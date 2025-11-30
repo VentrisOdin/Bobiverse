@@ -10,8 +10,19 @@ from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from typing import Dict, List, Optional, Literal
 
+from db.db_manager import (
+    init_db,
+    create_task_uuid,
+    log_task,
+    log_task_execution,
+    update_task_final_status,
+)
+
 # Load .env if present
 load_dotenv()
+
+# Initialize database on startup
+init_db()
 
 # ---------------- Logging Setup ---------------- #
 
@@ -115,6 +126,9 @@ NODE_REGISTRY: Dict[str, NodeInfo] = {}
 
 TASKS: Dict[int, TaskInfo] = {}
 TASK_COUNTER: int = 0
+
+# Map in-memory task.id -> DB task_uuid
+TASK_DB_UUIDS: Dict[int, str] = {}
 
 
 # ---------- Helper ---------- #
@@ -277,7 +291,7 @@ def drop_node(name: str):
 def submit_task(payload: TaskSubmit):
     """
     Submit a simple test task. For Phase 1.5 this just routes to a node
-    and stores everything in memory.
+    and stores everything in memory, and now also logs to SQLite.
     """
     global TASK_COUNTER
 
@@ -310,6 +324,29 @@ def submit_task(payload: TaskSubmit):
         result=None,
     )
     TASKS[task.id] = task
+
+    # ---------- NEW: log into DB ----------
+    try:
+        task_uuid = create_task_uuid()
+        db_task_id = log_task(
+            task_uuid=task_uuid,
+            high_level_type="generic",          # you can refine this later
+            submitted_by="api",                 # or "Matt", or request user
+            input_payload=payload.dict(),
+            initial_status="pending",
+        )
+        TASK_DB_UUIDS[task.id] = task_uuid
+
+        logger.info(
+            "[TASK_SUBMIT_DB] id=%s uuid=%s db_id=%s",
+            task.id,
+            task_uuid,
+            db_task_id,
+        )
+    except Exception as e:
+        # We don't want DB errors to break the API in dev;
+        # just log them for now.
+        logger.exception("Failed to log task to DB: %s", e)
 
     logger.info(
         "[TASK_SUBMIT] id=%s target_node=%s desc=%s",
@@ -365,6 +402,28 @@ def task_result(task_id: int, payload: TaskResult):
     task.updated_at = _utc_now()
 
     TASKS[task_id] = task
+
+    # ---------- NEW: update DB final status ----------
+    task_uuid = TASK_DB_UUIDS.get(task_id)
+    if task_uuid:
+        try:
+            # Map node-style status to DB-style status
+            final_status = "success" if payload.status == "completed" else payload.status
+
+            update_task_final_status(
+                task_uuid=task_uuid,
+                final_status=final_status,
+                final_result_summary=payload.result,
+                error_message=None,
+            )
+            logger.info(
+                "[TASK_RESULT_DB] id=%s uuid=%s final_status=%s",
+                task_id,
+                task_uuid,
+                final_status,
+            )
+        except Exception as e:
+            logger.exception("Failed to update task in DB: %s", e)
 
     logger.info(
         "[TASK_RESULT] id=%s node=%s status=%s",
