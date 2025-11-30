@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  node_agent:
+    build: ./node_agent
+    container_name: node_agent
+    restart: unless-stopped
+    environment:
+      - NODE_NAME=${BOBIVERSE_NODE_NAME}
+      - NODE_ROLE=${BOBIVERSE_NODE_ROLE}   # server / worker
+      - SERVER_IP=${TAILSCALE_IP}
+    volumes:
+      - ../shared:/app/shared
+      - ../logs:/app/logs
+    network_mode: "host"
