@@ -16,6 +16,7 @@ from db.db_manager import (
     log_task,
     log_task_execution,
     update_task_final_status,
+    update_task_execution_status,   # ← add this
 )
 
 # Load .env if present
@@ -127,8 +128,10 @@ NODE_REGISTRY: Dict[str, NodeInfo] = {}
 TASKS: Dict[int, TaskInfo] = {}
 TASK_COUNTER: int = 0
 
-# Map in-memory task.id -> DB task_uuid
+# Map in-memory task.id -> DB task_uuid and DB ids
 TASK_DB_UUIDS: Dict[int, str] = {}
+TASK_DB_IDS: Dict[int, int] = {}          # ← new: maps TaskInfo.id -> tasks.id (DB)
+TASK_EXECUTION_IDS: Dict[int, int] = {}   # ← new: maps TaskInfo.id -> task_executions.id
 
 
 # ---------- Helper ---------- #
@@ -336,6 +339,7 @@ def submit_task(payload: TaskSubmit):
             initial_status="pending",
         )
         TASK_DB_UUIDS[task.id] = task_uuid
+        TASK_DB_IDS[task.id] = db_task_id   # ← add this
 
         logger.info(
             "[TASK_SUBMIT_DB] id=%s uuid=%s db_id=%s",
@@ -374,6 +378,31 @@ def next_task(node_name: str):
             task.status = "in_progress"
             task.updated_at = _utc_now()
             logger.info("[TASK_ASSIGN] id=%s -> node=%s", task.id, node_name)
+
+            # ----- NEW: log execution step in DB -----
+            db_task_id = TASK_DB_IDS.get(task.id)
+            if db_task_id:
+                try:
+                    exec_id = log_task_execution(
+                        task_id=db_task_id,
+                        step_index=0,  # Phase 1: single-step tasks
+                        target_module="generic",         # later: 'MoneyCouncil', etc.
+                        target_node=node_name,
+                        agent_name=node_name,            # or 'node-agent'
+                        status="running",
+                        metrics=None,
+                        output_summary=f"Task {task.id} picked up by node {node_name}",
+                    )
+                    TASK_EXECUTION_IDS[task.id] = exec_id
+                    logger.info(
+                        "[TASK_EXEC_DB] task_id=%s db_task_id=%s exec_id=%s",
+                        task.id,
+                        db_task_id,
+                        exec_id,
+                    )
+                except Exception as e:
+                    logger.exception("Failed to log task execution to DB: %s", e)
+
             return task
 
     # No tasks
@@ -402,6 +431,27 @@ def task_result(task_id: int, payload: TaskResult):
     task.updated_at = _utc_now()
 
     TASKS[task_id] = task
+
+    # ----- NEW: update execution step in DB -----
+    exec_id = TASK_EXECUTION_IDS.get(task_id)
+    if exec_id:
+        try:
+            exec_status = "success" if payload.status == "completed" else "failed"
+            update_task_execution_status(
+                execution_id=exec_id,
+                status=exec_status,
+                metrics=None,
+                output_summary=payload.result,
+                error_message=None,
+            )
+            logger.info(
+                "[TASK_EXEC_RESULT_DB] task_id=%s exec_id=%s status=%s",
+                task_id,
+                exec_id,
+                exec_status,
+            )
+        except Exception as e:
+            logger.exception("Failed to update task execution in DB: %s", e)
 
     # ---------- NEW: update DB final status ----------
     task_uuid = TASK_DB_UUIDS.get(task_id)
