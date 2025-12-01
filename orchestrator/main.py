@@ -1,29 +1,36 @@
 import os
 from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Literal
+from typing import Dict, List, Optional, Any
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
 from dotenv import load_dotenv
-from typing import Dict, List, Optional, Literal
 
 from db.db_manager import (
     init_db,
-    create_task_uuid,
-    log_task,
-    log_task_execution,
-    update_task_final_status,
-    update_task_execution_status,   # ← add this
+    create_task,
+    get_task_by_uuid,
+    update_task_status,
+    create_task_execution,
+    complete_task_execution,
+    get_executions_for_task,
+    list_recent_tasks,
+)
+from models import (
+    NodeRegistration,
+    NodeHeartbeat,
+    NodeInfo,
+    NodeHealth,
+    TaskSubmit,
+    TaskInfo,
+    TaskResult,
+    DbTaskCreate,
 )
 
 # Load .env if present
 load_dotenv()
-
-# Initialize database on startup
-init_db()
 
 # ---------------- Logging Setup ---------------- #
 
@@ -64,62 +71,12 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# ---------- Data Models ---------- #
 
-class NodeRegistration(BaseModel):
-    name: str
-    role: Literal["server", "worker"]
-    tailscale_ip: str
-    capabilities: List[str] = Field(default_factory=list)  # e.g. ["trading", "dev", "medical"]
-
-
-class NodeHeartbeat(BaseModel):
-    name: str
-    load: Optional[float] = None           # 0.0–1.0 normalized CPU load
-    free_memory_mb: Optional[int] = None
-    active_councils: List[str] = Field(default_factory=list)
-
-
-class NodeInfo(BaseModel):
-    name: str
-    role: str
-    tailscale_ip: str
-    capabilities: List[str] = Field(default_factory=list)
-    last_seen: datetime
-    load: Optional[float] = None
-    free_memory_mb: Optional[int] = None
-    active_councils: List[str] = Field(default_factory=list)
-
-
-class NodeHealth(BaseModel):
-    name: str
-    status: Literal["online", "stale"]
-    last_seen: datetime
-    load: Optional[float] = None
-    free_memory_mb: Optional[int] = None
-
-
-# ---------- Task Models (Phase 1.5: in-memory only) ---------- #
-
-class TaskSubmit(BaseModel):
-    description: str
-    target_node: Optional[str] = None  # if None, Prime Bob will pick a node
-
-
-class TaskInfo(BaseModel):
-    id: int
-    description: str
-    target_node: str
-    status: Literal["pending", "in_progress", "completed", "failed"]
-    created_at: datetime
-    updated_at: datetime
-    result: Optional[str] = None
-
-
-class TaskResult(BaseModel):
-    node_name: str
-    status: Literal["completed", "failed"]
-    result: Optional[str] = None
+@app.on_event("startup")
+async def startup_event():
+    # Ensure the SQLite DB and tables exist
+    init_db()
+    logger.info("Database initialised.")
 
 
 # In-memory node registry (Phase 1: keep it simple)
@@ -128,10 +85,11 @@ NODE_REGISTRY: Dict[str, NodeInfo] = {}
 TASKS: Dict[int, TaskInfo] = {}
 TASK_COUNTER: int = 0
 
-# Map in-memory task.id -> DB task_uuid and DB ids
+# Map in-memory task.id -> DB task_uuid
 TASK_DB_UUIDS: Dict[int, str] = {}
-TASK_DB_IDS: Dict[int, int] = {}          # ← new: maps TaskInfo.id -> tasks.id (DB)
-TASK_EXECUTION_IDS: Dict[int, int] = {}   # ← new: maps TaskInfo.id -> task_executions.id
+
+# NEW: map in-memory task.id -> DB execution_id
+TASK_DB_EXECUTION_IDS: Dict[int, int] = {}
 
 
 # ---------- Helper ---------- #
@@ -328,24 +286,23 @@ def submit_task(payload: TaskSubmit):
     )
     TASKS[task.id] = task
 
-    # ---------- NEW: log into DB ----------
+    # ---------- Log into DB ----------
     try:
-        task_uuid = create_task_uuid()
-        db_task_id = log_task(
-            task_uuid=task_uuid,
-            high_level_type="generic",          # you can refine this later
-            submitted_by="api",                 # or "Matt", or request user
+        db_task = create_task(
+            high_level_type="generic",
             input_payload=payload.dict(),
-            initial_status="pending",
+            submitted_by="api",
+            is_experiment=False,
+            input_hash=None,
         )
+        task_uuid = db_task["task_uuid"]
         TASK_DB_UUIDS[task.id] = task_uuid
-        TASK_DB_IDS[task.id] = db_task_id   # ← add this
 
         logger.info(
             "[TASK_SUBMIT_DB] id=%s uuid=%s db_id=%s",
             task.id,
             task_uuid,
-            db_task_id,
+            db_task["id"],
         )
     except Exception as e:
         # We don't want DB errors to break the API in dev;
@@ -367,7 +324,7 @@ def next_task(node_name: str):
     """
     Called by a node to fetch its next pending task.
     Marks the task as in_progress.
-    Returns 200 with a TaskInfo if a task exists, or 204 if none.
+    Returns 200 with a TaskInfo if a task exists, or None if none.
     """
     if node_name not in NODE_REGISTRY:
         raise HTTPException(status_code=404, detail=f"Node '{node_name}' not registered.")
@@ -379,29 +336,33 @@ def next_task(node_name: str):
             task.updated_at = _utc_now()
             logger.info("[TASK_ASSIGN] id=%s -> node=%s", task.id, node_name)
 
-            # ----- NEW: log execution step in DB -----
-            db_task_id = TASK_DB_IDS.get(task.id)
-            if db_task_id:
+            # ----- DB logging -----
+            task_uuid = TASK_DB_UUIDS.get(task.id)
+            if task_uuid:
                 try:
-                    exec_id = log_task_execution(
-                        task_id=db_task_id,
-                        step_index=0,  # Phase 1: single-step tasks
-                        target_module="generic",         # later: 'MoneyCouncil', etc.
-                        target_node=node_name,
-                        agent_name=node_name,            # or 'node-agent'
-                        status="running",
-                        metrics=None,
-                        output_summary=f"Task {task.id} picked up by node {node_name}",
+                    # Update DB task status to RUNNING
+                    update_task_status(
+                        task_uuid=task_uuid,
+                        final_status="RUNNING",
                     )
-                    TASK_EXECUTION_IDS[task.id] = exec_id
+
+                    # Create an execution row
+                    exec_row = create_task_execution(
+                        task_uuid=task_uuid,
+                        target_module="generic",
+                        target_node=node_name,
+                        strategy_name=None,
+                    )
+                    TASK_DB_EXECUTION_IDS[task.id] = exec_row["id"]
+
                     logger.info(
-                        "[TASK_EXEC_DB] task_id=%s db_task_id=%s exec_id=%s",
+                        "[TASK_EXEC_DB_START] task_id=%s task_uuid=%s exec_id=%s",
                         task.id,
-                        db_task_id,
-                        exec_id,
+                        task_uuid,
+                        exec_row["id"],
                     )
                 except Exception as e:
-                    logger.exception("Failed to log task execution to DB: %s", e)
+                    logger.exception("Failed to log task execution start to DB: %s", e)
 
             return task
 
@@ -432,48 +393,49 @@ def task_result(task_id: int, payload: TaskResult):
 
     TASKS[task_id] = task
 
-    # ----- NEW: update execution step in DB -----
-    exec_id = TASK_EXECUTION_IDS.get(task_id)
-    if exec_id:
-        try:
-            exec_status = "success" if payload.status == "completed" else "failed"
-            update_task_execution_status(
-                execution_id=exec_id,
-                status=exec_status,
-                metrics=None,
-                output_summary=payload.result,
-                error_message=None,
-            )
-            logger.info(
-                "[TASK_EXEC_RESULT_DB] task_id=%s exec_id=%s status=%s",
-                task_id,
-                exec_id,
-                exec_status,
-            )
-        except Exception as e:
-            logger.exception("Failed to update task execution in DB: %s", e)
-
-    # ---------- NEW: update DB final status ----------
+    # ---------- DB: update task + execution ----------
     task_uuid = TASK_DB_UUIDS.get(task_id)
-    if task_uuid:
-        try:
-            # Map node-style status to DB-style status
-            final_status = "success" if payload.status == "completed" else payload.status
+    exec_id = TASK_DB_EXECUTION_IDS.get(task_id)
 
-            update_task_final_status(
+    if task_uuid:
+        final_status_db = "SUCCESS" if payload.status == "completed" else "FAILED"
+        error_msg = payload.result if payload.status == "failed" else None
+
+        # 1) Update the task row
+        try:
+            update_task_status(
                 task_uuid=task_uuid,
-                final_status=final_status,
-                final_result_summary=payload.result,
-                error_message=None,
+                final_status=final_status_db,
+                error_type=error_msg,
             )
             logger.info(
-                "[TASK_RESULT_DB] id=%s uuid=%s final_status=%s",
+                "[TASK_RESULT_DB_STATUS] id=%s uuid=%s final_status=%s",
                 task_id,
                 task_uuid,
-                final_status,
+                final_status_db,
             )
         except Exception as e:
-            logger.exception("Failed to update task in DB: %s", e)
+            logger.exception("Failed to update task status in DB: %s", e)
+
+        # 2) Update the execution row (if we have one)
+        if exec_id is not None:
+            try:
+                complete_task_execution(
+                    execution_id=exec_id,
+                    status=final_status_db,
+                    output_summary=payload.result,
+                    error_type=error_msg,
+                    latency_ms=None,      # could be filled in later
+                    metrics=None,
+                )
+                logger.info(
+                    "[TASK_RESULT_DB_EXEC] id=%s uuid=%s exec_id=%s",
+                    task_id,
+                    task_uuid,
+                    exec_id,
+                )
+            except Exception as e:
+                logger.exception("Failed to complete task execution in DB: %s", e)
 
     logger.info(
         "[TASK_RESULT] id=%s node=%s status=%s",
@@ -501,6 +463,51 @@ def get_task(task_id: int):
     if task_id not in TASKS:
         raise HTTPException(status_code=404, detail=f"Task '{task_id}' not found.")
     return TASKS[task_id]
+
+
+# ---------- DB Task Routes (Phase 1.6) ---------- #
+
+@app.post("/db/tasks/create")
+def db_create_task(body: DbTaskCreate):
+    """
+    Create a task directly in the database (Phase 1.6 style).
+    Returns the full task row including task_uuid.
+    """
+    row = create_task(
+        high_level_type=body.high_level_type,
+        input_payload=body.input_payload,
+        submitted_by=body.submitted_by,
+        is_experiment=body.is_experiment,
+        input_hash=body.input_hash,
+    )
+    return row
+
+
+@app.get("/db/tasks/{task_uuid}")
+def db_get_task(task_uuid: str):
+    """
+    Get a task from the database by its UUID.
+    """
+    row = get_task_by_uuid(task_uuid)
+    if not row:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return row
+
+
+@app.get("/db/tasks")
+def db_list_tasks(limit: int = 100):
+    """
+    List recent tasks from the database.
+    """
+    return list_recent_tasks(limit=limit)
+
+
+@app.get("/db/tasks/{task_uuid}/executions")
+def db_get_task_executions(task_uuid: str):
+    """
+    Get all execution records for a task.
+    """
+    return get_executions_for_task(task_uuid)
 
 
 # ---------- Dev-only: local run ---------- #

@@ -21,6 +21,7 @@ def get_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     try:
+        conn.execute("PRAGMA foreign_keys = ON;")
         yield conn
         conn.commit()
     finally:
@@ -35,185 +36,239 @@ def init_db() -> None:
     if not os.path.exists(SCHEMA_PATH):
         raise FileNotFoundError(f"schema.sql not found at {SCHEMA_PATH}")
 
-    # Ensure DB file exists and run schema
     with get_connection() as conn, open(SCHEMA_PATH, "r", encoding="utf-8") as f:
         schema_sql = f.read()
         conn.executescript(schema_sql)
 
 
-# ============
-# Task helpers
-# ============
-
-def create_task_uuid() -> str:
-    """Generate a new task UUID string."""
-    return str(uuid.uuid4())
+def _row_to_dict(row: sqlite3.Row) -> Dict[str, Any]:
+    return {k: row[k] for k in row.keys()}
 
 
-def log_task(
-    task_uuid: str,
-    high_level_type: Optional[str] = None,
+# =========================
+# TASK-LEVEL OPERATIONS
+# =========================
+
+def create_task(
+    high_level_type: Optional[str],
+    input_payload: Dict[str, Any],
     submitted_by: Optional[str] = None,
-    input_payload: Optional[Dict[str, Any]] = None,
-    initial_status: str = "pending",
-) -> int:
+    is_experiment: bool = False,
+    input_hash: Optional[str] = None,
+) -> Dict[str, Any]:
     """
-    Insert a new high-level task row.
-
-    Returns:
-        task_id (int): the auto-incremented primary key.
+    Create a new task row. Returns the full task record as a dict.
     """
-    input_payload_json = json.dumps(input_payload) if input_payload is not None else None
+    task_uuid = str(uuid.uuid4())
+    payload_str = json.dumps(input_payload, ensure_ascii=False)
 
     with get_connection() as conn:
-        cur = conn.execute(
+        cur = conn.cursor()
+        cur.execute(
             """
             INSERT INTO tasks (
                 task_uuid,
                 high_level_type,
-                submitted_by,
                 input_payload,
-                final_status
+                input_hash,
+                submitted_by,
+                is_experiment,
+                final_status,
+                created_at,
+                updated_at
             )
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
             """,
-            (task_uuid, high_level_type, submitted_by, input_payload_json, initial_status),
+            (
+                task_uuid,
+                high_level_type,
+                payload_str,
+                input_hash,
+                submitted_by,
+                1 if is_experiment else 0,
+                "PENDING",
+            ),
         )
-        return cur.lastrowid
+        task_id = cur.lastrowid
+        cur.execute("SELECT * FROM tasks WHERE id = ?", (task_id,))
+        row = cur.fetchone()
+        return _row_to_dict(row)
 
 
-def update_task_final_status(
+def update_task_status(
     task_uuid: str,
     final_status: str,
-    final_result_summary: Optional[str] = None,
-    error_message: Optional[str] = None,
+    error_type: Optional[str] = None,
+    reward_score: Optional[float] = None,
 ) -> None:
     """
-    Mark a task as completed/failed/etc and set a final summary + error if needed.
-    Also updates completed_at to NOW.
+    Update the final_status (and optionally error_type / reward_score) of a task.
     """
     with get_connection() as conn:
-        conn.execute(
-            """
-            UPDATE tasks
-            SET final_status = ?,
-                final_result_summary = ?,
-                error_message = ?,
-                completed_at = CURRENT_TIMESTAMP
-            WHERE task_uuid = ?
-            """,
-            (final_status, final_result_summary, error_message, task_uuid),
-        )
+        cur = conn.cursor()
+
+        updates = ["final_status = ?", "updated_at = datetime('now')"]
+        params: List[Any] = [final_status]
+
+        if error_type is not None:
+            updates.append("error_type = ?")
+            params.append(error_type)
+
+        if reward_score is not None:
+            updates.append("reward_score = ?")
+            params.append(reward_score)
+
+        params.append(task_uuid)
+
+        sql = f"UPDATE tasks SET {', '.join(updates)} WHERE task_uuid = ?"
+        cur.execute(sql, params)
 
 
-def get_task_by_uuid(task_uuid: str) -> Optional[sqlite3.Row]:
+def get_task_by_uuid(task_uuid: str) -> Optional[Dict[str, Any]]:
     """
-    Fetch a single task row by its task_uuid.
-    Returns sqlite3.Row or None.
+    Load a single task by its UUID.
     """
     with get_connection() as conn:
-        cur = conn.execute(
-            "SELECT * FROM tasks WHERE task_uuid = ?",
-            (task_uuid,),
-        )
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM tasks WHERE task_uuid = ?", (task_uuid,))
         row = cur.fetchone()
-        return row
+        return _row_to_dict(row) if row else None
 
 
-# ======================
-# Task executions helpers
-# ======================
-
-def log_task_execution(
-    task_id: int,
-    step_index: int,
-    target_module: Optional[str] = None,
-    target_node: Optional[str] = None,
-    agent_name: Optional[str] = None,
-    status: str = "running",
-    metrics: Optional[Dict[str, Any]] = None,
-    output_summary: Optional[str] = None,
-    error_message: Optional[str] = None,
-) -> int:
+def list_recent_tasks(limit: int = 100) -> List[Dict[str, Any]]:
     """
-    Insert a new execution step for a given task.
-
-    Returns:
-        execution_id (int): the auto-incremented primary key for this step.
+    Return the most recent tasks (for quick dashboards / debugging).
     """
-    metrics_json = json.dumps(metrics) if metrics is not None else None
-
     with get_connection() as conn:
-        cur = conn.execute(
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT * FROM tasks
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+        rows = cur.fetchall()
+        return [_row_to_dict(r) for r in rows]
+
+
+# =========================
+# EXECUTION-LEVEL OPERATIONS
+# =========================
+
+def create_task_execution(
+    task_uuid: str,
+    target_module: Optional[str],
+    target_node: Optional[str],
+    strategy_name: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Create a task_executions row for a given task UUID.
+    Returns the created execution as a dict.
+    """
+    with get_connection() as conn:
+        cur = conn.cursor()
+
+        # Look up the internal task ID first
+        cur.execute("SELECT id FROM tasks WHERE task_uuid = ?", (task_uuid,))
+        task_row = cur.fetchone()
+        if not task_row:
+            raise ValueError(f"No task found for task_uuid={task_uuid}")
+
+        task_id = task_row["id"]
+
+        cur.execute(
             """
             INSERT INTO task_executions (
                 task_id,
-                step_index,
                 target_module,
                 target_node,
-                agent_name,
+                strategy_name,
                 status,
-                metrics_json,
-                output_summary,
-                error_message
+                started_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, datetime('now'))
             """,
             (
                 task_id,
-                step_index,
                 target_module,
                 target_node,
-                agent_name,
-                status,
-                metrics_json,
-                output_summary,
-                error_message,
+                strategy_name,
+                "RUNNING",
             ),
         )
-        return cur.lastrowid
+
+        exec_id = cur.lastrowid
+        cur.execute("SELECT * FROM task_executions WHERE id = ?", (exec_id,))
+        row = cur.fetchone()
+        return _row_to_dict(row)
 
 
-def update_task_execution_status(
+def complete_task_execution(
     execution_id: int,
     status: str,
-    metrics: Optional[Dict[str, Any]] = None,
     output_summary: Optional[str] = None,
-    error_message: Optional[str] = None,
+    error_type: Optional[str] = None,
+    latency_ms: Optional[int] = None,
+    metrics: Optional[Dict[str, Any]] = None,
 ) -> None:
     """
-    Update an existing execution step when it finishes.
-    Sets finished_at to NOW and updates status/metrics/output/error.
-    """
-    metrics_json = json.dumps(metrics) if metrics is not None else None
-
-    with get_connection() as conn:
-        conn.execute(
-            """
-            UPDATE task_executions
-            SET status = ?,
-                metrics_json = ?,
-                output_summary = ?,
-                error_message = ?,
-                finished_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-            """,
-            (status, metrics_json, output_summary, error_message, execution_id),
-        )
-
-
-def get_executions_for_task(task_id: int) -> List[sqlite3.Row]:
-    """
-    Return all execution steps for a given task_id in step_index order.
+    Mark a task_executions row as completed, with results/metrics.
     """
     with get_connection() as conn:
-        cur = conn.execute(
+        cur = conn.cursor()
+
+        updates = [
+            "status = ?",
+            "completed_at = datetime('now')",
+        ]
+        params: List[Any] = [status]
+
+        if output_summary is not None:
+            updates.append("output_summary = ?")
+            params.append(output_summary)
+
+        if error_type is not None:
+            updates.append("error_type = ?")
+            params.append(error_type)
+
+        if latency_ms is not None:
+            updates.append("latency_ms = ?")
+            params.append(latency_ms)
+
+        if metrics is not None:
+            metrics_json = json.dumps(metrics, ensure_ascii=False)
+            updates.append("metrics_json = ?")
+            params.append(metrics_json)
+
+        params.append(execution_id)
+
+        sql = f"UPDATE task_executions SET {', '.join(updates)} WHERE id = ?"
+        cur.execute(sql, params)
+
+
+def get_executions_for_task(task_uuid: str) -> List[Dict[str, Any]]:
+    """
+    Return all executions for a given task UUID, newest first.
+    """
+    with get_connection() as conn:
+        cur = conn.cursor()
+
+        cur.execute("SELECT id FROM tasks WHERE task_uuid = ?", (task_uuid,))
+        task_row = cur.fetchone()
+        if not task_row:
+            return []
+
+        task_id = task_row["id"]
+
+        cur.execute(
             """
-            SELECT *
-            FROM task_executions
+            SELECT * FROM task_executions
             WHERE task_id = ?
-            ORDER BY step_index ASC, id ASC
+            ORDER BY started_at DESC
             """,
             (task_id,),
         )
-        return cur.fetchall()
+        rows = cur.fetchall()
+        return [_row_to_dict(r) for r in rows]
