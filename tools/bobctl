@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Try likely venv locations in order
+CANDIDATES=(
+  "$HOME/bobiverse/orchestrator/.venv/bin/activate"
+  "$HOME/bobiverse/.venv/bin/activate"
+)
+
+for V in "${CANDIDATES[@]}"; do
+  if [ -f "$V" ]; then
+    # shellcheck source=/dev/null
+    source "$V"
+    break
+  fi
+done
+
+python "$SCRIPT_DIR/bobctl.py" "$@"

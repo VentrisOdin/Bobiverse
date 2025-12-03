@@ -2,9 +2,9 @@
 
 import os
 import sqlite3
-from typing import Optional, Dict, Any, List
-import json
 import uuid
+import json
+from typing import Optional, Dict, Any, List
 from contextlib import contextmanager
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -270,5 +270,145 @@ def get_executions_for_task(task_uuid: str) -> List[Dict[str, Any]]:
             """,
             (task_id,),
         )
+        rows = cur.fetchall()
+        return [_row_to_dict(r) for r in rows]
+
+
+# =========================
+# POLICY PROPOSAL OPERATIONS
+# =========================
+
+def create_policy_proposal(
+    source: str,
+    proposal_type: str,
+    payload: Dict[str, Any],
+    scope: Optional[str] = None,
+    rationale: Optional[str] = None,
+    status: str = "PENDING",
+) -> Dict[str, Any]:
+    """
+    Insert a new policy proposal into the DB and return the row as a dict.
+    """
+    proposal_uuid = str(uuid.uuid4())
+    payload_json = json.dumps(payload, ensure_ascii=False)
+
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO policy_proposals (
+                proposal_uuid, source, proposal_type, scope,
+                payload_json, rationale, status
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                proposal_uuid,
+                source,
+                proposal_type,
+                scope,
+                payload_json,
+                rationale,
+                status,
+            ),
+        )
+        proposal_id = cur.lastrowid
+
+        cur.execute(
+            "SELECT * FROM policy_proposals WHERE id = ?",
+            (proposal_id,),
+        )
+        row = cur.fetchone()
+        return _row_to_dict(row) if row else {
+            "id": proposal_id,
+            "proposal_uuid": proposal_uuid,
+        }
+
+
+def update_policy_proposal_status(
+    proposal_uuid: str,
+    status: str,
+    decided_at: Optional[str] = None,
+    applied_at: Optional[str] = None,
+) -> Optional[Dict[str, Any]]:
+    """
+    Update status (and optionally decided/applied timestamps) for a proposal.
+    """
+    with get_connection() as conn:
+        cur = conn.cursor()
+
+        fields = ["status = ?"]
+        params: List[Any] = [status]
+
+        if decided_at is not None:
+            fields.append("decided_at = ?")
+            params.append(decided_at)
+        if applied_at is not None:
+            fields.append("applied_at = ?")
+            params.append(applied_at)
+
+        params.append(proposal_uuid)
+
+        cur.execute(
+            f"""
+            UPDATE policy_proposals
+            SET {", ".join(fields)}
+            WHERE proposal_uuid = ?
+            """,
+            tuple(params),
+        )
+
+        cur.execute(
+            "SELECT * FROM policy_proposals WHERE proposal_uuid = ?",
+            (proposal_uuid,),
+        )
+        row = cur.fetchone()
+        return _row_to_dict(row) if row else None
+
+
+def get_policy_proposal_by_uuid(proposal_uuid: str) -> Optional[Dict[str, Any]]:
+    """
+    Load a single policy proposal by its UUID.
+    """
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM policy_proposals WHERE proposal_uuid = ?",
+            (proposal_uuid,),
+        )
+        row = cur.fetchone()
+        return _row_to_dict(row) if row else None
+
+
+def list_policy_proposals(
+    status: Optional[str] = None,
+    limit: int = 100,
+) -> List[Dict[str, Any]]:
+    """
+    List recent policy proposals, optionally filtered by status.
+    """
+    with get_connection() as conn:
+        cur = conn.cursor()
+
+        if status:
+            cur.execute(
+                """
+                SELECT * FROM policy_proposals
+                WHERE status = ?
+                ORDER BY datetime(created_at) DESC
+                LIMIT ?
+                """,
+                (status, limit),
+            )
+        else:
+            cur.execute(
+                """
+                SELECT * FROM policy_proposals
+                ORDER BY datetime(created_at) DESC
+                LIMIT ?
+                """,
+                (limit,),
+            )
+
         rows = cur.fetchall()
         return [_row_to_dict(r) for r in rows]

@@ -1,7 +1,7 @@
 # orchestrator/models.py
 
 from datetime import datetime
-from typing import Dict, List, Optional, Literal, Any
+from typing import Dict, Any, Optional, List, Literal
 
 from pydantic import BaseModel, Field
 
@@ -44,8 +44,20 @@ class NodeHealth(BaseModel):
 # ---------- Task Models (in-memory tasks) ---------- #
 
 class TaskSubmit(BaseModel):
-    description: str
-    target_node: Optional[str] = None  # if None, Prime Bob will pick a node
+    # NEW: explicit task type for routing
+    high_level_type: Optional[str] = "generic"  # e.g. "dev", "trading", "medical", "general"
+
+    # Human-readable description (optional if everything is in input_payload)
+    description: Optional[str] = None
+
+    # Structured payload for specialist councils
+    input_payload: Optional[Dict[str, Any]] = None
+
+    # Who originated this task
+    submitted_by: Optional[str] = "user"
+
+    # If None, Prime Bob will auto-choose based on capabilities
+    target_node: Optional[str] = None
 
 
 class TaskInfo(BaseModel):
@@ -56,6 +68,10 @@ class TaskInfo(BaseModel):
     created_at: datetime
     updated_at: datetime
     result: Optional[str] = None
+
+    # NEW: preserve type + payload for Reflector / councils
+    high_level_type: Optional[str] = "generic"
+    input_payload: Dict[str, Any] = Field(default_factory=dict)
 
 
 class TaskResult(BaseModel):
@@ -74,8 +90,31 @@ class DbTaskCreate(BaseModel):
     input_hash: Optional[str] = None
 
 
+# ---------- Policy Proposal Models ---------- #
+
+class PolicyProposalCreate(BaseModel):
+    source: str = "reflector"
+    proposal_type: str  # e.g. "ROUTING_ADJUSTMENT", "PROMPT_UPDATE"
+    scope: Optional[str] = None         # e.g. "node:test-node", "module:DEV-CODEGEN"
+    payload: Dict[str, Any]            # structured details
+    rationale: Optional[str] = None    # human-readable explanation
+
+
+class PolicyProposalRecord(BaseModel):
+    id: int
+    proposal_uuid: str
+    source: Optional[str] = None
+    proposal_type: str
+    scope: Optional[str] = None
+    payload_json: str
+    rationale: Optional[str] = None
+    status: str
+    created_at: str
+    decided_at: Optional[str] = None
+    applied_at: Optional[str] = None
+
+
 # ---------- (Optional) Reflector Models (for later) ---------- #
-# These are stubs we can flesh out when we build Reflector v0.
 
 class ReflectorTaskStats(BaseModel):
     total_tasks: int

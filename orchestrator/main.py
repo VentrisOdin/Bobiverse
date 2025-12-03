@@ -17,6 +17,10 @@ from db.db_manager import (
     complete_task_execution,
     get_executions_for_task,
     list_recent_tasks,
+    create_policy_proposal,
+    list_policy_proposals,
+    get_policy_proposal_by_uuid,
+    update_policy_proposal_status,
 )
 from models import (
     NodeRegistration,
@@ -27,6 +31,8 @@ from models import (
     TaskInfo,
     TaskResult,
     DbTaskCreate,
+    PolicyProposalCreate,
+    PolicyProposalRecord,
 )
 
 # Load .env if present
@@ -117,6 +123,35 @@ def _choose_node_for_task() -> Optional[str]:
         chosen = sorted(NODE_REGISTRY.values(), key=lambda n: n.name.lower())[0]
 
     return chosen.name
+
+
+def choose_node_for_capability(task_type: str) -> Optional[str]:
+    """
+    Return a node that advertises capability matching the high_level_type.
+    E.g. task_type='dev' => node with 'dev' in node.capabilities.
+
+    If none match, fall back to lowest-load node.
+    """
+    if not NODE_REGISTRY:
+        return None
+
+    # Filter by capability
+    capable_nodes = [
+        n for n in NODE_REGISTRY.values()
+        if task_type in n.capabilities
+    ]
+
+    if capable_nodes:
+        # Pick lowest load among capable nodes
+        nodes_with_load = [n for n in capable_nodes if n.load is not None]
+        if nodes_with_load:
+            chosen = min(nodes_with_load, key=lambda n: n.load)
+        else:
+            chosen = sorted(capable_nodes, key=lambda n: n.name.lower())[0]
+        return chosen.name
+
+    # Fallback: use generic lowest-load selector
+    return _choose_node_for_task()
 
 
 # ---------- Routes ---------- #
@@ -257,7 +292,7 @@ def submit_task(payload: TaskSubmit):
     global TASK_COUNTER
 
     # Choose target node
-    target_name: Optional[str] = payload.target_node
+    target_name = payload.target_node
 
     if target_name is not None:
         if target_name not in NODE_REGISTRY:
@@ -266,32 +301,51 @@ def submit_task(payload: TaskSubmit):
                 detail=f"Target node '{target_name}' not found.",
             )
     else:
-        target_name = _choose_node_for_task()
+        # New: capability-aware routing
+        target_name = choose_node_for_capability(payload.high_level_type)
         if target_name is None:
             raise HTTPException(
                 status_code=503,
-                detail="No nodes available to run tasks.",
+                detail=f"No nodes available with capability '{payload.high_level_type}'.",
             )
+
+    # --- Canonicalise high_level_type + input_payload ---
+
+    # Default type
+    high_level_type = payload.high_level_type or "generic"
+
+    # Legacy support: if no input_payload provided, wrap description
+    if payload.input_payload is not None:
+        input_payload = dict(payload.input_payload)  # shallow copy
+    else:
+        input_payload = {}
+        if payload.description:
+            input_payload["description"] = payload.description
+
+    # Make sure there's always a human-readable description
+    description = payload.description or input_payload.get("description") or ""
 
     TASK_COUNTER += 1
     now = _utc_now()
     task = TaskInfo(
         id=TASK_COUNTER,
-        description=payload.description,
+        description=description,
         target_node=target_name,
         status="pending",
         created_at=now,
         updated_at=now,
         result=None,
+        high_level_type=high_level_type,
+        input_payload=input_payload,
     )
     TASKS[task.id] = task
 
     # ---------- Log into DB ----------
     try:
         db_task = create_task(
-            high_level_type="generic",
-            input_payload=payload.dict(),
-            submitted_by="api",
+            high_level_type=high_level_type,
+            input_payload=input_payload,
+            submitted_by=payload.submitted_by or "user",
             is_experiment=False,
             input_hash=None,
         )
@@ -310,9 +364,10 @@ def submit_task(payload: TaskSubmit):
         logger.exception("Failed to log task to DB: %s", e)
 
     logger.info(
-        "[TASK_SUBMIT] id=%s target_node=%s desc=%s",
+        "[TASK_SUBMIT] id=%s target_node=%s type=%s desc=%s",
         task.id,
         task.target_node,
+        high_level_type,
         task.description,
     )
 
@@ -508,6 +563,42 @@ def db_get_task_executions(task_uuid: str):
     Get all execution records for a task.
     """
     return get_executions_for_task(task_uuid)
+
+
+# ---------- Policy Proposal Routes ---------- #
+
+@app.post("/policies", response_model=PolicyProposalRecord)
+def create_policy(body: PolicyProposalCreate):
+    """
+    Create a new policy proposal.
+    """
+    row = create_policy_proposal(
+        source=body.source,
+        proposal_type=body.proposal_type,
+        scope=body.scope,
+        payload=body.payload,
+        rationale=body.rationale,
+    )
+    return row
+
+
+@app.get("/policies", response_model=List[PolicyProposalRecord])
+def list_policies(status: Optional[str] = None, limit: int = 100):
+    """
+    List policy proposals, optionally filtered by status.
+    """
+    return list_policy_proposals(status=status, limit=limit)
+
+
+@app.get("/policies/{proposal_uuid}", response_model=PolicyProposalRecord)
+def get_policy(proposal_uuid: str):
+    """
+    Get a specific policy proposal by UUID.
+    """
+    row = get_policy_proposal_by_uuid(proposal_uuid)
+    if not row:
+        raise HTTPException(status_code=404, detail="Policy proposal not found")
+    return row
 
 
 # ---------- Dev-only: local run ---------- #

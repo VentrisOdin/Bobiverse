@@ -84,3 +84,45 @@ CREATE INDEX IF NOT EXISTS idx_exec_target_module ON task_executions(target_modu
 CREATE INDEX IF NOT EXISTS idx_exec_target_node   ON task_executions(target_node);
 CREATE INDEX IF NOT EXISTS idx_exec_status        ON task_executions(status);
 CREATE INDEX IF NOT EXISTS idx_exec_started_at    ON task_executions(started_at);
+
+
+-- ============================
+-- policy_proposals: Reflector → Policy loop
+-- ============================
+CREATE TABLE IF NOT EXISTS policy_proposals (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    proposal_uuid    TEXT NOT NULL UNIQUE,
+
+    -- Who created this proposal: "reflector", "human", "dev_council", etc.
+    source           TEXT,
+
+    -- High-level type of proposal
+    -- e.g. "ROUTING_ADJUSTMENT", "PROMPT_UPDATE", "EXPERIMENT_PLAN"
+    proposal_type    TEXT NOT NULL,
+
+    -- Scope of what this touches (optional, for filtering)
+    -- e.g. "node:test-node", "module:DEV-CODEGEN", "global"
+    scope            TEXT,
+
+    -- Arbitrary JSON content describing the change being proposed
+    payload_json     TEXT NOT NULL,
+
+    -- Natural-language explanation for humans
+    rationale        TEXT,
+
+    -- "PENDING", "APPROVED", "REJECTED", "APPLIED"
+    status           TEXT NOT NULL DEFAULT 'PENDING',
+
+    created_at       TEXT NOT NULL DEFAULT (datetime('now')),
+    decided_at       TEXT,
+    applied_at       TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_policy_proposals_uuid
+    ON policy_proposals(proposal_uuid);
+
+CREATE INDEX IF NOT EXISTS idx_policy_proposals_status
+    ON policy_proposals(status);
+
+CREATE INDEX IF NOT EXISTS idx_policy_proposals_created_at
+    ON policy_proposals(created_at);
