@@ -1,12 +1,15 @@
 import os
 from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Literal
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 from dotenv import load_dotenv
+import uuid
+import json
 
 from db.db_manager import (
     init_db,
@@ -21,6 +24,7 @@ from db.db_manager import (
     list_policy_proposals,
     get_policy_proposal_by_uuid,
     update_policy_proposal_status,
+    get_connection,
 )
 from models import (
     NodeRegistration,
@@ -34,6 +38,30 @@ from models import (
     PolicyProposalCreate,
     PolicyProposalRecord,
 )
+
+
+# ---------- Dev Council Models ---------- #
+
+class DevTaskCreate(BaseModel):
+    description: str
+    details: Optional[str] = None
+    submitted_by: str = "bobctl"
+    priority: str = "normal"
+
+
+class DevTaskNextResponse(BaseModel):
+    task_uuid: str
+    input_payload: Dict[str, Any]
+    submitted_by: str
+    created_at: str
+    execution_id: int
+
+
+class DevTaskResultIn(BaseModel):
+    execution_id: int
+    status: Literal["success", "partial", "failed"]
+    output_summary: str
+    full_response: Optional[Dict[str, Any]] = None
 
 # Load .env if present
 load_dotenv()
@@ -599,6 +627,260 @@ def get_policy(proposal_uuid: str):
     if not row:
         raise HTTPException(status_code=404, detail="Policy proposal not found")
     return row
+
+
+# ---------- Dev Council Routes ---------- #
+
+@app.get("/dev/tasks/next", response_model=Optional[DevTaskNextResponse])
+def dev_next_task(node_name: str):
+    """
+    Claim the next PENDING 'dev' task from the DB for the given node.
+
+    - Picks the oldest PENDING dev task.
+    - Marks it RUNNING (and, if columns exist, assigns target_node/target_module).
+    - Creates a task_executions row.
+    - Returns the input_payload plus execution_id.
+    """
+    if node_name not in NODE_REGISTRY:
+        raise HTTPException(status_code=404, detail=f"Node '{node_name}' not registered.")
+
+    node = NODE_REGISTRY[node_name]
+    if "dev" not in (node.capabilities or []):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Node '{node_name}' does not advertise 'dev' capability.",
+        )
+
+    with get_connection() as conn:
+        cur = conn.cursor()
+
+        # 1) Grab oldest PENDING dev task
+        cur.execute(
+            """
+            SELECT *
+            FROM tasks
+            WHERE high_level_type = 'dev'
+              AND (final_status IS NULL OR final_status = 'PENDING')
+            ORDER BY id ASC
+            LIMIT 1
+            """
+        )
+        row = cur.fetchone()
+        if not row:
+            # No pending dev tasks
+            return None
+
+        row_dict = dict(row)
+        task_uuid = row_dict["task_uuid"]
+        input_payload_raw = row_dict.get("input_payload")
+        submitted_by = row_dict.get("submitted_by", "unknown")
+        created_at = (
+            row_dict.get("created_at")
+            or row_dict.get("submitted_at")
+            or row_dict.get("created")
+            or row_dict.get("submitted")
+            or ""
+        )
+
+        # Safely parse JSON payload
+        try:
+            input_payload = json.loads(input_payload_raw) if input_payload_raw else {}
+        except json.JSONDecodeError:
+            input_payload = {}
+
+        # Ensure Dev Bob always has a task_id to work with
+        if not input_payload.get("task_id"):
+            input_payload["task_id"] = task_uuid
+
+        # 2) Introspect tasks table columns
+        cur.execute("PRAGMA table_info(tasks)")
+        cols_info = cur.fetchall()
+        cols = {c["name"] for c in cols_info}
+
+        # 3) Build dynamic UPDATE depending on which columns exist
+        update_parts = []
+        params = []
+
+        if "final_status" in cols:
+            update_parts.append("final_status = ?")
+            params.append("RUNNING")
+        if "target_node" in cols:
+            update_parts.append("target_node = ?")
+            params.append(node_name)
+        if "target_module" in cols:
+            update_parts.append("target_module = ?")
+            params.append("dev_council")
+
+        if update_parts:
+            sql = f"UPDATE tasks SET {', '.join(update_parts)} WHERE task_uuid = ?"
+            params.append(task_uuid)
+            cur.execute(sql, params)
+
+    # 4) Create an execution record
+    exec_row = create_task_execution(
+        task_uuid=task_uuid,
+        target_module="dev_council",
+        target_node=node_name,
+        strategy_name=None,
+    )
+
+    return DevTaskNextResponse(
+        task_uuid=task_uuid,
+        input_payload=input_payload,
+        submitted_by=submitted_by,
+        created_at=str(created_at),
+        execution_id=exec_row["id"],
+    )
+
+
+@app.post("/dev/tasks/{task_uuid}/result")
+def dev_task_result(task_uuid: str, body: DevTaskResultIn):
+    """
+    Node reports back the result of a Dev Council task.
+
+    - Updates the tasks row final_status.
+    - Completes the corresponding task_executions row with summary + full_response.
+    """
+    status_map = {
+        "success": "SUCCESS",
+        "partial": "PARTIAL",
+        "failed": "FAILED",
+    }
+    final_status_db = status_map.get(body.status, "FAILED")
+
+    error_msg = None
+    if body.status == "failed":
+        error_msg = body.output_summary
+
+    # 1) Update the task row
+    try:
+        update_task_status(
+            task_uuid=task_uuid,
+            final_status=final_status_db,
+            error_type=error_msg,
+        )
+        logger.info(
+            "[DEV_TASK_RESULT_DB_STATUS] uuid=%s final_status=%s",
+            task_uuid,
+            final_status_db,
+        )
+    except Exception as e:
+        logger.exception("Failed to update dev task status in DB: %s", e)
+
+    # 2) Update the execution row
+    try:
+        complete_task_execution(
+            execution_id=body.execution_id,
+            status=final_status_db,
+            output_summary=body.output_summary,
+            error_type=error_msg,
+            latency_ms=None,          # we can wire timing later
+            metrics=body.full_response,  # store full DevTaskResponse JSON in metrics_json
+        )
+        logger.info(
+            "[DEV_TASK_RESULT_DB_EXEC] uuid=%s exec_id=%s status=%s",
+            task_uuid,
+            body.execution_id,
+            final_status_db,
+        )
+    except Exception as e:
+        logger.exception("Failed to complete dev task execution in DB: %s", e)
+
+    return {"status": "ok", "task_uuid": task_uuid, "final_status": final_status_db}
+
+
+@app.post("/tasks/dev")
+def create_dev_task(payload: DevTaskCreate):
+    """
+    Create a new 'dev' task row in the tasks table so it shows up
+    in show-tasks and can later be picked up by the Dev Council pipeline.
+
+    This writes input_payload in a shape that matches DevTaskRequest on
+    the Dev Council side, so the node agent can deserialize it directly.
+    """
+    task_uuid = str(uuid.uuid4())
+    now = datetime.now(timezone.utc).isoformat()
+
+    # This JSON structure is intentionally aligned with DevTaskRequest.
+    dev_payload = {
+        "task_id": task_uuid,                    # <-- now Dev Bob sees the real ID
+        "task_type": "dev",                      # maps to DevTaskRequest.task_type
+        "description": payload.description,      # DevTaskRequest.description
+        "code_snippet": None,                    # DevTaskRequest.code_snippet
+        "repo_context": None,                    # DevTaskRequest.repo_context
+        "extra_instructions": payload.details,   # DevTaskRequest.extra_instructions
+
+        # New structured fields with safe defaults (all optional in DevTaskRequest)
+        "priority": payload.priority,            # DevTaskRequest.priority
+
+        "kind": None,                            # DevTaskRequest.kind
+        "target_paths": [],                      # DevTaskRequest.target_paths
+        "context_files": [],                     # DevTaskRequest.context_files
+        "constraints": [],                       # DevTaskRequest.constraints
+        "acceptance_criteria": [],               # DevTaskRequest.acceptance_criteria
+
+        "origin": {
+            "submitted_by": payload.submitted_by,
+            "origin_type": "bobctl",
+            "source_node": "orchestrator-server",
+            "source_tool": "bobctl submit-dev",
+            "experiment_id": None,
+            "variant_id": None,
+        },
+
+        "extra": {},
+    }
+
+    with get_connection() as conn:
+        cur = conn.cursor()
+
+        # Introspect the tasks table so we only insert valid columns
+        cur.execute("PRAGMA table_info(tasks)")
+        cols_info = cur.fetchall()
+        cols = {row["name"] for row in cols_info}
+
+        values: Dict[str, Any] = {}
+
+        if "task_uuid" in cols:
+            values["task_uuid"] = task_uuid
+        if "high_level_type" in cols:
+            values["high_level_type"] = "dev"
+        if "submitted_by" in cols:
+            values["submitted_by"] = payload.submitted_by
+        if "target_module" in cols:
+            values["target_module"] = "dev_council"
+        if "priority" in cols:
+            values["priority"] = payload.priority
+        if "final_status" in cols:
+            values["final_status"] = "PENDING"
+        if "input_summary" in cols:
+            values["input_summary"] = payload.description
+        if "input_payload" in cols:
+            values["input_payload"] = json.dumps(dev_payload)
+
+        # Timestamps – use whatever exists
+        for ts_col in ("created_at", "submitted_at", "created", "submitted"):
+            if ts_col in cols:
+                values[ts_col] = now
+
+        if not values:
+            raise RuntimeError("tasks table has no expected columns; cannot insert dev task")
+
+        col_names = ", ".join(values.keys())
+        placeholders = ", ".join(["?"] * len(values))
+        sql = f"INSERT INTO tasks ({col_names}) VALUES ({placeholders})"
+        cur.execute(sql, list(values.values()))
+
+    return {
+        "task_uuid": task_uuid,
+        "high_level_type": "dev",
+        "final_status": "PENDING",
+        "submitted_by": payload.submitted_by,
+        "description": payload.description,
+        "details": payload.details,
+        "priority": payload.priority,
+        "created_at": now,
+    }
 
 
 # ---------- Dev-only: local run ---------- #

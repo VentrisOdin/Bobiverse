@@ -1,31 +1,43 @@
 import requests
 import json
-import os
 from pathlib import Path
 
-def cli(args, orch_url):
-    details = None
-    if args.details:
-        p = Path(args.details)
-        details = p.read_text() if p.exists() else args.details
+
+def _load_details(details_arg: str | None) -> str | None:
+    if not details_arg:
+        return None
+    p = Path(details_arg)
+    if p.exists() and p.is_file():
+        return p.read_text()
+    return details_arg  # treat as raw text
+
+
+def cli(args, orch_url: str) -> None:
+    description = args.description
+    details = _load_details(args.details)
 
     payload = {
-        "high_level_type": "dev",
-        "submitted_by": "prime_bob",
-        "target_module": "dev_council",
+        "description": description,
+        "details": details,
+        "submitted_by": "bobctl",
         "priority": "normal",
-        "input_payload": {
-            "description": args.description,
-            "details": details
-        }
     }
 
-    url = f"{orch_url}/tasks"
+    url = f"{orch_url}/tasks/dev"
     try:
-        r = requests.post(url, json=payload, timeout=10)
-        r.raise_for_status()
+        resp = requests.post(url, json=payload, timeout=10)
+        resp.raise_for_status()
+    except requests.HTTPError as e:
+        print(f"[submit-dev] HTTP error from {url}: {e} ({e.response.status_code})")
+        try:
+            print("Response:", e.response.text)
+        except Exception:
+            pass
+        return
     except Exception as e:
-        print(f"[submit-dev] Error: {e}")
+        print(f"[submit-dev] Error submitting task to {url}: {e}")
         return
 
-    print(json.dumps(r.json(), indent=2))
+    data = resp.json()
+    print("[submit-dev] Created dev task:")
+    print(json.dumps(data, indent=2))
