@@ -5,7 +5,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import uuid
@@ -20,6 +20,7 @@ from db.db_manager import (
     complete_task_execution,
     get_executions_for_task,
     list_recent_tasks,
+    list_recent_executions,
     create_policy_proposal,
     list_policy_proposals,
     get_policy_proposal_by_uuid,
@@ -66,6 +67,23 @@ class DevTaskResultIn(BaseModel):
     status: Literal["success", "partial", "failed"]
     output_summary: str
     full_response: Optional[Dict[str, Any]] = None
+
+
+class ReflectorExecution(BaseModel):
+    id: int
+    task_id: int
+    task_uuid: str
+    high_level_type: Optional[str] = None
+    target_module: Optional[str] = None
+    target_node: Optional[str] = None
+    strategy_name: Optional[str] = None
+    status: Optional[str] = None
+    output_summary: Optional[str] = None
+    error_type: Optional[str] = None
+    latency_ms: Optional[int] = None
+    metrics_json: Optional[Dict[str, Any]] = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
 
 # Load .env if present
 load_dotenv()
@@ -595,6 +613,41 @@ def db_get_task_executions(task_uuid: str):
     Get all execution records for a task.
     """
     return get_executions_for_task(task_uuid)
+
+
+@app.get(
+    "/reflector/executions/recent",
+    response_model=List[ReflectorExecution],
+    tags=["reflector"],
+)
+def get_recent_executions_for_reflector(
+    module: Optional[str] = Query(
+        None,
+        description="Filter by target_module (e.g. 'dev_council')",
+        alias="module",
+    ),
+    limit: int = Query(
+        100,
+        ge=1,
+        le=500,
+        description="Maximum number of executions to return (1–500).",
+    ),
+):
+    """
+    Read-only endpoint for the Reflector and analysis tools.
+
+    Example:
+      /reflector/executions/recent?module=dev_council&limit=100
+    """
+    try:
+        rows = list_recent_executions(
+            target_module=module,
+            limit=limit,
+        )
+        return rows
+    except Exception as e:
+        logger.exception("Error fetching recent executions for Reflector: %s", e)
+        raise HTTPException(status_code=500, detail="Failed to fetch recent executions")
 
 
 # ---------- Policy Proposal Routes ---------- #

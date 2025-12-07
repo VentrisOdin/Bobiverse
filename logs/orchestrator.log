@@ -35779,3 +35779,1372 @@
 2025-12-07 18:32:00,834 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6112MB
 2025-12-07 18:32:04,158 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6111MB
 2025-12-07 18:32:07,468 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6109MB
+2025-12-07 18:32:10,753 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6108MB
+2025-12-07 18:32:14,108 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6112MB
+2025-12-07 18:32:17,478 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6111MB
+2025-12-07 18:32:20,830 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6113MB
+2025-12-07 18:32:24,182 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6116MB
+2025-12-07 18:32:27,535 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6113MB
+2025-12-07 18:32:30,888 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6112MB
+2025-12-07 18:32:34,237 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6111MB
+2025-12-07 18:32:37,585 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6110MB
+2025-12-07 18:32:40,937 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6114MB
+2025-12-07 18:32:44,290 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6113MB
+2025-12-07 18:32:47,641 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6114MB
+2025-12-07 18:32:50,992 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6113MB
+2025-12-07 18:32:54,404 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6113MB
+2025-12-07 18:32:57,762 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6111MB
+2025-12-07 18:33:01,111 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6112MB
+2025-12-07 18:33:04,460 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6113MB
+2025-12-07 18:33:07,810 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6112MB
+2025-12-07 18:33:11,159 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6110MB
+2025-12-07 18:33:14,508 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6110MB
+2025-12-07 18:33:17,860 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6111MB
+2025-12-07 18:33:21,208 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6111MB
+2025-12-07 18:33:24,559 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6118MB
+2025-12-07 18:33:27,919 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6117MB
+2025-12-07 18:33:31,268 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6115MB
+2025-12-07 18:33:34,618 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6117MB
+2025-12-07 18:33:37,971 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6116MB
+2025-12-07 18:33:41,324 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6114MB
+2025-12-07 18:33:44,677 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6113MB
+2025-12-07 18:33:48,027 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6113MB
+2025-12-07 18:33:51,380 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6112MB
+2025-12-07 18:33:54,733 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6109MB
+2025-12-07 18:33:58,128 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6108MB
+2025-12-07 18:34:01,532 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6113MB
+2025-12-07 18:34:05,248 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6111MB
+2025-12-07 18:34:08,736 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6112MB
+2025-12-07 18:34:12,085 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6111MB
+2025-12-07 18:34:15,429 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6109MB
+2025-12-07 18:34:18,772 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6112MB
+2025-12-07 18:34:22,117 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6112MB
+2025-12-07 18:34:25,460 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6111MB
+2025-12-07 18:34:28,803 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6109MB
+2025-12-07 18:34:32,143 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6111MB
+2025-12-07 18:34:35,482 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6117MB
+2025-12-07 18:34:38,818 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6116MB
+2025-12-07 18:34:42,158 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6115MB
+2025-12-07 18:34:45,504 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6114MB
+2025-12-07 18:34:48,857 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6113MB
+2025-12-07 18:34:52,223 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6117MB
+2025-12-07 18:34:55,568 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6116MB
+2025-12-07 18:34:58,911 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6116MB
+2025-12-07 18:35:02,252 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6115MB
+2025-12-07 18:35:05,589 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6116MB
+2025-12-07 18:35:08,928 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6118MB
+2025-12-07 18:35:12,258 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6116MB
+2025-12-07 18:35:15,590 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6115MB
+2025-12-07 18:35:18,929 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6116MB
+2025-12-07 18:35:23,175 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6114MB
+2025-12-07 18:35:26,521 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6115MB
+2025-12-07 18:35:29,881 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6114MB
+2025-12-07 18:35:33,224 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6115MB
+2025-12-07 18:35:36,606 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6113MB
+2025-12-07 18:35:39,945 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6111MB
+2025-12-07 18:35:43,331 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6114MB
+2025-12-07 18:35:46,743 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6115MB
+2025-12-07 18:35:50,179 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6114MB
+2025-12-07 18:35:53,551 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6112MB
+2025-12-07 18:35:56,981 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6115MB
+2025-12-07 18:36:00,391 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6112MB
+2025-12-07 18:36:03,816 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6116MB
+2025-12-07 18:36:07,312 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6113MB
+2025-12-07 18:36:10,733 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6112MB
+2025-12-07 18:36:14,205 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6117MB
+2025-12-07 18:36:17,636 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6118MB
+2025-12-07 18:36:20,981 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6115MB
+2025-12-07 18:36:24,452 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6114MB
+2025-12-07 18:36:27,869 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6112MB
+2025-12-07 18:36:31,289 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6111MB
+2025-12-07 18:36:34,717 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6116MB
+2025-12-07 18:36:38,159 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6115MB
+2025-12-07 18:36:41,540 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6112MB
+2025-12-07 18:36:44,990 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6114MB
+2025-12-07 18:36:48,409 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6111MB
+2025-12-07 18:36:51,823 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6111MB
+2025-12-07 18:36:55,225 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.019, free_mem=6109MB
+2025-12-07 18:36:58,616 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6111MB
+2025-12-07 18:37:02,059 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6113MB
+2025-12-07 18:37:05,483 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6112MB
+2025-12-07 18:37:08,849 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6111MB
+2025-12-07 18:37:12,305 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6114MB
+2025-12-07 18:37:15,780 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6116MB
+2025-12-07 18:37:19,298 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6115MB
+2025-12-07 18:37:22,745 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6116MB
+2025-12-07 18:37:26,184 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6114MB
+2025-12-07 18:37:29,623 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6115MB
+2025-12-07 18:37:33,029 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6113MB
+2025-12-07 18:37:36,427 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6112MB
+2025-12-07 18:37:39,790 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6111MB
+2025-12-07 18:37:43,221 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6113MB
+2025-12-07 18:37:46,658 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6110MB
+2025-12-07 18:37:50,044 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6118MB
+2025-12-07 18:37:53,479 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6116MB
+2025-12-07 18:37:56,900 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6118MB
+2025-12-07 18:38:00,244 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6116MB
+2025-12-07 18:38:03,619 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6113MB
+2025-12-07 18:38:06,967 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6117MB
+2025-12-07 18:38:10,332 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6117MB
+2025-12-07 18:38:13,669 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6115MB
+2025-12-07 18:38:17,162 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6116MB
+2025-12-07 18:38:20,556 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6115MB
+2025-12-07 18:38:23,927 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6112MB
+2025-12-07 18:38:27,292 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6111MB
+2025-12-07 18:38:30,769 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6114MB
+2025-12-07 18:38:34,208 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6113MB
+2025-12-07 18:38:37,572 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6111MB
+2025-12-07 18:38:40,935 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6114MB
+2025-12-07 18:38:44,308 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6117MB
+2025-12-07 18:38:47,773 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6115MB
+2025-12-07 18:38:51,126 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6117MB
+2025-12-07 18:38:54,485 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6115MB
+2025-12-07 18:38:57,863 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6117MB
+2025-12-07 18:39:01,272 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6115MB
+2025-12-07 18:39:04,694 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6113MB
+2025-12-07 18:39:08,096 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6112MB
+2025-12-07 18:39:11,794 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6113MB
+2025-12-07 18:39:15,346 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6111MB
+2025-12-07 18:39:18,707 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6112MB
+2025-12-07 18:39:22,098 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6112MB
+2025-12-07 18:39:25,697 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.04, free_mem=6101MB
+2025-12-07 18:39:29,119 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.091, free_mem=6076MB
+2025-12-07 18:39:32,472 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6079MB
+2025-12-07 18:39:35,890 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6078MB
+2025-12-07 18:39:39,314 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6074MB
+2025-12-07 18:39:42,710 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6077MB
+2025-12-07 18:39:46,082 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6076MB
+2025-12-07 18:39:49,597 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6075MB
+2025-12-07 18:39:53,018 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6076MB
+2025-12-07 18:39:56,534 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6078MB
+2025-12-07 18:39:59,930 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6074MB
+2025-12-07 18:40:03,374 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6075MB
+2025-12-07 18:40:06,810 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6076MB
+2025-12-07 18:40:10,233 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6076MB
+2025-12-07 18:40:13,624 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6076MB
+2025-12-07 18:40:17,032 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6073MB
+2025-12-07 18:40:20,590 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6072MB
+2025-12-07 18:40:24,011 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6072MB
+2025-12-07 18:40:27,421 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6076MB
+2025-12-07 18:40:30,868 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6074MB
+2025-12-07 18:40:34,291 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6072MB
+2025-12-07 18:40:37,710 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6076MB
+2025-12-07 18:40:41,157 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6075MB
+2025-12-07 18:40:44,569 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6075MB
+2025-12-07 18:40:47,940 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6073MB
+2025-12-07 18:40:51,280 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6073MB
+2025-12-07 18:40:54,616 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6072MB
+2025-12-07 18:40:57,919 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6073MB
+2025-12-07 18:41:01,223 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6074MB
+2025-12-07 18:41:04,537 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6073MB
+2025-12-07 18:41:07,864 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6071MB
+2025-12-07 18:41:11,210 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6073MB
+2025-12-07 18:41:14,552 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6070MB
+2025-12-07 18:41:17,897 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6073MB
+2025-12-07 18:41:21,263 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.016, free_mem=6071MB
+2025-12-07 18:41:24,606 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6072MB
+2025-12-07 18:41:27,949 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6071MB
+2025-12-07 18:41:31,276 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6070MB
+2025-12-07 18:41:34,596 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6069MB
+2025-12-07 18:41:37,912 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=6072MB
+2025-12-07 18:41:41,247 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6070MB
+2025-12-07 18:41:44,575 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6071MB
+2025-12-07 18:41:47,913 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6069MB
+2025-12-07 18:41:51,263 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6071MB
+2025-12-07 18:41:54,616 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6077MB
+2025-12-07 18:41:57,974 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.017, free_mem=6074MB
+2025-12-07 18:42:01,329 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6076MB
+2025-12-07 18:42:04,687 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6073MB
+2025-12-07 18:42:08,003 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6072MB
+2025-12-07 18:42:11,323 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6068MB
+2025-12-07 18:42:14,651 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6070MB
+2025-12-07 18:42:17,986 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6069MB
+2025-12-07 18:42:21,324 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6065MB
+2025-12-07 18:42:24,676 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6063MB
+2025-12-07 18:42:28,041 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.021, free_mem=6059MB
+2025-12-07 18:42:31,395 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:42:34,755 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=6075MB
+2025-12-07 18:42:38,118 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6073MB
+2025-12-07 18:42:41,454 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6073MB
+2025-12-07 18:42:44,763 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6078MB
+2025-12-07 18:42:48,073 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6076MB
+2025-12-07 18:42:51,395 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.015, free_mem=6079MB
+2025-12-07 18:42:54,725 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6077MB
+2025-12-07 18:42:58,058 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6074MB
+2025-12-07 18:43:01,416 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6073MB
+2025-12-07 18:43:04,768 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6072MB
+2025-12-07 18:43:08,119 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6072MB
+2025-12-07 18:43:11,474 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6075MB
+2025-12-07 18:43:14,826 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6072MB
+2025-12-07 18:43:18,147 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.049, free_mem=5962MB
+2025-12-07 18:43:21,458 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5962MB
+2025-12-07 18:43:24,767 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5962MB
+2025-12-07 18:43:28,079 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.065, free_mem=5959MB
+2025-12-07 18:43:31,402 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.026000000000000002, free_mem=5955MB
+2025-12-07 18:43:34,733 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6074MB
+2025-12-07 18:43:43,405 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.035, free_mem=6069MB
+2025-12-07 18:43:46,760 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.063, free_mem=6070MB
+2025-12-07 18:43:50,115 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.023, free_mem=6071MB
+2025-12-07 18:43:53,438 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6073MB
+2025-12-07 18:43:56,764 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6070MB
+2025-12-07 18:44:00,066 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6069MB
+2025-12-07 18:44:03,318 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6067MB
+2025-12-07 18:44:06,571 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6070MB
+2025-12-07 18:44:09,732 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6070MB
+2025-12-07 18:44:12,792 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6069MB
+2025-12-07 18:44:15,991 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6071MB
+2025-12-07 18:44:19,349 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6068MB
+2025-12-07 18:44:22,696 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.015, free_mem=6071MB
+2025-12-07 18:44:26,051 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6068MB
+2025-12-07 18:44:29,405 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6068MB
+2025-12-07 18:44:32,760 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.017, free_mem=6067MB
+2025-12-07 18:44:43,669 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6067MB
+2025-12-07 18:44:46,973 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.049, free_mem=6070MB
+2025-12-07 18:44:50,276 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6069MB
+2025-12-07 18:44:53,587 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6073MB
+2025-12-07 18:44:56,915 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6071MB
+2025-12-07 18:45:00,230 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6070MB
+2025-12-07 18:45:03,554 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6071MB
+2025-12-07 18:45:06,889 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6069MB
+2025-12-07 18:45:10,217 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.022000000000000002, free_mem=6052MB
+2025-12-07 18:45:13,549 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6053MB
+2025-12-07 18:45:16,895 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6052MB
+2025-12-07 18:45:20,229 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.128, free_mem=6008MB
+2025-12-07 18:45:23,573 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.183, free_mem=6000MB
+2025-12-07 18:45:26,909 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.02, free_mem=6074MB
+2025-12-07 18:45:30,222 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6076MB
+2025-12-07 18:45:33,532 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.07200000000000001, free_mem=6064MB
+2025-12-07 18:45:36,850 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6062MB
+2025-12-07 18:45:40,186 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6060MB
+2025-12-07 18:45:43,523 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.015, free_mem=6057MB
+2025-12-07 18:45:46,865 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 18:45:50,200 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6054MB
+2025-12-07 18:45:53,537 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6054MB
+2025-12-07 18:45:56,855 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6054MB
+2025-12-07 18:46:00,167 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6054MB
+2025-12-07 18:46:03,452 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6053MB
+2025-12-07 18:46:06,653 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6051MB
+2025-12-07 18:46:09,850 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6054MB
+2025-12-07 18:46:13,166 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6051MB
+2025-12-07 18:46:16,523 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6051MB
+2025-12-07 18:46:19,881 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6057MB
+2025-12-07 18:46:23,240 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6054MB
+2025-12-07 18:46:26,594 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6053MB
+2025-12-07 18:46:29,943 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6055MB
+2025-12-07 18:46:33,302 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6052MB
+2025-12-07 18:46:36,640 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6051MB
+2025-12-07 18:46:39,920 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6053MB
+2025-12-07 18:46:43,165 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 18:46:46,408 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6055MB
+2025-12-07 18:46:49,761 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6057MB
+2025-12-07 18:46:53,116 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6060MB
+2025-12-07 18:46:56,471 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6061MB
+2025-12-07 18:46:59,825 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6059MB
+2025-12-07 18:47:03,173 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6061MB
+2025-12-07 18:47:06,503 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6060MB
+2025-12-07 18:47:09,823 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6061MB
+2025-12-07 18:47:13,146 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 18:47:16,344 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6058MB
+2025-12-07 18:47:19,540 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6061MB
+2025-12-07 18:47:22,796 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6061MB
+2025-12-07 18:47:26,149 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6059MB
+2025-12-07 18:47:29,507 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 18:47:32,864 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 18:47:36,221 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6059MB
+2025-12-07 18:47:39,578 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 18:47:42,929 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6059MB
+2025-12-07 18:47:46,304 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6059MB
+2025-12-07 18:47:49,620 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6059MB
+2025-12-07 18:47:52,833 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6059MB
+2025-12-07 18:47:56,043 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 18:47:59,367 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6060MB
+2025-12-07 18:48:02,718 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6058MB
+2025-12-07 18:48:06,069 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6055MB
+2025-12-07 18:48:09,423 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6058MB
+2025-12-07 18:48:12,780 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:48:16,153 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 18:48:19,503 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6055MB
+2025-12-07 18:48:22,853 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6054MB
+2025-12-07 18:48:26,000 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6052MB
+2025-12-07 18:48:29,114 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6059MB
+2025-12-07 18:48:32,231 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6062MB
+2025-12-07 18:48:35,423 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 18:48:38,729 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 18:48:42,060 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 18:48:45,411 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6059MB
+2025-12-07 18:48:48,763 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6057MB
+2025-12-07 18:48:52,118 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6056MB
+2025-12-07 18:48:55,471 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 18:48:58,810 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 18:49:02,118 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6059MB
+2025-12-07 18:49:05,427 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6062MB
+2025-12-07 18:49:08,760 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6060MB
+2025-12-07 18:49:12,113 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6062MB
+2025-12-07 18:49:15,469 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 18:49:18,828 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 18:49:22,189 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6059MB
+2025-12-07 18:49:25,527 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6056MB
+2025-12-07 18:49:28,833 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 18:49:32,140 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6053MB
+2025-12-07 18:49:35,291 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6056MB
+2025-12-07 18:49:38,350 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6054MB
+2025-12-07 18:49:41,404 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6059MB
+2025-12-07 18:49:44,634 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6058MB
+2025-12-07 18:49:47,942 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 18:49:51,260 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6058MB
+2025-12-07 18:49:54,611 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6056MB
+2025-12-07 18:49:57,962 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6054MB
+2025-12-07 18:50:01,313 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:50:04,665 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 18:50:08,023 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6055MB
+2025-12-07 18:50:11,331 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6055MB
+2025-12-07 18:50:14,645 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6057MB
+2025-12-07 18:50:17,969 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:50:21,319 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 18:50:24,672 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6057MB
+2025-12-07 18:50:28,028 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 18:50:31,380 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 18:50:34,751 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6058MB
+2025-12-07 18:50:38,054 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:50:41,358 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6056MB
+2025-12-07 18:50:44,573 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:50:47,624 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6057MB
+2025-12-07 18:50:50,834 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6055MB
+2025-12-07 18:50:54,159 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6057MB
+2025-12-07 18:50:57,488 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.016, free_mem=6057MB
+2025-12-07 18:51:00,815 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6056MB
+2025-12-07 18:51:04,168 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6057MB
+2025-12-07 18:51:07,520 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6060MB
+2025-12-07 18:51:10,878 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 18:51:14,231 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6056MB
+2025-12-07 18:51:17,587 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6056MB
+2025-12-07 18:51:20,784 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 18:51:23,968 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 18:51:27,281 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6059MB
+2025-12-07 18:51:30,635 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6060MB
+2025-12-07 18:51:33,990 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6058MB
+2025-12-07 18:51:37,341 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6064MB
+2025-12-07 18:51:40,696 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6060MB
+2025-12-07 18:51:44,048 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 18:51:47,371 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 18:51:50,688 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6059MB
+2025-12-07 18:51:53,957 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6056MB
+2025-12-07 18:51:57,064 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 18:52:00,368 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6054MB
+2025-12-07 18:52:03,700 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6056MB
+2025-12-07 18:52:07,054 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6055MB
+2025-12-07 18:52:10,408 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 18:52:13,762 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6055MB
+2025-12-07 18:52:17,121 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6055MB
+2025-12-07 18:52:20,467 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6054MB
+2025-12-07 18:52:23,798 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6053MB
+2025-12-07 18:52:27,131 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6057MB
+2025-12-07 18:52:30,298 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6059MB
+2025-12-07 18:52:33,499 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 18:52:36,804 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 18:52:40,153 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6056MB
+2025-12-07 18:52:43,505 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6055MB
+2025-12-07 18:52:46,857 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6054MB
+2025-12-07 18:52:50,208 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6059MB
+2025-12-07 18:52:53,559 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6059MB
+2025-12-07 18:52:56,898 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6059MB
+2025-12-07 18:53:00,232 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6055MB
+2025-12-07 18:53:03,565 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6058MB
+2025-12-07 18:53:06,624 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 18:53:09,915 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 18:53:13,247 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 18:53:16,599 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 18:53:19,957 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6057MB
+2025-12-07 18:53:23,310 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6055MB
+2025-12-07 18:53:26,662 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6058MB
+2025-12-07 18:53:30,017 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6055MB
+2025-12-07 18:53:33,354 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 18:53:36,690 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6058MB
+2025-12-07 18:53:39,921 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6056MB
+2025-12-07 18:53:43,034 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6054MB
+2025-12-07 18:53:46,337 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6056MB
+2025-12-07 18:53:49,675 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6054MB
+2025-12-07 18:53:53,029 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6058MB
+2025-12-07 18:53:56,380 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6056MB
+2025-12-07 18:53:59,731 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6055MB
+2025-12-07 18:54:03,083 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6056MB
+2025-12-07 18:54:06,438 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 18:54:09,787 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6055MB
+2025-12-07 18:54:13,139 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6052MB
+2025-12-07 18:54:16,266 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6056MB
+2025-12-07 18:54:19,358 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6053MB
+2025-12-07 18:54:22,673 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6056MB
+2025-12-07 18:54:26,026 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6053MB
+2025-12-07 18:54:29,376 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6053MB
+2025-12-07 18:54:32,726 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6055MB
+2025-12-07 18:54:36,076 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6054MB
+2025-12-07 18:54:39,426 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6053MB
+2025-12-07 18:54:42,777 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 18:54:46,146 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 18:54:49,465 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6061MB
+2025-12-07 18:54:52,567 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6061MB
+2025-12-07 18:54:55,828 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6063MB
+2025-12-07 18:54:59,154 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6061MB
+2025-12-07 18:55:02,505 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6060MB
+2025-12-07 18:55:05,856 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6059MB
+2025-12-07 18:55:09,210 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:55:12,563 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6060MB
+2025-12-07 18:55:15,918 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6060MB
+2025-12-07 18:55:19,269 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 18:55:22,619 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 18:55:25,815 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 18:55:28,863 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 18:55:31,995 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6058MB
+2025-12-07 18:55:35,347 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6057MB
+2025-12-07 18:55:38,697 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6054MB
+2025-12-07 18:55:42,051 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6054MB
+2025-12-07 18:55:45,403 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6055MB
+2025-12-07 18:55:48,754 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6061MB
+2025-12-07 18:55:52,103 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6062MB
+2025-12-07 18:55:55,454 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6064MB
+2025-12-07 18:55:58,804 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6061MB
+2025-12-07 18:56:01,903 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6062MB
+2025-12-07 18:56:05,031 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6061MB
+2025-12-07 18:56:08,343 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6059MB
+2025-12-07 18:56:11,695 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6060MB
+2025-12-07 18:56:15,046 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:56:18,395 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6060MB
+2025-12-07 18:56:21,749 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:56:25,104 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6059MB
+2025-12-07 18:56:28,456 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6057MB
+2025-12-07 18:56:31,809 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 18:56:35,080 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 18:56:38,130 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 18:56:41,181 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6058MB
+2025-12-07 18:56:44,339 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6059MB
+2025-12-07 18:56:47,562 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 18:56:50,785 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 18:56:53,622 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 18:56:56,412 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 18:56:59,204 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6057MB
+2025-12-07 18:57:02,003 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6061MB
+2025-12-07 18:57:04,801 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6060MB
+2025-12-07 18:57:07,593 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6061MB
+2025-12-07 18:57:10,394 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6060MB
+2025-12-07 18:57:13,188 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6063MB
+2025-12-07 18:57:16,185 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6060MB
+2025-12-07 18:57:19,476 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6059MB
+2025-12-07 18:57:22,765 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6056MB
+2025-12-07 18:57:26,054 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6059MB
+2025-12-07 18:57:29,348 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6059MB
+2025-12-07 18:57:32,652 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 18:57:35,945 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6056MB
+2025-12-07 18:57:39,236 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 18:57:42,304 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6058MB
+2025-12-07 18:57:45,257 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6059MB
+2025-12-07 18:57:48,205 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 18:57:51,422 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6059MB
+2025-12-07 18:57:54,724 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 18:57:58,015 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6055MB
+2025-12-07 18:58:01,307 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6053MB
+2025-12-07 18:58:04,596 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 18:58:07,895 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6059MB
+2025-12-07 18:58:11,190 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6060MB
+2025-12-07 18:58:14,482 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6059MB
+2025-12-07 18:58:17,548 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6057MB
+2025-12-07 18:58:20,568 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 18:58:23,642 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6056MB
+2025-12-07 18:58:26,941 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6055MB
+2025-12-07 18:58:30,234 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 18:58:33,529 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 18:58:36,822 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6063MB
+2025-12-07 18:58:40,112 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6062MB
+2025-12-07 18:58:43,400 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6061MB
+2025-12-07 18:58:46,693 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6059MB
+2025-12-07 18:58:49,882 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 18:58:52,904 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:58:55,927 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 18:58:59,098 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6056MB
+2025-12-07 18:59:02,392 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6058MB
+2025-12-07 18:59:05,689 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 18:59:08,985 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 18:59:12,279 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6056MB
+2025-12-07 18:59:15,569 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6056MB
+2025-12-07 18:59:18,859 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6059MB
+2025-12-07 18:59:22,149 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6061MB
+2025-12-07 18:59:25,295 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6058MB
+2025-12-07 18:59:28,335 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6057MB
+2025-12-07 18:59:31,376 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6056MB
+2025-12-07 18:59:34,653 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 18:59:37,948 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6059MB
+2025-12-07 18:59:41,245 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6062MB
+2025-12-07 18:59:44,535 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 18:59:47,825 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6058MB
+2025-12-07 18:59:51,120 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 18:59:54,439 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6059MB
+2025-12-07 18:59:57,736 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 19:00:00,775 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:00:03,816 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 19:00:06,939 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6055MB
+2025-12-07 19:00:10,232 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 19:00:13,489 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6056MB
+2025-12-07 19:00:16,620 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 19:00:19,803 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6056MB
+2025-12-07 19:00:22,985 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6060MB
+2025-12-07 19:00:26,166 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:00:29,347 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 19:00:32,524 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 19:00:35,696 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6058MB
+2025-12-07 19:00:38,867 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6057MB
+2025-12-07 19:00:42,010 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 19:00:45,171 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6055MB
+2025-12-07 19:00:48,334 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6055MB
+2025-12-07 19:00:51,563 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6058MB
+2025-12-07 19:00:54,795 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6056MB
+2025-12-07 19:00:57,988 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 19:01:01,139 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6060MB
+2025-12-07 19:01:04,283 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6058MB
+2025-12-07 19:01:07,464 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 19:01:10,657 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 19:01:13,850 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6060MB
+2025-12-07 19:01:17,002 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6058MB
+2025-12-07 19:01:20,138 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:01:23,319 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6062MB
+2025-12-07 19:01:26,557 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6064MB
+2025-12-07 19:01:29,795 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6060MB
+2025-12-07 19:01:32,963 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 19:01:36,116 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 19:01:39,277 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 19:01:42,466 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 19:01:45,652 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:01:48,820 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 19:01:51,964 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6055MB
+2025-12-07 19:01:55,109 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6060MB
+2025-12-07 19:01:58,334 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6060MB
+2025-12-07 19:02:01,600 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 19:02:04,820 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:02:07,987 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6055MB
+2025-12-07 19:02:11,155 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:02:14,329 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 19:02:17,513 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6052MB
+2025-12-07 19:02:20,701 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6056MB
+2025-12-07 19:02:23,852 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 19:02:27,002 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6058MB
+2025-12-07 19:02:30,188 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 19:02:33,425 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:02:36,661 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:02:39,858 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6060MB
+2025-12-07 19:02:43,028 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6062MB
+2025-12-07 19:02:46,194 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6061MB
+2025-12-07 19:02:49,374 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6060MB
+2025-12-07 19:02:52,551 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:02:55,724 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 19:02:58,881 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6055MB
+2025-12-07 19:03:02,033 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:03:05,236 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:03:08,475 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 19:03:11,721 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6059MB
+2025-12-07 19:03:14,890 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6059MB
+2025-12-07 19:03:18,066 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:03:21,244 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6055MB
+2025-12-07 19:03:24,425 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 19:03:27,605 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6058MB
+2025-12-07 19:03:30,769 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6060MB
+2025-12-07 19:03:33,924 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 19:03:37,088 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 19:03:40,339 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6057MB
+2025-12-07 19:03:43,585 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6059MB
+2025-12-07 19:03:46,816 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 19:03:49,984 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 19:03:53,150 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6056MB
+2025-12-07 19:03:56,326 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6055MB
+2025-12-07 19:03:59,504 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:04:02,684 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 19:04:05,837 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6062MB
+2025-12-07 19:04:08,994 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6059MB
+2025-12-07 19:04:12,186 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6059MB
+2025-12-07 19:04:15,429 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6061MB
+2025-12-07 19:04:18,677 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6063MB
+2025-12-07 19:04:21,871 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6061MB
+2025-12-07 19:04:25,039 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 19:04:28,209 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6059MB
+2025-12-07 19:04:31,388 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6064MB
+2025-12-07 19:04:34,574 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6061MB
+2025-12-07 19:04:37,744 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6063MB
+2025-12-07 19:04:40,896 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6062MB
+2025-12-07 19:04:44,048 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6060MB
+2025-12-07 19:04:47,273 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6059MB
+2025-12-07 19:04:50,519 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 19:04:53,760 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 19:04:56,931 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 19:05:00,101 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6058MB
+2025-12-07 19:05:03,286 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:05:06,472 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6064MB
+2025-12-07 19:05:09,662 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6061MB
+2025-12-07 19:05:12,836 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6059MB
+2025-12-07 19:05:15,996 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6065MB
+2025-12-07 19:05:19,169 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6061MB
+2025-12-07 19:05:23,037 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6060MB
+2025-12-07 19:05:26,290 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6061MB
+2025-12-07 19:05:29,480 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 19:05:32,647 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 19:05:35,808 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6059MB
+2025-12-07 19:05:38,990 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6058MB
+2025-12-07 19:05:42,173 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6060MB
+2025-12-07 19:05:45,352 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 19:05:48,508 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 19:05:51,661 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6060MB
+2025-12-07 19:05:54,892 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.027999999999999997, free_mem=6057MB
+2025-12-07 19:05:58,150 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:06:01,400 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6058MB
+2025-12-07 19:06:04,560 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:06:07,726 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6056MB
+2025-12-07 19:06:10,898 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6056MB
+2025-12-07 19:06:14,085 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6058MB
+2025-12-07 19:06:17,288 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:06:20,448 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 19:06:23,614 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6063MB
+2025-12-07 19:06:26,780 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6061MB
+2025-12-07 19:06:30,041 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6059MB
+2025-12-07 19:06:33,304 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6058MB
+2025-12-07 19:06:36,517 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 19:06:39,685 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6060MB
+2025-12-07 19:06:42,858 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6060MB
+2025-12-07 19:06:46,042 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6058MB
+2025-12-07 19:06:49,225 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6056MB
+2025-12-07 19:06:52,403 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6057MB
+2025-12-07 19:06:55,556 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6055MB
+2025-12-07 19:06:58,711 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6054MB
+2025-12-07 19:07:01,929 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6062MB
+2025-12-07 19:07:05,199 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6058MB
+2025-12-07 19:07:08,468 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:07:11,632 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6055MB
+2025-12-07 19:07:14,782 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 19:07:17,941 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6056MB
+2025-12-07 19:07:21,137 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6056MB
+2025-12-07 19:07:24,330 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:07:27,494 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6057MB
+2025-12-07 19:07:30,640 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 19:07:33,785 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6056MB
+2025-12-07 19:07:37,045 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6056MB
+2025-12-07 19:07:40,318 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6059MB
+2025-12-07 19:07:43,549 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:07:46,658 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 19:07:49,772 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6055MB
+2025-12-07 19:07:52,890 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6057MB
+2025-12-07 19:07:56,010 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:07:59,130 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6057MB
+2025-12-07 19:08:02,415 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 19:08:05,708 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 19:08:08,966 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6055MB
+2025-12-07 19:08:12,163 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 19:08:15,363 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6056MB
+2025-12-07 19:08:18,532 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6055MB
+2025-12-07 19:08:21,692 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 19:08:24,867 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 19:08:27,968 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 19:08:31,056 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 19:08:34,212 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6054MB
+2025-12-07 19:08:37,503 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6053MB
+2025-12-07 19:08:40,795 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6057MB
+2025-12-07 19:08:44,085 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 19:08:47,373 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6059MB
+2025-12-07 19:08:50,665 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6061MB
+2025-12-07 19:08:53,970 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:08:57,274 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.002, free_mem=6060MB
+2025-12-07 19:09:00,498 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6059MB
+2025-12-07 19:09:03,767 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 19:09:06,993 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6055MB
+2025-12-07 19:09:10,184 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6056MB
+2025-12-07 19:09:13,376 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6055MB
+2025-12-07 19:09:16,581 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6055MB
+2025-12-07 19:09:19,923 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6054MB
+2025-12-07 19:09:23,199 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6052MB
+2025-12-07 19:09:26,386 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 19:09:29,580 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6053MB
+2025-12-07 19:09:32,774 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6053MB
+2025-12-07 19:09:35,977 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 19:09:39,176 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6059MB
+2025-12-07 19:09:42,379 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6058MB
+2025-12-07 19:09:45,566 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6057MB
+2025-12-07 19:09:48,755 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:09:51,965 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6054MB
+2025-12-07 19:09:55,199 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6053MB
+2025-12-07 19:09:58,433 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6051MB
+2025-12-07 19:10:01,649 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 19:10:04,861 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:10:08,069 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6063MB
+2025-12-07 19:10:11,266 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6064MB
+2025-12-07 19:10:14,462 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6061MB
+2025-12-07 19:10:17,741 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 19:10:21,093 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6060MB
+2025-12-07 19:10:24,447 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6060MB
+2025-12-07 19:10:27,819 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6060MB
+2025-12-07 19:10:31,175 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6060MB
+2025-12-07 19:10:34,497 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6057MB
+2025-12-07 19:10:37,712 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6057MB
+2025-12-07 19:10:40,928 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6055MB
+2025-12-07 19:10:44,128 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6060MB
+2025-12-07 19:10:47,312 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6058MB
+2025-12-07 19:10:51,558 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6056MB
+2025-12-07 19:10:54,661 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6060MB
+2025-12-07 19:10:57,758 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6059MB
+2025-12-07 19:11:00,990 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6060MB
+2025-12-07 19:11:04,252 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6059MB
+2025-12-07 19:11:07,518 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6059MB
+2025-12-07 19:11:10,790 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6058MB
+2025-12-07 19:11:14,057 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6056MB
+2025-12-07 19:11:17,344 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6061MB
+2025-12-07 19:11:20,701 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6057MB
+2025-12-07 19:11:24,050 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 19:11:27,402 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6063MB
+2025-12-07 19:11:30,753 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6061MB
+2025-12-07 19:11:34,110 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6061MB
+2025-12-07 19:11:37,470 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6061MB
+2025-12-07 19:11:40,830 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6060MB
+2025-12-07 19:11:44,183 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6058MB
+2025-12-07 19:11:47,538 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:11:50,889 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6056MB
+2025-12-07 19:11:53,968 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:11:56,917 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6056MB
+2025-12-07 19:11:59,953 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6058MB
+2025-12-07 19:12:03,102 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6057MB
+2025-12-07 19:12:06,256 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=6058MB
+2025-12-07 19:12:09,474 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6060MB
+2025-12-07 19:12:12,830 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6060MB
+2025-12-07 19:12:16,192 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6059MB
+2025-12-07 19:12:19,544 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6056MB
+2025-12-07 19:12:22,897 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6058MB
+2025-12-07 19:12:26,244 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6056MB
+2025-12-07 19:12:29,470 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 19:12:32,701 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6055MB
+2025-12-07 19:12:35,864 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6053MB
+2025-12-07 19:12:38,955 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6053MB
+2025-12-07 19:12:42,084 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6056MB
+2025-12-07 19:12:45,330 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:12:48,595 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6058MB
+2025-12-07 19:12:51,862 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6056MB
+2025-12-07 19:12:55,212 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6054MB
+2025-12-07 19:12:58,567 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6059MB
+2025-12-07 19:13:01,915 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 19:13:05,267 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6055MB
+2025-12-07 19:13:08,619 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6056MB
+2025-12-07 19:13:11,759 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6055MB
+2025-12-07 19:13:14,862 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6055MB
+2025-12-07 19:13:18,021 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6061MB
+2025-12-07 19:13:21,370 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6059MB
+2025-12-07 19:13:24,721 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6057MB
+2025-12-07 19:13:28,071 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6058MB
+2025-12-07 19:13:31,424 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6059MB
+2025-12-07 19:13:34,775 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 19:13:38,122 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6060MB
+2025-12-07 19:13:41,466 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6061MB
+2025-12-07 19:13:44,714 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:13:47,900 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 19:13:51,085 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6056MB
+2025-12-07 19:13:54,365 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6058MB
+2025-12-07 19:13:57,717 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:14:01,068 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6056MB
+2025-12-07 19:14:04,425 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:14:07,779 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6057MB
+2025-12-07 19:14:11,119 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6056MB
+2025-12-07 19:14:14,430 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6054MB
+2025-12-07 19:14:17,741 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6054MB
+2025-12-07 19:14:20,913 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6055MB
+2025-12-07 19:14:23,982 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6060MB
+2025-12-07 19:14:27,097 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6058MB
+2025-12-07 19:14:30,368 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6060MB
+2025-12-07 19:14:33,650 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6059MB
+2025-12-07 19:14:36,947 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:14:40,306 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:14:43,663 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6059MB
+2025-12-07 19:14:47,015 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6058MB
+2025-12-07 19:14:50,376 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6059MB
+2025-12-07 19:14:53,972 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6057MB
+2025-12-07 19:14:57,180 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6056MB
+2025-12-07 19:15:00,375 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6054MB
+2025-12-07 19:15:03,660 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6054MB
+2025-12-07 19:15:06,932 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6055MB
+2025-12-07 19:15:10,180 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6054MB
+2025-12-07 19:15:13,691 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6053MB
+2025-12-07 19:15:17,519 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6059MB
+2025-12-07 19:15:20,809 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:15:24,078 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 19:15:27,320 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6057MB
+2025-12-07 19:15:30,561 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6056MB
+2025-12-07 19:15:33,801 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6058MB
+2025-12-07 19:15:37,041 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6059MB
+2025-12-07 19:15:40,269 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=6059MB
+2025-12-07 19:15:43,533 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.145, free_mem=5936MB
+2025-12-07 19:15:46,809 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5933MB
+2025-12-07 19:15:50,089 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=5932MB
+2025-12-07 19:15:53,457 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5932MB
+2025-12-07 19:15:56,748 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.10800000000000001, free_mem=5908MB
+2025-12-07 19:16:00,040 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.11900000000000001, free_mem=5906MB
+2025-12-07 19:16:03,309 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=5903MB
+2025-12-07 19:16:06,548 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.07200000000000001, free_mem=5889MB
+2025-12-07 19:16:09,795 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.021, free_mem=5904MB
+2025-12-07 19:16:13,036 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=5903MB
+2025-12-07 19:16:16,293 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5902MB
+2025-12-07 19:16:19,536 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=5901MB
+2025-12-07 19:16:22,778 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.025, free_mem=5909MB
+2025-12-07 19:16:26,023 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5909MB
+2025-12-07 19:16:29,259 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5984MB
+2025-12-07 19:16:32,491 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5982MB
+2025-12-07 19:16:35,721 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5982MB
+2025-12-07 19:16:38,969 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.015, free_mem=5985MB
+2025-12-07 19:16:42,224 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5984MB
+2025-12-07 19:16:45,483 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.05, free_mem=5866MB
+2025-12-07 19:16:48,729 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5865MB
+2025-12-07 19:16:51,974 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5864MB
+2025-12-07 19:16:55,221 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=5864MB
+2025-12-07 19:16:58,468 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.083, free_mem=5857MB
+2025-12-07 19:17:01,709 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5856MB
+2025-12-07 19:17:04,943 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=5897MB
+2025-12-07 19:17:08,172 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=5891MB
+2025-12-07 19:17:11,406 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5891MB
+2025-12-07 19:17:14,662 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5890MB
+2025-12-07 19:17:17,919 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.017, free_mem=5887MB
+2025-12-07 19:17:21,173 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5893MB
+2025-12-07 19:17:24,425 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5964MB
+2025-12-07 19:17:27,705 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5963MB
+2025-12-07 19:17:30,951 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.044000000000000004, free_mem=5849MB
+2025-12-07 19:17:34,194 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=5847MB
+2025-12-07 19:17:37,436 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5846MB
+2025-12-07 19:17:40,662 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5845MB
+2025-12-07 19:17:43,890 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5848MB
+2025-12-07 19:17:47,132 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5967MB
+2025-12-07 19:17:50,386 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5965MB
+2025-12-07 19:17:53,640 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5963MB
+2025-12-07 19:17:56,885 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5960MB
+2025-12-07 19:18:00,131 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5960MB
+2025-12-07 19:18:03,376 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.111, free_mem=5848MB
+2025-12-07 19:18:06,623 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.017, free_mem=5848MB
+2025-12-07 19:18:09,867 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=5851MB
+2025-12-07 19:18:13,101 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5849MB
+2025-12-07 19:18:16,331 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=5846MB
+2025-12-07 19:18:19,563 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.021, free_mem=5885MB
+2025-12-07 19:18:22,820 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5887MB
+2025-12-07 19:18:26,085 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.016, free_mem=5887MB
+2025-12-07 19:18:29,339 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.047, free_mem=5948MB
+2025-12-07 19:18:32,589 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6023MB
+2025-12-07 19:18:35,839 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6022MB
+2025-12-07 19:18:39,089 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.019, free_mem=6023MB
+2025-12-07 19:18:42,344 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6024MB
+2025-12-07 19:18:45,587 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=6025MB
+2025-12-07 19:18:48,819 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6024MB
+2025-12-07 19:18:52,059 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6027MB
+2025-12-07 19:18:55,334 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6028MB
+2025-12-07 19:18:58,599 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6027MB
+2025-12-07 19:19:01,855 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6025MB
+2025-12-07 19:19:05,109 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6028MB
+2025-12-07 19:19:08,362 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6029MB
+2025-12-07 19:19:11,611 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6027MB
+2025-12-07 19:19:14,863 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6025MB
+2025-12-07 19:19:18,112 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6026MB
+2025-12-07 19:19:21,372 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.028999999999999998, free_mem=6027MB
+2025-12-07 19:19:24,629 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6025MB
+2025-12-07 19:19:27,871 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6024MB
+2025-12-07 19:19:31,124 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6028MB
+2025-12-07 19:19:34,390 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6030MB
+2025-12-07 19:19:37,659 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6027MB
+2025-12-07 19:19:40,908 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6026MB
+2025-12-07 19:19:44,172 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.017, free_mem=6025MB
+2025-12-07 19:19:47,435 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6026MB
+2025-12-07 19:19:50,697 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.017, free_mem=6026MB
+2025-12-07 19:19:53,946 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6024MB
+2025-12-07 19:19:57,180 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6024MB
+2025-12-07 19:20:00,412 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6023MB
+2025-12-07 19:20:03,648 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6022MB
+2025-12-07 19:20:06,903 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6026MB
+2025-12-07 19:20:10,158 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6025MB
+2025-12-07 19:20:13,413 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6024MB
+2025-12-07 19:20:16,669 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6025MB
+2025-12-07 19:20:19,927 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6024MB
+2025-12-07 19:20:23,176 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.02, free_mem=6023MB
+2025-12-07 19:20:26,420 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6025MB
+2025-12-07 19:20:29,667 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6026MB
+2025-12-07 19:20:32,896 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6024MB
+2025-12-07 19:20:36,126 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6025MB
+2025-12-07 19:20:39,366 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6027MB
+2025-12-07 19:20:42,620 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6031MB
+2025-12-07 19:20:45,872 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6029MB
+2025-12-07 19:20:49,118 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6027MB
+2025-12-07 19:20:52,362 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6026MB
+2025-12-07 19:20:55,607 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6026MB
+2025-12-07 19:20:58,849 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6026MB
+2025-12-07 19:21:02,100 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6026MB
+2025-12-07 19:21:05,359 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6025MB
+2025-12-07 19:21:08,687 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.015, free_mem=6023MB
+2025-12-07 19:21:11,918 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6025MB
+2025-12-07 19:21:15,172 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6026MB
+2025-12-07 19:21:18,428 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6028MB
+2025-12-07 19:21:21,689 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6026MB
+2025-12-07 19:21:24,939 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6025MB
+2025-12-07 19:21:28,197 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6025MB
+2025-12-07 19:21:31,451 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6023MB
+2025-12-07 19:21:34,696 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6022MB
+2025-12-07 19:21:37,952 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6023MB
+2025-12-07 19:21:41,194 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6025MB
+2025-12-07 19:21:44,423 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6023MB
+2025-12-07 19:21:47,667 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6025MB
+2025-12-07 19:21:50,925 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6023MB
+2025-12-07 19:21:54,180 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6021MB
+2025-12-07 19:21:57,439 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6020MB
+2025-12-07 19:22:00,695 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6023MB
+2025-12-07 19:22:03,956 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6022MB
+2025-12-07 19:22:07,197 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6025MB
+2025-12-07 19:22:10,445 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6023MB
+2025-12-07 19:22:13,674 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6024MB
+2025-12-07 19:22:16,874 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6023MB
+2025-12-07 19:22:20,071 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6024MB
+2025-12-07 19:22:23,262 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6023MB
+2025-12-07 19:22:26,454 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6022MB
+2025-12-07 19:22:29,652 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.015, free_mem=6021MB
+2025-12-07 19:22:32,853 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6023MB
+2025-12-07 19:22:36,049 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.018000000000000002, free_mem=6023MB
+2025-12-07 19:22:39,257 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6023MB
+2025-12-07 19:22:42,470 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6025MB
+2025-12-07 19:22:45,674 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6024MB
+2025-12-07 19:22:48,876 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6025MB
+2025-12-07 19:22:52,082 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6028MB
+2025-12-07 19:22:55,290 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6026MB
+2025-12-07 19:22:58,523 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6029MB
+2025-12-07 19:23:01,759 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6028MB
+2025-12-07 19:23:05,058 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6026MB
+2025-12-07 19:23:08,298 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6025MB
+2025-12-07 19:23:11,544 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.015, free_mem=6027MB
+2025-12-07 19:23:14,883 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6026MB
+2025-12-07 19:23:18,260 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6027MB
+2025-12-07 19:23:21,594 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6029MB
+2025-12-07 19:23:24,832 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6027MB
+2025-12-07 19:23:28,074 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6029MB
+2025-12-07 19:23:31,373 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6031MB
+2025-12-07 19:23:34,736 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6027MB
+2025-12-07 19:23:38,108 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6025MB
+2025-12-07 19:23:41,468 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6027MB
+2025-12-07 19:23:44,817 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6028MB
+2025-12-07 19:23:48,162 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6026MB
+2025-12-07 19:23:51,467 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6024MB
+2025-12-07 19:23:54,759 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=6029MB
+2025-12-07 19:23:58,013 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6029MB
+2025-12-07 19:24:01,269 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6027MB
+2025-12-07 19:24:04,525 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6024MB
+2025-12-07 19:24:07,786 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6023MB
+2025-12-07 19:24:11,047 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6026MB
+2025-12-07 19:24:14,317 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6026MB
+2025-12-07 19:24:17,606 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6026MB
+2025-12-07 19:24:20,892 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6022MB
+2025-12-07 19:24:24,149 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6025MB
+2025-12-07 19:24:27,399 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6022MB
+2025-12-07 19:24:30,648 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6024MB
+2025-12-07 19:24:33,901 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6025MB
+2025-12-07 19:24:37,153 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6026MB
+2025-12-07 19:24:40,405 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6027MB
+2025-12-07 19:24:43,660 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6029MB
+2025-12-07 19:24:46,924 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6026MB
+2025-12-07 19:24:50,181 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6024MB
+2025-12-07 19:24:53,447 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6027MB
+2025-12-07 19:24:55,007 [INFO] [DEV_TASK_CREATE] uuid=369ef830-95fa-459d-b58f-5615661e7e9a priority=normal submitted_by=bobctl
+2025-12-07 19:24:56,718 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6024MB
+2025-12-07 19:25:32,707 [INFO] [DEV_TASK_RESULT_DB_STATUS] uuid=369ef830-95fa-459d-b58f-5615661e7e9a final_status=SUCCESS
+2025-12-07 19:25:32,710 [INFO] [DEV_TASK_RESULT_DB_EXEC] uuid=369ef830-95fa-459d-b58f-5615661e7e9a exec_id=50 status=SUCCESS
+2025-12-07 19:25:35,944 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.201, free_mem=4767MB
+2025-12-07 19:25:39,189 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=4770MB
+2025-12-07 19:25:42,446 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=4772MB
+2025-12-07 19:25:45,695 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4768MB
+2025-12-07 19:25:48,947 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4767MB
+2025-12-07 19:25:52,206 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=4768MB
+2025-12-07 19:25:55,472 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=4766MB
+2025-12-07 19:25:58,731 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4768MB
+2025-12-07 19:26:01,986 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=4768MB
+2025-12-07 19:26:05,241 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=4768MB
+2025-12-07 19:26:08,490 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4769MB
+2025-12-07 19:26:11,742 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=4768MB
+2025-12-07 19:26:14,990 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4767MB
+2025-12-07 19:26:18,240 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=4769MB
+2025-12-07 19:26:21,491 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4772MB
+2025-12-07 19:26:24,757 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=4770MB
+2025-12-07 19:26:28,025 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=4772MB
+2025-12-07 19:26:31,291 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=4771MB
+2025-12-07 19:26:34,566 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.015, free_mem=4768MB
+2025-12-07 19:26:37,832 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=4770MB
+2025-12-07 19:26:41,090 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4769MB
+2025-12-07 19:26:44,340 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4767MB
+2025-12-07 19:26:47,589 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4766MB
+2025-12-07 19:26:50,836 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4767MB
+2025-12-07 19:26:54,081 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4769MB
+2025-12-07 19:26:57,337 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=4773MB
+2025-12-07 19:27:00,606 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=4772MB
+2025-12-07 19:27:03,886 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4774MB
+2025-12-07 19:27:07,150 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=4772MB
+2025-12-07 19:27:10,419 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4771MB
+2025-12-07 19:27:13,694 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4770MB
+2025-12-07 19:27:16,950 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=4769MB
+2025-12-07 19:27:20,207 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=4767MB
+2025-12-07 19:27:23,458 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4766MB
+2025-12-07 19:27:26,712 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4764MB
+2025-12-07 19:27:29,963 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4763MB
+2025-12-07 19:27:33,252 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.015, free_mem=4766MB
+2025-12-07 19:27:36,605 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4765MB
+2025-12-07 19:27:39,967 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=4767MB
+2025-12-07 19:27:43,328 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=4764MB
+2025-12-07 19:27:46,689 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=4763MB
+2025-12-07 19:27:50,042 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4766MB
+2025-12-07 19:27:53,291 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4765MB
+2025-12-07 19:27:56,536 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=4767MB
+2025-12-07 19:27:59,783 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4767MB
+2025-12-07 19:28:03,028 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.03, free_mem=4762MB
+2025-12-07 19:28:06,270 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4760MB
+2025-12-07 19:28:09,527 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4759MB
+2025-12-07 19:28:12,790 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4758MB
+2025-12-07 19:28:16,053 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=4757MB
+2025-12-07 19:28:19,330 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4759MB
+2025-12-07 19:28:22,602 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4761MB
+2025-12-07 19:28:25,870 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4759MB
+2025-12-07 19:28:29,131 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.023, free_mem=4758MB
+2025-12-07 19:28:32,394 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.021, free_mem=4752MB
+2025-12-07 19:28:35,662 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.018000000000000002, free_mem=4761MB
+2025-12-07 19:28:38,915 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=4758MB
+2025-12-07 19:28:42,178 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=4758MB
+2025-12-07 19:28:45,432 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4759MB
+2025-12-07 19:28:48,681 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4758MB
+2025-12-07 19:28:51,940 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4757MB
+2025-12-07 19:28:55,209 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4755MB
+2025-12-07 19:28:58,482 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4759MB
+2025-12-07 19:29:01,744 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4758MB
+2025-12-07 19:29:05,016 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4762MB
+2025-12-07 19:29:08,272 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4759MB
+2025-12-07 19:29:11,522 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=4759MB
+2025-12-07 19:29:14,766 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=4760MB
+2025-12-07 19:29:18,063 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4762MB
+2025-12-07 19:29:21,414 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4765MB
+2025-12-07 19:29:24,754 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4766MB
+2025-12-07 19:29:28,043 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4764MB
+2025-12-07 19:29:31,323 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=4763MB
+2025-12-07 19:29:34,602 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4761MB
+2025-12-07 19:29:37,846 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=4761MB
+2025-12-07 19:29:41,092 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=4762MB
+2025-12-07 19:29:44,323 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=4761MB
+2025-12-07 19:29:47,540 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=4763MB
+2025-12-07 19:29:50,758 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=4764MB
+2025-12-07 19:29:54,099 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4763MB
+2025-12-07 19:29:57,453 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4763MB
+2025-12-07 19:30:00,803 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4765MB
+2025-12-07 19:30:04,169 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=4765MB
+2025-12-07 19:30:16,735 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=4771MB
+2025-12-07 19:30:19,879 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=4770MB
+2025-12-07 19:30:22,996 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4781MB
+2025-12-07 19:30:26,137 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=4779MB
+2025-12-07 19:30:29,489 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=4776MB
+2025-12-07 19:30:32,840 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4779MB
+2025-12-07 19:30:36,192 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4776MB
+2025-12-07 19:30:39,544 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=4774MB
+2025-12-07 19:30:42,899 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=4779MB
+2025-12-07 19:30:46,257 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=4776MB
+2025-12-07 19:30:49,609 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=4774MB
+2025-12-07 19:30:52,921 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=4774MB
+2025-12-07 19:30:56,043 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=4776MB
+2025-12-07 19:30:59,170 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.046, free_mem=5997MB
+2025-12-07 19:31:02,440 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5997MB
+2025-12-07 19:31:05,834 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5996MB
+2025-12-07 19:31:09,189 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5995MB
+2025-12-07 19:31:12,542 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=5994MB
+2025-12-07 19:31:15,893 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5994MB
+2025-12-07 19:31:19,248 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5992MB
+2025-12-07 19:31:22,601 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=5992MB
+2025-12-07 19:31:25,951 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5991MB
+2025-12-07 19:31:29,165 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5989MB
+2025-12-07 19:31:32,292 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5990MB
+2025-12-07 19:31:35,410 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5990MB
+2025-12-07 19:31:38,743 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5988MB
+2025-12-07 19:31:42,098 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5989MB
+2025-12-07 19:31:45,453 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=5993MB
+2025-12-07 19:31:48,807 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5991MB
+2025-12-07 19:31:52,154 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5990MB
+2025-12-07 19:31:55,506 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5990MB
+2025-12-07 19:31:58,854 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5990MB
+2025-12-07 19:32:02,201 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5993MB
+2025-12-07 19:32:05,351 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5992MB
+2025-12-07 19:32:08,512 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5991MB
+2025-12-07 19:32:11,746 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5993MB
+2025-12-07 19:32:15,100 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5998MB
+2025-12-07 19:32:18,453 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5999MB
+2025-12-07 19:32:21,802 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5998MB
+2025-12-07 19:32:25,150 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5995MB
+2025-12-07 19:32:28,509 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5994MB
+2025-12-07 19:32:31,884 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5995MB
+2025-12-07 19:32:35,233 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5994MB
+2025-12-07 19:32:38,496 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5992MB
+2025-12-07 19:32:41,616 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5994MB
+2025-12-07 19:32:44,745 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=5991MB
+2025-12-07 19:32:47,865 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5996MB
+2025-12-07 19:32:51,032 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=5990MB
+2025-12-07 19:32:54,283 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5989MB
+2025-12-07 19:32:57,643 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5994MB
+2025-12-07 19:33:01,011 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5993MB
+2025-12-07 19:33:04,373 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5991MB
+2025-12-07 19:33:07,723 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5990MB
+2025-12-07 19:33:11,077 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5993MB
+2025-12-07 19:33:14,370 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=5993MB
+2025-12-07 19:33:17,645 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5992MB
+2025-12-07 19:33:20,920 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5992MB
+2025-12-07 19:33:24,279 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5989MB
+2025-12-07 19:33:27,637 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=5991MB
+2025-12-07 19:33:30,988 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5993MB
+2025-12-07 19:33:34,339 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5995MB
+2025-12-07 19:33:37,696 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5992MB
+2025-12-07 19:33:40,978 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5991MB
+2025-12-07 19:33:44,248 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5989MB
+2025-12-07 19:33:47,471 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5989MB
+2025-12-07 19:33:50,479 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5987MB
+2025-12-07 19:33:53,481 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5987MB
+2025-12-07 19:33:56,730 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5988MB
+2025-12-07 19:33:59,997 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5992MB
+2025-12-07 19:34:03,259 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5991MB
+2025-12-07 19:34:06,596 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5992MB
+2025-12-07 19:34:09,948 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5991MB
+2025-12-07 19:34:13,312 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5989MB
+2025-12-07 19:34:16,665 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5990MB
+2025-12-07 19:34:20,026 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=5994MB
+2025-12-07 19:34:23,319 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5992MB
+2025-12-07 19:34:26,558 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=5990MB
+2025-12-07 19:34:29,799 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5989MB
+2025-12-07 19:34:33,154 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5994MB
+2025-12-07 19:34:36,508 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5992MB
+2025-12-07 19:34:39,863 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5991MB
+2025-12-07 19:34:43,223 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=5993MB
+2025-12-07 19:34:46,575 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5994MB
+2025-12-07 19:34:49,872 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=5994MB
+2025-12-07 19:34:53,137 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5993MB
+2025-12-07 19:34:56,402 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=5991MB
+2025-12-07 19:34:59,492 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5991MB
+2025-12-07 19:35:02,631 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5990MB
+2025-12-07 19:35:05,913 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=5992MB
+2025-12-07 19:35:09,271 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5990MB
+2025-12-07 19:35:12,625 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5991MB
+2025-12-07 19:35:15,978 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=5990MB
+2025-12-07 19:35:19,332 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5989MB
+2025-12-07 19:35:23,086 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5995MB
+2025-12-07 19:35:26,392 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5992MB
+2025-12-07 19:35:29,696 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5991MB
+2025-12-07 19:35:32,911 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=5995MB
+2025-12-07 19:35:36,037 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5994MB
+2025-12-07 19:35:39,254 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5991MB
+2025-12-07 19:35:42,586 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.003, free_mem=5997MB
+2025-12-07 19:35:45,943 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5994MB
+2025-12-07 19:35:49,305 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5992MB
+2025-12-07 19:35:52,659 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5990MB
+2025-12-07 19:35:56,023 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5993MB
+2025-12-07 19:35:59,343 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5995MB
+2025-12-07 19:36:02,630 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=5992MB
+2025-12-07 19:36:05,922 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=5991MB
+2025-12-07 19:36:09,059 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=5991MB
+2025-12-07 19:36:12,253 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5993MB
+2025-12-07 19:36:15,536 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=5991MB
+2025-12-07 19:36:18,885 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=5993MB
+2025-12-07 19:36:22,238 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5991MB
+2025-12-07 19:36:25,599 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=5990MB
+2025-12-07 19:36:28,952 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=5989MB
+2025-12-07 19:36:32,308 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=5992MB
+2025-12-07 19:36:35,622 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=5997MB
+2025-12-07 19:36:38,925 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.047, free_mem=5999MB
+2025-12-07 19:36:42,167 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6002MB
+2025-12-07 19:36:45,271 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6004MB
+2025-12-07 19:36:48,515 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6006MB
+2025-12-07 19:36:51,828 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6006MB
+2025-12-07 19:36:55,191 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6006MB
+2025-12-07 19:36:58,550 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6005MB
+2025-12-07 19:37:01,901 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6004MB
+2025-12-07 19:37:05,255 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6006MB
+2025-12-07 19:37:08,592 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6004MB
+2025-12-07 19:37:11,900 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6005MB
+2025-12-07 19:37:15,213 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6004MB
+2025-12-07 19:37:18,376 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6006MB
+2025-12-07 19:37:21,464 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6005MB
+2025-12-07 19:37:24,711 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6005MB
+2025-12-07 19:37:28,062 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6004MB
+2025-12-07 19:37:31,418 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6004MB
+2025-12-07 19:37:34,781 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6003MB
+2025-12-07 19:37:38,146 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=6001MB
+2025-12-07 19:37:41,508 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6004MB
+2025-12-07 19:37:44,866 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6006MB
+2025-12-07 19:37:48,216 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6005MB
+2025-12-07 19:37:51,551 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013000000000000001, free_mem=6003MB
+2025-12-07 19:37:54,591 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6005MB
+2025-12-07 19:37:57,832 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6003MB
+2025-12-07 19:38:01,119 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6002MB
+2025-12-07 19:38:04,470 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6001MB
+2025-12-07 19:38:07,820 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.011000000000000001, free_mem=6005MB
+2025-12-07 19:38:11,171 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.004, free_mem=6007MB
+2025-12-07 19:38:14,525 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6007MB
+2025-12-07 19:38:17,877 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6005MB
+2025-12-07 19:38:21,221 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6003MB
+2025-12-07 19:38:24,559 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6008MB
+2025-12-07 19:38:27,755 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6010MB
+2025-12-07 19:38:30,759 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=6008MB
+2025-12-07 19:38:33,930 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6007MB
+2025-12-07 19:38:37,258 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6004MB
+2025-12-07 19:38:40,612 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6006MB
+2025-12-07 19:38:43,971 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6004MB
+2025-12-07 19:38:47,329 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6007MB
+2025-12-07 19:38:50,678 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6004MB
+2025-12-07 19:38:54,026 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6003MB
+2025-12-07 19:38:57,379 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6002MB
+2025-12-07 19:39:00,732 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6003MB
+2025-12-07 19:39:03,820 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006999999999999999, free_mem=6002MB
+2025-12-07 19:39:06,861 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6000MB
+2025-12-07 19:39:10,133 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6000MB
+2025-12-07 19:39:13,492 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=6003MB
+2025-12-07 19:39:16,846 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6006MB
+2025-12-07 19:39:20,198 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6004MB
+2025-12-07 19:39:23,550 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6006MB
+2025-12-07 19:39:26,905 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6004MB
+2025-12-07 19:39:30,260 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.01, free_mem=6002MB
+2025-12-07 19:39:33,614 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6000MB
+2025-12-07 19:39:36,899 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.012, free_mem=6002MB
+2025-12-07 19:39:39,903 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6004MB
+2025-12-07 19:39:43,050 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.013999999999999999, free_mem=6006MB
+2025-12-07 19:39:46,357 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.005, free_mem=6005MB
+2025-12-07 19:39:49,721 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.008, free_mem=6002MB
+2025-12-07 19:39:53,074 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6004MB
+2025-12-07 19:39:56,429 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.006, free_mem=6005MB
+2025-12-07 19:39:59,809 [INFO] [HEARTBEAT] Node 'data-mainpc' load=0.009000000000000001, free_mem=6004MB
+2025-12-07 19:40:01,243 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:40:01,413 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:40:01,442 [INFO] Database initialised.
+2025-12-07 19:40:03,173 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:06,537 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:09,890 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:11,445 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:40:11,525 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:40:11,545 [INFO] Database initialised.
+2025-12-07 19:40:13,032 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:16,034 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:19,131 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:22,483 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:25,860 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:29,214 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:32,569 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:35,931 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:39,280 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:42,629 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:45,983 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:49,038 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:57,999 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:40:59,646 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:40:59,732 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:40:59,749 [INFO] Database initialised.
+2025-12-07 19:41:01,362 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:04,724 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:06,865 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:41:06,954 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:41:06,968 [INFO] Database initialised.
+2025-12-07 19:41:08,085 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:11,444 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:14,804 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:18,155 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:21,448 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:24,453 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:27,458 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:30,656 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:33,087 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:41:33,221 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:41:33,245 [INFO] Database initialised.
+2025-12-07 19:41:33,890 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:36,754 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:41:36,843 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:41:36,859 [INFO] Database initialised.
+2025-12-07 19:41:37,117 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:40,147 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:43,145 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:46,157 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:49,159 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:52,157 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:55,152 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:41:58,153 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:01,155 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:04,475 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:07,827 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:09,124 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:42:09,206 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:42:09,230 [INFO] Database initialised.
+2025-12-07 19:42:11,190 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:13,078 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:42:13,168 [INFO] Prime Bob orchestrator starting…
+2025-12-07 19:42:13,186 [INFO] Database initialised.
+2025-12-07 19:42:14,549 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:17,897 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:21,252 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:24,606 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:27,957 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:31,317 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:34,669 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:37,997 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:41,283 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:44,579 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:47,850 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:51,106 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:54,366 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:42:57,608 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:00,854 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:04,101 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:07,347 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:10,593 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:13,856 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:17,109 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:20,360 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:23,613 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:26,853 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:30,091 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:33,327 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:36,562 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:39,797 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:43,033 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:46,273 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:49,505 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:52,733 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:55,966 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:43:59,200 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:02,432 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:05,676 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:08,915 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:12,154 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:15,383 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:18,619 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:21,853 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:25,084 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:28,323 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:31,655 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:35,011 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:38,346 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:41,587 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:44,826 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:48,086 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:51,361 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:54,643 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:44:57,908 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:01,179 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:04,449 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:07,663 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:10,881 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:14,117 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:17,362 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:20,612 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:23,894 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:27,175 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:30,464 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:33,751 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:37,044 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:40,316 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:43,565 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:46,821 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:50,071 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:53,322 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:56,587 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:45:59,887 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:46:03,178 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:46:06,472 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:46:09,752 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:46:13,034 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:46:16,283 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:46:19,531 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:46:22,779 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:46:26,025 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:46:29,271 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.
+2025-12-07 19:46:32,550 [WARNING] [HEARTBEAT] Unknown node 'data-mainpc' – heartbeat rejected.

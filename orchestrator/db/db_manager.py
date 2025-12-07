@@ -274,6 +274,60 @@ def get_executions_for_task(task_uuid: str) -> List[Dict[str, Any]]:
         return [_row_to_dict(r) for r in rows]
 
 
+def list_recent_executions(
+    target_module: Optional[str] = None,
+    limit: int = 100,
+) -> List[Dict[str, Any]]:
+    """
+    Return the most recent task_executions rows, optionally filtered by target_module.
+    Joined with tasks so we also expose task_uuid and high_level_type.
+
+    This is read-only and intended for Reflector / observability.
+    """
+    with get_connection() as conn:
+        cur = conn.cursor()
+
+        base_sql = """
+            SELECT
+                te.*,
+                t.task_uuid,
+                t.high_level_type
+            FROM task_executions AS te
+            JOIN tasks AS t
+              ON te.task_id = t.id
+        """
+
+        params: List[Any] = []
+
+        if target_module:
+            base_sql += " WHERE te.target_module = ?"
+            params.append(target_module)
+
+        base_sql += """
+            ORDER BY datetime(te.started_at) DESC
+            LIMIT ?
+        """
+        params.append(limit)
+
+        cur.execute(base_sql, tuple(params))
+        rows = cur.fetchall()
+
+    results: List[Dict[str, Any]] = []
+    for r in rows:
+        d = _row_to_dict(r)
+        # Decode metrics_json only for this helper; elsewhere it stays as stored.
+        mj = d.get("metrics_json")
+        if isinstance(mj, str) and mj:
+            try:
+                d["metrics_json"] = json.loads(mj)
+            except Exception:
+                # If it's corrupt, just leave it as the original string
+                pass
+        results.append(d)
+
+    return results
+
+
 # =========================
 # POLICY PROPOSAL OPERATIONS
 # =========================
