@@ -1,0 +1,14 @@
+# Core Bobiverse dependencies
+fastapi
+uvicorn[standard]
+pydantic
+python-dotenv
+requests
+rich
+
+# Database and serialization
+sqlalchemy
+aiosqlite
+
+# Optional but recommended for future councils
+numpy

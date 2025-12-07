@@ -43,10 +43,14 @@ from models import (
 # ---------- Dev Council Models ---------- #
 
 class DevTaskCreate(BaseModel):
+    """
+    Payload for creating a Dev Council task via /tasks/dev.
+    This is intentionally simple and matches bobctl submit-dev.
+    """
     description: str
     details: Optional[str] = None
     submitted_by: str = "bobctl"
-    priority: str = "normal"
+    priority: Literal["low", "normal", "high"] = "normal"
 
 
 class DevTaskNextResponse(BaseModel):
@@ -793,93 +797,44 @@ def dev_task_result(task_uuid: str, body: DevTaskResultIn):
 def create_dev_task(payload: DevTaskCreate):
     """
     Create a new 'dev' task row in the tasks table so it shows up
-    in show-tasks and can later be picked up by the Dev Council pipeline.
-
-    This writes input_payload in a shape that matches DevTaskRequest on
-    the Dev Council side, so the node agent can deserialize it directly.
+    and can be picked up by a node running Dev Council.
     """
-    task_uuid = str(uuid.uuid4())
-    now = datetime.now(timezone.utc).isoformat()
-
-    # This JSON structure is intentionally aligned with DevTaskRequest.
-    dev_payload = {
-        "task_id": task_uuid,                    # <-- now Dev Bob sees the real ID
-        "task_type": "dev",                      # maps to DevTaskRequest.task_type
-        "description": payload.description,      # DevTaskRequest.description
-        "code_snippet": None,                    # DevTaskRequest.code_snippet
-        "repo_context": None,                    # DevTaskRequest.repo_context
-        "extra_instructions": payload.details,   # DevTaskRequest.extra_instructions
-
-        # New structured fields with safe defaults (all optional in DevTaskRequest)
-        "priority": payload.priority,            # DevTaskRequest.priority
-
-        "kind": None,                            # DevTaskRequest.kind
-        "target_paths": [],                      # DevTaskRequest.target_paths
-        "context_files": [],                     # DevTaskRequest.context_files
-        "constraints": [],                       # DevTaskRequest.constraints
-        "acceptance_criteria": [],               # DevTaskRequest.acceptance_criteria
-
+    # Build what the Dev Council will see as input_payload
+    input_payload: Dict[str, Any] = {
+        "kind": "generic_dev_task",
+        "description": payload.description,
+        "details": payload.details,
+        "task_type": "dev",
+        "priority": payload.priority,
         "origin": {
             "submitted_by": payload.submitted_by,
             "origin_type": "bobctl",
             "source_node": "orchestrator-server",
             "source_tool": "bobctl submit-dev",
-            "experiment_id": None,
-            "variant_id": None,
         },
-
-        "extra": {},
     }
 
-    with get_connection() as conn:
-        cur = conn.cursor()
+    # Use the existing create_task function from db_manager
+    db_task = create_task(
+        high_level_type="dev",
+        input_payload=input_payload,
+        submitted_by=payload.submitted_by,
+        is_experiment=False,
+        input_hash=None,
+    )
 
-        # Introspect the tasks table so we only insert valid columns
-        cur.execute("PRAGMA table_info(tasks)")
-        cols_info = cur.fetchall()
-        cols = {row["name"] for row in cols_info}
+    task_uuid = db_task["task_uuid"]
 
-        values: Dict[str, Any] = {}
-
-        if "task_uuid" in cols:
-            values["task_uuid"] = task_uuid
-        if "high_level_type" in cols:
-            values["high_level_type"] = "dev"
-        if "submitted_by" in cols:
-            values["submitted_by"] = payload.submitted_by
-        if "target_module" in cols:
-            values["target_module"] = "dev_council"
-        if "priority" in cols:
-            values["priority"] = payload.priority
-        if "final_status" in cols:
-            values["final_status"] = "PENDING"
-        if "input_summary" in cols:
-            values["input_summary"] = payload.description
-        if "input_payload" in cols:
-            values["input_payload"] = json.dumps(dev_payload)
-
-        # Timestamps – use whatever exists
-        for ts_col in ("created_at", "submitted_at", "created", "submitted"):
-            if ts_col in cols:
-                values[ts_col] = now
-
-        if not values:
-            raise RuntimeError("tasks table has no expected columns; cannot insert dev task")
-
-        col_names = ", ".join(values.keys())
-        placeholders = ", ".join(["?"] * len(values))
-        sql = f"INSERT INTO tasks ({col_names}) VALUES ({placeholders})"
-        cur.execute(sql, list(values.values()))
+    logger.info(
+        "[DEV_TASK_CREATE] uuid=%s priority=%s submitted_by=%s",
+        task_uuid,
+        payload.priority,
+        payload.submitted_by,
+    )
 
     return {
         "task_uuid": task_uuid,
-        "high_level_type": "dev",
-        "final_status": "PENDING",
-        "submitted_by": payload.submitted_by,
-        "description": payload.description,
-        "details": payload.details,
-        "priority": payload.priority,
-        "created_at": now,
+        "status": "CREATED",
     }
 
 

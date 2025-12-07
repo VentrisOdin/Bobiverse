@@ -24,8 +24,12 @@ def cli(args, orch_url: str) -> None:
     }
 
     url = f"{orch_url}/tasks/dev"
+    print(f"[submit-dev] POST {url}")
+    print(f"[submit-dev] Payload: {json.dumps(payload, indent=2)}")
+
     try:
         resp = requests.post(url, json=payload, timeout=10)
+        print(f"[submit-dev] HTTP {resp.status_code}")
         resp.raise_for_status()
     except requests.HTTPError as e:
         print(f"[submit-dev] HTTP error from {url}: {e} ({e.response.status_code})")
@@ -38,6 +42,12 @@ def cli(args, orch_url: str) -> None:
         print(f"[submit-dev] Error submitting task to {url}: {e}")
         return
 
-    data = resp.json()
+    try:
+        data = resp.json()
+    except Exception:
+        print("[submit-dev] Non-JSON response:")
+        print(resp.text)
+        return
+
     print("[submit-dev] Created dev task:")
     print(json.dumps(data, indent=2))
