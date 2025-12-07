@@ -1,4 +1,5 @@
 import os
+import json
 import textwrap
 import logging
 from typing import Optional
@@ -7,6 +8,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
 from dotenv import load_dotenv
+from pydantic import ValidationError
 
 logger = logging.getLogger("dev_council")
 
@@ -140,13 +142,15 @@ You MUST output a single JSON object with this exact structure:
   }}
 }}
 
-HARD REQUIREMENTS:
-- Your FIRST character MUST be an opening brace.
-- Your LAST character MUST be a closing brace.
-- Do NOT wrap the JSON in ``` fences.
-- Do NOT include markdown, comments, or any text before or after the JSON.
-- If you are unsure, output an EMPTY but VALID JSON object that matches the schema above.
-"""
+HARD REQUIREMENTS FOR OUTPUT:
+- You MUST output a single JSON object that matches the fields described above
+  (summary, reasoning, suggested_changes, tests_suggested, risks, etc.).
+- Your FIRST character MUST be an opening brace {{.
+- Your LAST character MUST be a closing brace }}.
+- Do NOT include markdown, backticks, comments, or any extra text before or after the JSON.
+- Do NOT say "here is your JSON" or wrap the JSON in ``` fences.
+- All strings must use double quotes, and there must be NO trailing commas.
+""".strip()
 
 
 def build_context_blocks(context_files: dict) -> str:
@@ -200,49 +204,86 @@ def validate_suggested_changes(
 
 async def run_dev_analysis(req: DevTaskRequest) -> DevTaskResponse:
     """
-    Main Dev Council analysis logic.
-    Builds prompt, calls DeepSeek, parses JSON response.
+    Main Dev Council analysis logic with a small retry loop for JSON stability.
     """
     context_blocks = build_context_blocks(req.context_files)
 
-    prompt = DEV_PROMPT_TEMPLATE.format(
-        task_description=req.user_prompt,
-        context_blocks=context_blocks,
-    )
+    MAX_RETRIES = 2  # Max 3 attempts total (0,1,2)
+    raw_output = ""
+    last_error = None
+    analysis = None
 
-    raw_output = await call_deepseek(prompt)
-
-    import json
-    from pydantic import ValidationError
-
-    try:
-        # Try to parse model output as JSON
-        parsed = json.loads(raw_output)
-        analysis = DevTaskAnalysis(**parsed)
-
-        # Validate that suggested changes reference real files and exact code
-        analysis = validate_suggested_changes(analysis, req.context_files)
-
-    except (json.JSONDecodeError, ValidationError) as e:
-        # Fallback: model did not return valid / expected JSON
-        analysis = DevTaskAnalysis(
-            summary="Dev Council model did not return valid JSON or did not match DevTaskAnalysis schema.",
-            reasoning=f"Parse/validation error: {e}. Raw output (truncated): {raw_output[:400]}",
-            suggested_changes=[],
-            example_code=None,
-            tests_suggested=[],
-            risks={
-                "complexity": 0,
-                "behavior_risks": ["No changes applied due to parse/validation failure."],
-                "notes": "DeepSeek output could not be parsed into DevTaskAnalysis.",
-            },
+    for attempt in range(MAX_RETRIES + 1):
+        # 1. Build your existing prompt
+        prompt = DEV_PROMPT_TEMPLATE.format(
+            task_description=req.user_prompt,
+            context_blocks=context_blocks,
         )
 
+        # 2. If this is a retry, append a short error feedback block
+        if attempt > 0 and last_error is not None:
+            feedback = textwrap.dedent(f"""
+            --- RETRY ATTEMPT {attempt} ---
+            Your previous response failed to parse as valid JSON or did not match the expected schema.
+
+            Python error:
+            {last_error.__class__.__name__}: {last_error}
+
+            You MUST regenerate the ENTIRE JSON object.
+            Do NOT include any explanation or text outside the JSON.
+            """)
+            prompt += "\n\n" + feedback
+
+        try:
+            # 3. Call your existing DeepSeek client
+            raw_output = await call_deepseek(prompt)
+
+            # 4. Your existing parse + validation path:
+            parsed = json.loads(raw_output)
+            analysis = DevTaskAnalysis(**parsed)
+            analysis = validate_suggested_changes(analysis, req.context_files)
+
+            logger.info(f"[DevCouncil] Dev analysis succeeded on attempt {attempt + 1}.")
+            break  # ✅ Success – exit the loop
+
+        except (json.JSONDecodeError, ValidationError) as e:
+            last_error = e
+            logger.warning(
+                f"[DevCouncil] Attempt {attempt + 1} failed (JSON/Validation): "
+                f"{e.__class__.__name__}: {e}"
+            )
+
+            if attempt == MAX_RETRIES:
+                # 5. Final Failure: Build a safe, structured fallback
+                logger.error("[DevCouncil] All retries failed; building fallback analysis.")
+
+                # This uses ONLY the existing DevTaskAnalysis fields.
+                analysis = DevTaskAnalysis(
+                    summary="Dev Council failed to produce valid JSON after retries.",
+                    reasoning=(
+                        f"Final parse/validation error ({e.__class__.__name__}): {e}. "
+                        f"Raw output (truncated and also stored in raw_output): {raw_output[:400]}"
+                    ),
+                    suggested_changes=[],
+                    example_code=None,
+                    tests_suggested=[],
+                    risks={
+                        # Pack failure metadata into the existing risks structure
+                        "complexity": 0,
+                        "behavior_risks": [
+                            "No automated changes were applied for this task due to JSON failure."
+                        ],
+                        "notes": f"Last JSON error: {e.__class__.__name__}"
+                    },
+                )
+                break  # Exit after fallback
+
+    # 6. Return final result – analysis is guaranteed to be set
     return DevTaskResponse(
         task_id=req.task_id,
         task_type=req.task_type,
         model=DEV_COUNCIL_MODEL,
-        raw_output=raw_output,
+        raw_output=raw_output,  # last output, even if bad JSON
         analysis=analysis,
     )
 
