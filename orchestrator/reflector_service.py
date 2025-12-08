@@ -2,12 +2,12 @@
 
 import json
 import logging
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from db.db_manager import get_connection  # reuse same DB connection helper
+from db.db_manager import get_connection  # reuse same DB helper
 
 logger = logging.getLogger("reflector")
 logger.setLevel(logging.INFO)
@@ -15,15 +15,12 @@ logger.setLevel(logging.INFO)
 
 app = FastAPI(
     title="Bobiverse Reflector v1",
-    description=(
-        "Analytics and basic self-reflection over Bobiverse task history. "
-        "Provides raw stats for the Reflector LLM to learn from."
-    ),
+    description="Analytics and basic self-reflection over Bobiverse task history.",
     version="1.0.0",
 )
 
 
-# ---------- Core Models (v0, kept) ---------- #
+# ---------- Core Models (existing) ---------- #
 
 class TaskSummary(BaseModel):
     total_tasks: int
@@ -58,7 +55,7 @@ class FailedTask(BaseModel):
 
 class ExecutionOverview(BaseModel):
     execution_id: int
-    task_uuid: str
+    task_uuid: Optional[str]
     high_level_type: Optional[str] = None
     target_module: Optional[str] = None
     target_node: Optional[str] = None
@@ -66,7 +63,7 @@ class ExecutionOverview(BaseModel):
     strategy_name: Optional[str] = None
     error_type: Optional[str] = None
     created_at: str
-    latency_ms: Optional[float] = None  # parsed from metrics_json if present
+    latency_ms: Optional[float] = None  # reserved for future metrics_json usage
 
 
 class ErrorTypeStats(BaseModel):
@@ -91,6 +88,48 @@ class ReflectorInsights(BaseModel):
     worst_modules: List[ModuleErrorStats]
     top_error_types: List[ErrorTypeStats]
     strategy_stats: List[StrategyStats]
+    recent_failures: List[FailedTask]
+
+
+class ReflectorLessonInput(BaseModel):
+    summary_text: str
+    source: str = "manual"
+    tags: Optional[List[str]] = None
+
+
+class ReflectorLesson(BaseModel):
+    id: int
+    created_at: str
+    summary_text: str
+    raw_snapshot_json: dict
+    source: Optional[str] = None
+    tags: List[str] = []
+
+
+class ReflectorProposalInput(BaseModel):
+    proposal_uuid: str
+    proposal_type: str            # e.g. PROMPT_TWEAK, ROUTING_POLICY
+    target_module: str            # e.g. dev_council
+    motivation_lesson_id: Optional[int] = None
+    risk_score: int = 3           # 1–5
+    description: str              # 1–2 sentence summary
+    action_payload: Dict[str, Any]
+    source: str = "llm"           # e.g. 'llm-deepseek', 'heuristic'
+
+
+class ReflectorProposal(BaseModel):
+    id: int
+    created_at: str
+    proposal_uuid: str
+    proposal_type: str
+    target_module: str
+    motivation_lesson_id: Optional[int] = None
+    risk_score: int
+    description: str
+    action_payload: Dict[str, Any]
+    source: Optional[str] = None
+    status: str
+    applied_at: Optional[str] = None
 
 
 # ---------- Helpers ---------- #
@@ -99,26 +138,33 @@ def _safe_div(numerator: int, denominator: int) -> float:
     return float(numerator) / float(denominator) if denominator else 0.0
 
 
-def _parse_latency_ms(metrics_json: Optional[str]) -> Optional[float]:
+def _has_column(table: str, column: str) -> bool:
     """
-    Try to pull a 'latency_ms' or 'duration_ms' value from metrics_json.
-    Returns None if not present or invalid.
+    Check if a column exists on a table in SQLite.
+    This lets us add strategy-related endpoints safely before schema upgrades.
     """
-    if not metrics_json:
-        return None
-    try:
-        data = json.loads(metrics_json)
-        if isinstance(data, dict):
-            if "latency_ms" in data and isinstance(data["latency_ms"], (int, float)):
-                return float(data["latency_ms"])
-            if "duration_ms" in data and isinstance(data["duration_ms"], (int, float)):
-                return float(data["duration_ms"])
-    except Exception:
-        return None
-    return None
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute(f"PRAGMA table_info({table})")
+        cols = [row["name"] for row in cur.fetchall()]
+        return column in cols
 
 
-# ---------- Existing Endpoints (v0) ---------- #
+def _pack_tags(tags: Optional[List[str]]) -> Optional[str]:
+    if not tags:
+        return None
+    # remove empties and trim whitespace
+    cleaned = [t.strip() for t in tags if t and t.strip()]
+    return ",".join(cleaned) if cleaned else None
+
+
+def _unpack_tags(tag_str: Optional[str]) -> List[str]:
+    if not tag_str:
+        return []
+    return [t.strip() for t in tag_str.split(",") if t.strip()]
+
+
+# ---------- Existing Endpoints (kept) ---------- #
 
 @app.get("/reflector/summary", response_model=TaskSummary)
 def reflector_summary():
@@ -284,11 +330,13 @@ def reflector_recent_failures(limit: int = 50):
 def reflector_recent_executions(limit: int = 50):
     """
     Recent executions joined with task-level info.
-    This is the main feed for the Reflector LLM to analyse patterns.
+    Used as the main feed for the future Reflector brain.
     """
     with get_connection() as conn:
         cur = conn.cursor()
 
+        # We intentionally *don't* reference strategy_name/metrics_json here
+        # so this endpoint works even before schema upgrades.
         cur.execute(
             """
             SELECT
@@ -298,9 +346,7 @@ def reflector_recent_executions(limit: int = 50):
                 te.target_module AS target_module,
                 te.target_node AS target_node,
                 te.status AS status,
-                te.strategy_name AS strategy_name,
                 t.error_type AS error_type,
-                te.metrics_json AS metrics_json,
                 te.created_at AS created_at
             FROM task_executions te
             LEFT JOIN tasks t ON t.id = te.task_id
@@ -314,8 +360,6 @@ def reflector_recent_executions(limit: int = 50):
         results: List[ExecutionOverview] = []
 
         for row in rows:
-            latency_ms = _parse_latency_ms(row["metrics_json"]) if "metrics_json" in row.keys() else None
-
             results.append(
                 ExecutionOverview(
                     execution_id=row["execution_id"],
@@ -324,10 +368,10 @@ def reflector_recent_executions(limit: int = 50):
                     target_module=row["target_module"],
                     target_node=row["target_node"],
                     status=row["status"],
-                    strategy_name=row["strategy_name"] if "strategy_name" in row.keys() else None,
+                    strategy_name=None,  # reserved for future
                     error_type=row["error_type"],
                     created_at=row["created_at"],
-                    latency_ms=latency_ms,
+                    latency_ms=None,     # reserved for future metrics_json
                 )
             )
 
@@ -336,7 +380,7 @@ def reflector_recent_executions(limit: int = 50):
 
 
 @app.get("/reflector/errors/by_type", response_model=List[ErrorTypeStats])
-def reflector_errors_by_type(limit: int = 20):
+def reflector_errors_by_type(limit: int = 50):
     """
     Aggregate errors by error_type from the tasks table.
     Useful for seeing which failure modes dominate.
@@ -379,12 +423,18 @@ def reflector_errors_by_type(limit: int = 20):
 def reflector_strategy_summary(limit: int = 50):
     """
     Basic strategy-level performance stats, based on task_executions.strategy_name.
-    If you haven't added strategy_name yet, either add it to schema or disable this endpoint.
+    This endpoint safely returns [] if the 'strategy_name' column doesn't exist yet.
     """
+    # If we haven't added strategy_name yet, just return an empty list.
+    if not _has_column("task_executions", "strategy_name"):
+        logger.info(
+            "[REFLECTOR_STRATEGY_SUMMARY] 'strategy_name' column missing; returning empty list"
+        )
+        return []
+
     with get_connection() as conn:
         cur = conn.cursor()
 
-        # Note: strategy_name may be NULL for many rows; that's fine.
         cur.execute(
             """
             SELECT
@@ -426,36 +476,242 @@ def reflector_strategy_summary(limit: int = 50):
 
 
 @app.get("/reflector/insights", response_model=ReflectorInsights)
-def reflector_insights():
+def reflector_insights(limit_failures: int = 50):
     """
-    One-shot JSON bundle that the Reflector LLM can consume to write
-    'lessons learned' and propose experiments.
-
-    This does NOT do any LLM work itself; it's the analytic substrate.
+    One-shot JSON bundle that the future Reflector LLM agent can consume
+    to write 'lessons learned' and propose experiments.
+    No LLM work happens here; this is analytics only.
     """
     summary = reflector_summary()
     worst_nodes = reflector_node_errors()
     worst_modules = reflector_module_errors()
     top_error_types = reflector_errors_by_type()
     strategy_stats = reflector_strategy_summary()
-
-    insights = ReflectorInsights(
-        summary=summary,
-        worst_nodes=worst_nodes,
-        worst_modules=worst_modules,
-        top_error_types=top_error_types,
-        strategy_stats=strategy_stats,
-    )
+    recent_failures = reflector_recent_failures(limit=limit_failures)
 
     logger.info(
-        "[REFLECTOR_INSIGHTS] total_tasks=%s, nodes=%s, modules=%s, errors=%s, strategies=%s",
+        "[REFLECTOR_INSIGHTS] total_tasks=%s nodes=%s modules=%s errors=%s strategies=%s recent_failures=%s",
         summary.total_tasks,
         len(worst_nodes),
         len(worst_modules),
         len(top_error_types),
         len(strategy_stats),
+        len(recent_failures),
     )
-    return insights
+
+    return ReflectorInsights(
+        summary=summary,
+        worst_nodes=worst_nodes,
+        worst_modules=worst_modules,
+        top_error_types=top_error_types,
+        strategy_stats=strategy_stats,
+        recent_failures=recent_failures,
+    )
+
+
+@app.post("/reflector/lessons", response_model=ReflectorLesson)
+def create_reflector_lesson(payload: ReflectorLessonInput):
+    """
+    Capture a Reflector 'lesson':
+      - Takes a human/agent summary_text + source/tags.
+      - Captures the current /reflector/insights snapshot.
+      - Stores both in reflector_lessons.
+    """
+    # Get current insights snapshot as raw dict
+    insights = reflector_insights(limit_failures=50)
+    snapshot_json = insights.model_dump()
+
+    with get_connection() as conn:
+        cur = conn.cursor()
+        tags_str = _pack_tags(payload.tags)
+
+        cur.execute(
+            """
+            INSERT INTO reflector_lessons (summary_text, raw_snapshot_json, source, tags)
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                payload.summary_text,
+                json.dumps(snapshot_json),
+                payload.source,
+                tags_str,
+            ),
+        )
+        lesson_id = cur.lastrowid
+
+        cur.execute(
+            """
+            SELECT id, created_at, summary_text, raw_snapshot_json, source, tags
+            FROM reflector_lessons
+            WHERE id = ?
+            """,
+            (lesson_id,),
+        )
+        row = cur.fetchone()
+
+    logger.info(
+        "[REFLECTOR_LESSON_CREATED] id=%s source=%s tags=%s",
+        row["id"],
+        row["source"],
+        row["tags"],
+    )
+
+    return ReflectorLesson(
+        id=row["id"],
+        created_at=row["created_at"],
+        summary_text=row["summary_text"],
+        raw_snapshot_json=json.loads(row["raw_snapshot_json"]),
+        source=row["source"],
+        tags=_unpack_tags(row["tags"]),
+    )
+
+
+@app.get("/reflector/lessons/recent", response_model=List[ReflectorLesson])
+def get_recent_reflector_lessons(limit: int = 20):
+    """
+    Return the most recent reflector lessons, newest first.
+    """
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT id, created_at, summary_text, raw_snapshot_json, source, tags
+            FROM reflector_lessons
+            ORDER BY datetime(created_at) DESC, id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+        rows = cur.fetchall()
+
+    lessons: List[ReflectorLesson] = []
+    for row in rows:
+        lessons.append(
+            ReflectorLesson(
+                id=row["id"],
+                created_at=row["created_at"],
+                summary_text=row["summary_text"],
+                raw_snapshot_json=json.loads(row["raw_snapshot_json"]),
+                source=row["source"],
+                tags=_unpack_tags(row["tags"]),
+            )
+        )
+
+    logger.info("[REFLECTOR_LESSONS_RECENT] count=%s", len(lessons))
+    return lessons
+
+
+@app.post("/reflector/proposals", response_model=ReflectorProposal)
+def create_reflector_proposal(payload: ReflectorProposalInput):
+    """
+    Store a structured proposal generated by the Reflector Brain (or manually).
+    The payload's action_payload is stored as JSON text.
+    """
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO reflector_proposals (
+                proposal_uuid,
+                proposal_type,
+                target_module,
+                motivation_lesson_id,
+                risk_score,
+                description,
+                action_payload_json,
+                source
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                payload.proposal_uuid,
+                payload.proposal_type,
+                payload.target_module,
+                payload.motivation_lesson_id,
+                payload.risk_score,
+                payload.description,
+                json.dumps(payload.action_payload),
+                payload.source,
+            ),
+        )
+        proposal_id = cur.lastrowid
+
+        cur.execute(
+            """
+            SELECT id, created_at, proposal_uuid, proposal_type, target_module,
+                   motivation_lesson_id, risk_score, description,
+                   action_payload_json, source, status, applied_at
+            FROM reflector_proposals
+            WHERE id = ?
+            """,
+            (proposal_id,),
+        )
+        row = cur.fetchone()
+
+    logger.info(
+        "[REFLECTOR_PROPOSAL_CREATED] id=%s type=%s target_module=%s",
+        row["id"],
+        row["proposal_type"],
+        row["target_module"],
+    )
+
+    return ReflectorProposal(
+        id=row["id"],
+        created_at=row["created_at"],
+        proposal_uuid=row["proposal_uuid"],
+        proposal_type=row["proposal_type"],
+        target_module=row["target_module"],
+        motivation_lesson_id=row["motivation_lesson_id"],
+        risk_score=row["risk_score"],
+        description=row["description"],
+        action_payload=json.loads(row["action_payload_json"]),
+        source=row["source"],
+        status=row["status"],
+        applied_at=row["applied_at"],
+    )
+
+
+@app.get("/reflector/proposals/recent", response_model=List[ReflectorProposal])
+def get_recent_reflector_proposals(limit: int = 20):
+    """
+    Return the most recent proposals, newest first.
+    """
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT id, created_at, proposal_uuid, proposal_type, target_module,
+                   motivation_lesson_id, risk_score, description,
+                   action_payload_json, source, status, applied_at
+            FROM reflector_proposals
+            ORDER BY datetime(created_at) DESC, id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+        rows = cur.fetchall()
+
+    proposals: List[ReflectorProposal] = []
+    for row in rows:
+        proposals.append(
+            ReflectorProposal(
+                id=row["id"],
+                created_at=row["created_at"],
+                proposal_uuid=row["proposal_uuid"],
+                proposal_type=row["proposal_type"],
+                target_module=row["target_module"],
+                motivation_lesson_id=row["motivation_lesson_id"],
+                risk_score=row["risk_score"],
+                description=row["description"],
+                action_payload=json.loads(row["action_payload_json"]),
+                source=row["source"],
+                status=row["status"],
+                applied_at=row["applied_at"],
+            )
+        )
+
+    logger.info("[REFLECTOR_PROPOSALS_RECENT] count=%s", len(proposals))
+    return proposals
 
 
 # ---------- Dev-only: local run ---------- #

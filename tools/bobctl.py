@@ -93,6 +93,26 @@ COMMANDS = {
         "help": "Live node/task dashboard",
         "args": [("--interval", {"type": float, "default": 2.0})],
     },
+    "show-reflector": {
+        "handler": "reflector_cli:cli",
+        "help": "Query Reflector analytics endpoints",
+        "args": [
+            ("endpoint", {"type": str, "nargs": "?", "default": "insights", 
+                         "help": "Endpoint: summary|nodes|modules|failures|executions|errors|strategies|insights"}),
+            ("--limit", {"type": int, "default": 50}),
+            ("--reflector-url", {"type": str, "default": "http://localhost:5081"}),
+        ],
+    },
+    "reflector-lessons": {
+        "handler": "reflector_lessons_cli:cli",
+        "help": "Manage Reflector lessons (list, create)",
+        "args": [],
+    },
+    "reflector-proposals": {
+        "handler": "reflector_proposals_cli:cli",
+        "help": "Manage Reflector proposals (list, create)",
+        "args": [],
+    },
 }
 
 

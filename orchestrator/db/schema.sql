@@ -126,3 +126,39 @@ CREATE INDEX IF NOT EXISTS idx_policy_proposals_status
 
 CREATE INDEX IF NOT EXISTS idx_policy_proposals_created_at
     ON policy_proposals(created_at);
+
+
+-- ==========================================
+-- Reflector Lessons: high-level system learnings
+-- ==========================================
+CREATE TABLE IF NOT EXISTS reflector_lessons (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at        TEXT NOT NULL DEFAULT (datetime('now')),
+    summary_text      TEXT NOT NULL,
+    raw_snapshot_json TEXT NOT NULL,  -- JSON string of /reflector/insights at time of lesson
+    source            TEXT,           -- e.g. 'manual', 'heuristic', 'llm-dev_council'
+    tags              TEXT            -- comma-separated tags, e.g. 'dev_council,integration,errors'
+);
+
+
+-- ==========================================
+-- Reflector Proposals: structured actions suggested by Reflector Brain
+-- ==========================================
+CREATE TABLE IF NOT EXISTS reflector_proposals (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at          TEXT NOT NULL DEFAULT (datetime('now')),
+    proposal_uuid       TEXT NOT NULL,
+    proposal_type       TEXT NOT NULL, -- e.g. PROMPT_TWEAK, ROUTING_POLICY, MODULE_ISOLATION
+    target_module       TEXT NOT NULL, -- e.g. dev_council, trading_council
+    motivation_lesson_id INTEGER,      -- FK to reflector_lessons.id
+    risk_score          INTEGER,       -- 1-5
+    description         TEXT NOT NULL, -- short human summary
+    action_payload_json TEXT NOT NULL, -- JSON string of the executable payload
+    source              TEXT,          -- e.g. 'llm-deepseek', 'heuristic', 'manual'
+    status              TEXT NOT NULL DEFAULT 'PENDING', -- PENDING, APPROVED, REJECTED, APPLIED
+    applied_at          TEXT,
+    FOREIGN KEY (motivation_lesson_id) REFERENCES reflector_lessons(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_reflector_proposals_uuid
+    ON reflector_proposals (proposal_uuid);
