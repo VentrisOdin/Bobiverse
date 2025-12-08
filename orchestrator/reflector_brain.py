@@ -7,9 +7,10 @@ import json
 import requests
 
 # Toggle this to True once you have an LLM endpoint wired up
-USE_LLM = False
+USE_LLM = True
 
 REFLECTOR_HOST = os.environ.get("BOBIVERSE_REFLECTOR_HOST", "http://localhost:5081")
+ARCHITECT_BOB_URL = "http://100.72.252.66:8012/architect/propose"
 
 
 def fetch_insights():
@@ -143,6 +144,34 @@ def build_llm_prompt(insights: dict) -> str:
     return prompt
 
 
+def call_architect_bob(insights: dict, latest_lesson_id: int | None) -> dict:
+    """
+    Call the Architect Bob LLM microservice and return a proposal dict.
+    """
+    payload = {
+        "insights": insights,
+        "latest_lesson_id": latest_lesson_id,
+    }
+
+    try:
+        resp = requests.post(ARCHITECT_BOB_URL, json=payload, timeout=120)
+    except Exception as e:
+        raise RuntimeError(f"Failed to contact Architect Bob at {ARCHITECT_BOB_URL}: {e}")
+
+    if resp.status_code != 200:
+        raise RuntimeError(f"Architect Bob returned HTTP {resp.status_code}: {resp.text}")
+
+    try:
+        data = resp.json()
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"Architect Bob JSON decode error: {e}. Raw response: {resp.text}")
+
+    if "proposal" not in data:
+        raise RuntimeError(f"Malformed Architect Bob response (missing 'proposal'): {data}")
+
+    return data["proposal"]
+
+
 def call_llm(prompt: str) -> str:
     """
     Placeholder for LLM call.
@@ -159,36 +188,29 @@ def generate_proposal_via_llm(insights: dict) -> dict | None:
     """
     LLM-powered Reflector Brain.
 
-    - Builds a prompt with the insights.
-    - Sends to LLM.
-    - Parses the returned JSON into a proposal dict.
+    - Calls Architect Bob with insights and latest lesson ID.
+    - Returns the proposal dict directly from the microservice.
     """
-    prompt = build_llm_prompt(insights)
-    raw = call_llm(prompt)
+    # Determine latest lesson ID if your system tracks it, otherwise use None
+    latest_lesson_id = fetch_latest_lesson_id()
 
-    # Expect RAW to be a pure JSON object as text
-    try:
-        obj = json.loads(raw)
-    except json.JSONDecodeError as e:
-        print(f"[ReflectorBrain] LLM output was not valid JSON: {e}", file=sys.stderr)
-        return None
+    proposal_data = call_architect_bob(insights, latest_lesson_id)
 
     # Basic validation & normalisation
     # Ensure required keys exist; fill defaults if missing.
     proposal = {
-        "proposal_uuid": obj.get("proposal_uuid") or str(uuid.uuid4()),
-        "proposal_type": obj.get("proposal_type") or "PROMPT_TWEAK",
-        "target_module": obj.get("target_module") or "dev_council",
-        "motivation_lesson_id": obj.get("motivation_lesson_id") or fetch_latest_lesson_id(),
-        "risk_score": int(obj.get("risk_score") or 3),
-        "description": obj.get("description") or "LLM-generated proposal.",
-        "action_payload": obj.get("action_payload") or {
+        "proposal_uuid": proposal_data.get("proposal_uuid") or str(uuid.uuid4()),
+        "proposal_type": proposal_data.get("proposal_type") or "PROMPT_TWEAK",
+        "target_module": proposal_data.get("target_module") or "dev_council",
+        "motivation_lesson_id": proposal_data.get("motivation_lesson_id") or latest_lesson_id,
+        "risk_score": int(proposal_data.get("risk_score") or 3),
+        "description": proposal_data.get("description") or "LLM-generated proposal.",
+        "action_payload": proposal_data.get("action_payload") or {
             "key": "SYSTEM_PROMPT",
             "new_value": "<LLM_DID_NOT_SUPPLY_NEW_VALUE>",
         },
-        "source": obj.get("source") or "llm-reflector-brain",
+        "source": proposal_data.get("source") or "llm-architect-bob",
     }
-
     # Clamp risk_score between 1 and 5
     if proposal["risk_score"] < 1:
         proposal["risk_score"] = 1

@@ -1,37 +1,29 @@
-./bobctl show-nodes
-./bobctl show-tasks --limit 5
-./bobctl submit-dev "Bobctl smoke test"
-./bobctl show-tasks --limit 5
 bobctl — Bobiverse Command-Line Interface
 
-The bobctl tool is the unified command-line interface for interacting with Prime Bob (the orchestrator), worker nodes, and Dev Council (Dev Bob) components of the Bobiverse.
+The bobctl tool is the unified command-line interface for interacting with:
 
-bobctl allows you to:
+🧠 Prime Bob (the Orchestrator)
 
-Inspect nodes
+🏗️ Node Agents (worker machines)
 
-Submit tasks (generic, shell, python, dev tasks)
+👨‍💻 Dev Council (LLM-powered Dev Bob)
 
-Monitor live cluster status
+🪞 Reflector (self-learning analytics engine)
 
-Inspect completed Dev Council analyses
+It is the administrative shell for the entire Bobiverse distributed AI system.
 
-Debug the orchestrator DB
-
-Tail orchestrator logs
-
-All commands run from:
+Run bobctl from:
 
 cd ~/bobiverse/tools
 ./bobctl <command> [args...]
 
 
-You can optionally specify a different orchestrator:
+To use a non-default orchestrator:
 
 ./bobctl --orch-url http://<host>:<port> <command>
 
 
-Default orchestrator URL (via Tailscale):
+Default orchestrator URL (Tailscale):
 
 http://100.111.201.26:5080
 
@@ -41,17 +33,9 @@ Node Inspection
 
 Task Management
 
-show-tasks
-
-submit-dev
-
-submit-shell
-
-submit-python
+Submitting Tasks
 
 Dev Council Introspection
-
-show-dev
 
 Live Monitoring
 
@@ -61,10 +45,22 @@ Orchestrator Logs
 
 Common Workflows
 
-Node Inspection
+Service Locations & File Paths
+
+Starting Everything Manually (uvicorn)
+
+Systemd Unit Files
+
+Systemd Status & Logs
+
+LLM Storage Locations (Main PC)
+
+Cluster Health Checklist
+
+1. Node Inspection
 🔍 show-nodes
 
-Lists all known nodes, their roles, health, load, memory, and advertised capabilities.
+Lists all known nodes, their roles, loads, memory, and capability flags.
 
 ./bobctl show-nodes
 
@@ -76,204 +72,280 @@ NAME            ROLE    LOAD   FREE_MB   LAST_SEEN                            CA
 data-mainpc     worker  0.012  5746      2025-12-04T18:42:18.383625Z          shell, python, dev
 
 
-Use when:
+Use this to:
 
-Confirming node connectivity
+Confirm nodes are online
 
-Checking Dev node is online (dev capability)
+Ensure Dev node is available
 
-Debugging node-agent registration
+Debug node-agent registration
 
-Task Management
+2. Task Management
 📋 show-tasks
-
-Lists recent tasks stored in the orchestrator DB.
-
 ./bobctl show-tasks --limit 10
 
 
-Displays:
-
-TASK       TYPE    STATUS    TIME                      SUMMARY
--------------------------------------------------------------------
-f3111df8   dev     SUCCESS   2025-12-04 19:42:38        
-...
-
-
-Good for:
-
-Verifying tasks were created
-
-Tracking success and failures
-
-Seeing Dev Council work move from PENDING → RUNNING → SUCCESS
-
-Submitting Tasks
-🧠 submit-dev
-
-Creates a structured Dev Council task in the orchestrator DB.
-This is the canonical pipeline entry for Dev Bob tasks.
-
-./bobctl submit-dev "Fix the memory leak in foo()" --details "Investigate line 42 onward"
-
-
-This writes a row into /tasks/dev shaped exactly like DevTaskRequest, which Dev Council consumes.
-
-Dev Bob will:
-
-Claim the task via /dev/tasks/next
-
-Call the DeepSeek LLM via Dev Council
-
-Return structured JSON results
-
-Update orchestrator DB via /dev/tasks/<uuid>/result
-
-You then view output with show-dev.
-
-🐚 submit-shell
-
-Run a shell command remotely on a capable node.
-
-./bobctl submit-shell "echo hello world"
-
-
-Uses high_level_type = "shell".
-
-🐍 submit-python
-
-Send a python snippet to a node with python capability.
-
-./bobctl submit-python "print(2 + 2)"
-
-Dev Council Introspection
-🔬 show-dev <task_uuid>
-
-Displays full structured Dev Council reasoning, summary, suggestions, risks, tests, etc.
-
-./bobctl show-dev <task_uuid>
-
-
-Example:
-
-./bobctl show-dev ff4f474f-0dd3-4b82-aa81-0098285b914f
-
-
-Output includes:
+Shows:
 
 Task UUID
 
-Execution ID
+Type
 
-Node & Module
+Status (PENDING → RUNNING → SUCCESS/FAILURE)
 
-HIGH-LEVEL SUMMARY
+Summary
 
-Full Dev Council model output
+Useful for tracking flow through the entire pipeline.
 
-Structured reasoning parsed into:
+3. Submitting Tasks
+🧠 submit-dev
 
-SUMMARY
+Submit a Dev Council task:
 
-REASONING
+./bobctl submit-dev "Fix memory leak" --details "Investigate foo() line 42"
 
-SUGGESTED CHANGES
 
-EXAMPLE CODE
+Pipeline:
 
-TESTS_SUGGESTED
+Task enters orchestrator database
 
-RISKS
+Node Agent requests work
 
-This is the primary introspection & debugging tool for all LLM-driven development.
+Dev Council calls DeepSeek/LLama3 LLM
 
-Live Monitoring
+Structured JSON returned
+
+DB updated
+
+View with show-dev
+
+🐚 submit-shell
+./bobctl submit-shell "echo hello"
+
+
+Runs on a node with shell capability.
+
+🐍 submit-python
+./bobctl submit-python "print(2 + 2)"
+
+
+Runs via node-agent Python executor.
+
+4. Dev Council Introspection
+🔬 show-dev <uuid>
+
+Shows complete structured Dev Council output, including:
+
+Summary
+
+Reasoning
+
+Suggested Changes
+
+Example Code
+
+Tests Suggested
+
+Risks
+
+./bobctl show-dev <task_uuid>
+
+5. Live Monitoring
 📡 live-status
-
-Shows a real-time auto-refreshing cluster dashboard.
-
 ./bobctl live-status --interval 3
 
 
 Displays:
 
-Node list (load, memory, last_seen, capabilities)
+Auto-updating node list
 
-Most recent tasks
+Recent tasks
 
-Auto-refresh loop (Ctrl+C to exit)
+Health metrics
 
-Perfect for monitoring the health of the entire Bobiverse.
+Great for running on a second monitor.
 
-Database Debugging
+6. Database Debugging
 🗃️ db-inspect
-
-Show raw rows directly from orchestrator’s SQLite DB.
-
 ./bobctl db-inspect --limit 10
 
 
-Outputs:
+Reads raw rows from:
 
-tasks table (task_uuid, payload, status, error, timestamps)
+tasks
 
-task_executions table (execution_id, module, node, status, metrics_json)
+task_executions
 
-Use this when:
+Use this to inspect malformed tasks or reflector metrics.
 
-Tracking errors
-
-Inspecting malformed payloads
-
-Seeing raw metrics_json before parsing
-
-Orchestrator Logs
+7. Orchestrator Logs
 🪵 tail-orch-logs
-
-Tail the orchestrator’s log file in real-time.
-
 ./bobctl tail-orch-logs
 
 
-This wraps:
+Wraps:
 
 ~/bobiverse/logs/orchestrator.log
 
 
-Used for debugging:
+Shows:
 
 Node registration
 
-Task assignment
+Task routing
 
-DB writes
+Dev Council errors
 
-Dev Council returning errors
+Reflector calls
 
-Internal failures
-
-Common Workflows
-🧪 1. Full Dev Council Smoke Test
-./bobctl submit-dev "Bobctl smoke test" --details "Ensure dev pipeline works."
+8. Common Workflows
+🧪 Smoke Test Dev Council
+./bobctl submit-dev "Bobctl smoke test"
 ./bobctl show-tasks --limit 5
-
-
-Wait a few seconds → then:
-
 ./bobctl show-dev <uuid>
 
-🚦 2. Check cluster health
+🚦 Check Cluster Health
 ./bobctl show-nodes
 ./bobctl live-status --interval 2
 
-🧹 3. Debug a failing Dev Council task
+🧹 Debug failing Dev Council task
 ./bobctl show-dev <uuid>
 ./bobctl db-inspect --limit 20
 ./bobctl tail-orch-logs
 
-🛠 4. Run local shell/python tasks
-./bobctl submit-shell "uptime"
-./bobctl submit-python "print('hello')"
+9. Service Locations & File Paths
+~/bobiverse/
+├── orchestrator/
+│   ├── main.py
+│   └── db/
+│       ├── db_manager.py
+│       ├── schema.sql
+│       └── bobiverse.db
+├── node_agent/
+│   └── node_agent_service.py
+├── councils/
+│   └── dev_council/
+│       ├── dev_council_service.py
+│       ├── schemas.py
+│       └── model_prompts/
+├── reflector/
+│   └── reflector_service.py
+├── tools/
+│   └── bobctl
+└── logs/
+    ├── orchestrator.log
+    ├── node_agent.log
+    ├── dev_council.log
+    └── reflector.log
 
-📜 5. Retrieve latest tasks
-./bobctl show-tasks --limit 20
+10. Starting Everything Manually (uvicorn)
+
+Run inside .venv
+All commands assume cd ~/bobiverse
+
+Orchestrator
+uvicorn orchestrator.main:app --host 0.0.0.0 --port 5080 --reload
+
+Node Agent (server)
+uvicorn node_agent.node_agent_service:app --host 0.0.0.0 --port 7000 --reload
+
+Node Agent (main PC)
+
+Typical port: 8001
+
+uvicorn node_agent.node_agent_service:app --host 0.0.0.0 --port 8001 --reload
+
+Dev Council (main PC)
+
+Port: 8011
+
+uvicorn councils.dev_council.dev_council_service:app --host 0.0.0.0 --port 8011 --reload
+
+Reflector (server)
+uvicorn reflector.reflector_service:app --host 0.0.0.0 --port 5090 --reload
+
+11. Systemd Unit Files
+
+Place in:
+
+/etc/systemd/system/
+
+
+Enable all:
+
+sudo systemctl enable orchestrator.service
+sudo systemctl enable node_agent.service
+sudo systemctl enable dev_council.service
+sudo systemctl enable reflector.service
+
+
+Start/Stop:
+
+sudo systemctl restart orchestrator.service
+sudo systemctl status dev_council.service
+
+
+Log tail:
+
+journalctl -u orchestrator.service -f
+journalctl -u dev_council.service -f
+
+12. LLM STORAGE LOCATIONS (MAIN PC)
+Ollama installation
+
+WSL path:
+
+/home/matt/.ollama/
+
+Model files
+
+Ollama stores models at:
+
+/home/matt/.ollama/models/
+
+
+Examples:
+
+llama3:8b  
+deepseek-coder:6.7b  
+mistral-nemo  
+
+
+You pull them via:
+
+ollama pull llama3
+ollama pull deepseek-coder:6.7b
+
+Dev Council LLM Selection
+
+In Dev Council config:
+
+LLM_HOST=http://localhost:11434
+MODEL_NAME=deepseek-coder:6.7b
+
+
+You can change to:
+
+MODEL_NAME=llama3
+
+13. Cluster Health Checklist After Reboot
+On the Server
+systemctl status orchestrator
+systemctl status node_agent
+systemctl status reflector
+bobctl show-nodes
+bobctl councils
+
+On the Main PC
+systemctl status dev_council
+systemctl status node_agent
+
+Everything is healthy if:
+
+All services show active (running)
+
+show-nodes shows data-mainpc and server
+
+councils displays dev_council as active
+
+Dev tasks flow end-to-end
