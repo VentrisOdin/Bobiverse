@@ -193,6 +193,12 @@ You MUST output a single JSON object with this exact structure:
 - DO NOT apologise or explain limitations.
 - DO NOT invent code.
 - Always choose *minimal, safe, incremental* modifications.
+- If you mention any issues, problems, or areas for improvement in the reasoning,
+  you MUST add at least one entry to "suggested_changes".
+- Each "suggested_changes" entry MUST contain at least one "snippets" item with
+  valid "before_code" and "after_code".
+- It is better to propose small, safe, incremental improvements than to leave
+  "suggested_changes" empty.
 """.strip()
 
 
@@ -248,59 +254,54 @@ def validate_suggested_changes(
 async def run_dev_analysis(req: DevTaskRequest) -> DevTaskResponse:
     """
     Main Dev Council analysis logic with a small retry loop for JSON stability.
-
-    SAFE EXTENSION:
-    - We duplicate req.context_files into a local dict.
-    - We *optionally* augment it with code from req.details if it contains a
-      bobctl-dev JSON payload (mode, filename, code, intent, instructions).
-    - If details is not JSON or doesn't contain code, behaviour is unchanged.
+    This now supports extra code/context passed via req.details (bobctl dev).
     """
-    # Start from the existing context_files
-    context_files = dict(req.context_files or {})
+
+    # --- 1) Start from base context_files (e.g. orchestrator/main.py) ---
+    base_context_files = dict(req.context_files or {})
+    context_files = dict(base_context_files)
     extra_task_note = ""
 
-    # --- NEW: safely try to pull extra code from req.details (bobctl dev) ---
-    # We use getattr with default so this is safe even if DevTaskRequest
-    # doesn't define a 'details' field.
+    # --- 2) Try to pull extra code from req.details (bobctl dev payload) ---
     details_raw = getattr(req, "details", None)
+    details_json = None
 
-    if details_raw:
-        details_json = None
+    if isinstance(details_raw, str):
         try:
             details_json = json.loads(details_raw)
         except Exception:
             details_json = None
+    elif isinstance(details_raw, dict):
+        # Already parsed JSON
+        details_json = details_raw
 
-        # We only treat this as a bobctl dev payload if it looks like one
-        if isinstance(details_json, dict) and "code" in details_json:
-            mode = details_json.get("mode", "single_file")
-            filename = details_json.get("filename", "input_from_bobctl_dev.py")
-            code = details_json.get("code") or ""
-            intent = details_json.get("intent", "analyse")
-            instructions = details_json.get("instructions") or req.user_prompt
+    if isinstance(details_json, dict) and "code" in details_json:
+        mode = details_json.get("mode", "single_file")
+        filename = details_json.get("filename", "input_from_bobctl_dev.py")
+        code = details_json.get("code") or ""
+        instructions = details_json.get("instructions") or req.user_prompt
+        intent = details_json.get("intent", "analyse")
 
-            if code.strip():
-                # Add this as an extra context file for the model to see
-                context_key = f"bobctl_dev/{filename}"
-                context_files[context_key] = code
+        if code.strip():
+            context_key = f"bobctl_dev/{filename}"
+            context_files[context_key] = code
 
-                # Add a short note into the task description to help the model
-                extra_task_note = (
-                    "This task was submitted via 'bobctl dev'.\n"
-                    f"Mode: {mode}\n"
-                    f"Intent: {intent}\n"
-                    f"User instructions: {instructions}\n"
-                    f"Primary file: {context_key}\n"
-                )
+            extra_task_note = (
+                "This task was submitted via 'bobctl dev'.\n"
+                f"Mode: {mode}\n"
+                f"Intent: {intent}\n"
+                f"User instructions: {instructions}\n"
+                f"Primary file: {context_key}\n"
+            )
 
-    # Build the final task description used in the prompt
+    # --- 3) Build final task_description and context_blocks ---
     task_description = req.user_prompt
     if extra_task_note:
         task_description = task_description + "\n\n" + extra_task_note
 
-    # Build context blocks from the (possibly augmented) context_files
     context_blocks = build_context_blocks(context_files)
 
+    # --- 4) Main retry loop (unchanged behaviour, but using merged context) ---
     MAX_RETRIES = 2  # Max 3 attempts total (0,1,2)
     raw_output = ""
     last_error = None
@@ -334,7 +335,6 @@ async def run_dev_analysis(req: DevTaskRequest) -> DevTaskResponse:
             # 4. Your existing parse + validation path:
             parsed = json.loads(raw_output)
             analysis = DevTaskAnalysis(**parsed)
-            # NOTE: we now validate against the possibly-augmented context_files
             analysis = validate_suggested_changes(analysis, context_files)
 
             logger.info(f"[DevCouncil] Dev analysis succeeded on attempt {attempt + 1}.")

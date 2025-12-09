@@ -128,19 +128,12 @@ def process_one_dev_task() -> None:
         or f"Dev task {task_uuid} from orchestrator."
     )
 
-    # Optional context: orchestrator/main.py (kept for now as extra context)
+    # Context for Dev Council.
+    # For v1.1 we don't hard-wire any local files here; the real code context
+    # comes from the 'details' payload created by bobctl dev.
     context_files: Dict[str, str] = {}
-    try:
-        orch_path = Path.home() / "bobiverse" / "orchestrator" / "main.py"
-        context_files["orchestrator/main.py"] = orch_path.read_text()
-    except Exception as e:
-        logging.error(
-            "[DEV_TASK] Could not load orchestrator/main.py for dev context: %s",
-            e,
-        )
-        # context_files will stay {}, which Dev Council can still handle
 
-    # Let Dev Council's own prompt template handle the "You are Dev Bob" etc.
+    # Let Dev Council's own prompt template handle "You are Dev Bob" etc.
     user_prompt = description
 
     dev_council_request = {
@@ -148,7 +141,7 @@ def process_one_dev_task() -> None:
         "context_files": context_files,
         "task_id": str(task_uuid),
         "task_type": "dev",
-        # NEW: forward bobctl dev JSON (if any) so Dev Council can see it
+        # Forward bobctl dev JSON (if any) so Dev Council can see it
         "details": input_payload.get("details"),
     }
 
@@ -175,8 +168,8 @@ def process_one_dev_task() -> None:
             task_uuid,
             summary,
         )
-    except requests.RequestException as e:
-        # If Dev Council fails (422, 500, network, etc.), mark the dev task failed
+    except Exception as e:
+        # If ANYTHING goes wrong (request, JSON, type errors, etc.), mark failed
         status = "failed"
         summary = f"Dev Council error: {e}"
         dev_result = {"error": str(e)}

@@ -32,7 +32,7 @@ class DevTaskRequest(BaseModel):
     task_type: str              # e.g. "dev"
     user_prompt: str            # what bobctl / orchestrator asked for
     context_files: Dict[str, str]  # {"orchestrator/main.py": "<file contents>", ...}
-    details: Optional[str] = None  # JSON string from bobctl dev (may be None)
+    details: Optional[Any] = None  # can be JSON string or dict
 
 
 class DevTaskResponse(BaseModel):
