@@ -205,8 +205,58 @@ def validate_suggested_changes(
 async def run_dev_analysis(req: DevTaskRequest) -> DevTaskResponse:
     """
     Main Dev Council analysis logic with a small retry loop for JSON stability.
+
+    SAFE EXTENSION:
+    - We duplicate req.context_files into a local dict.
+    - We *optionally* augment it with code from req.details if it contains a
+      bobctl-dev JSON payload (mode, filename, code, intent, instructions).
+    - If details is not JSON or doesn't contain code, behaviour is unchanged.
     """
-    context_blocks = build_context_blocks(req.context_files)
+    # Start from the existing context_files
+    context_files = dict(req.context_files or {})
+    extra_task_note = ""
+
+    # --- NEW: safely try to pull extra code from req.details (bobctl dev) ---
+    # We use getattr with default so this is safe even if DevTaskRequest
+    # doesn't define a 'details' field.
+    details_raw = getattr(req, "details", None)
+
+    if details_raw:
+        details_json = None
+        try:
+            details_json = json.loads(details_raw)
+        except Exception:
+            details_json = None
+
+        # We only treat this as a bobctl dev payload if it looks like one
+        if isinstance(details_json, dict) and "code" in details_json:
+            mode = details_json.get("mode", "single_file")
+            filename = details_json.get("filename", "input_from_bobctl_dev.py")
+            code = details_json.get("code") or ""
+            intent = details_json.get("intent", "analyse")
+            instructions = details_json.get("instructions") or req.user_prompt
+
+            if code.strip():
+                # Add this as an extra context file for the model to see
+                context_key = f"bobctl_dev/{filename}"
+                context_files[context_key] = code
+
+                # Add a short note into the task description to help the model
+                extra_task_note = (
+                    "This task was submitted via 'bobctl dev'.\n"
+                    f"Mode: {mode}\n"
+                    f"Intent: {intent}\n"
+                    f"User instructions: {instructions}\n"
+                    f"Primary file: {context_key}\n"
+                )
+
+    # Build the final task description used in the prompt
+    task_description = req.user_prompt
+    if extra_task_note:
+        task_description = task_description + "\n\n" + extra_task_note
+
+    # Build context blocks from the (possibly augmented) context_files
+    context_blocks = build_context_blocks(context_files)
 
     MAX_RETRIES = 2  # Max 3 attempts total (0,1,2)
     raw_output = ""
@@ -216,7 +266,7 @@ async def run_dev_analysis(req: DevTaskRequest) -> DevTaskResponse:
     for attempt in range(MAX_RETRIES + 1):
         # 1. Build your existing prompt
         prompt = DEV_PROMPT_TEMPLATE.format(
-            task_description=req.user_prompt,
+            task_description=task_description,
             context_blocks=context_blocks,
         )
 
@@ -241,7 +291,8 @@ async def run_dev_analysis(req: DevTaskRequest) -> DevTaskResponse:
             # 4. Your existing parse + validation path:
             parsed = json.loads(raw_output)
             analysis = DevTaskAnalysis(**parsed)
-            analysis = validate_suggested_changes(analysis, req.context_files)
+            # NOTE: we now validate against the possibly-augmented context_files
+            analysis = validate_suggested_changes(analysis, context_files)
 
             logger.info(f"[DevCouncil] Dev analysis succeeded on attempt {attempt + 1}.")
             break  # ✅ Success – exit the loop
