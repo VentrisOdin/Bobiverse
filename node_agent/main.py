@@ -121,14 +121,15 @@ def process_one_dev_task() -> None:
 
     # ---- Build a proper DevTaskRequest payload for Dev Council ----
     # Derive a decent user_prompt from the original payload.
+    # IMPORTANT: do NOT fall back to 'details' here, because for bobctl dev
+    # 'details' is a big JSON string, not a human prompt.
     description = (
         input_payload.get("description")
-        or input_payload.get("details")
         or f"Dev task {task_uuid} from orchestrator."
     )
 
-    # Try to give Dev Council real code context: orchestrator/main.py
-    context_files = {}
+    # Optional context: orchestrator/main.py (kept for now as extra context)
+    context_files: Dict[str, str] = {}
     try:
         orch_path = Path.home() / "bobiverse" / "orchestrator" / "main.py"
         context_files["orchestrator/main.py"] = orch_path.read_text()
@@ -139,20 +140,16 @@ def process_one_dev_task() -> None:
         )
         # context_files will stay {}, which Dev Council can still handle
 
-    # Make the user_prompt very explicit
-    user_prompt = (
-        description
-        + "\n\n"
-        + "You are Dev Bob. Focus ONLY on orchestrator/main.py in the provided "
-          "CONTEXT FILES. Even if the task seems vague, you MUST return a JSON "
-          "object in the exact format requested in the instructions."
-    )
+    # Let Dev Council's own prompt template handle the "You are Dev Bob" etc.
+    user_prompt = description
 
     dev_council_request = {
         "user_prompt": user_prompt,
         "context_files": context_files,
         "task_id": str(task_uuid),
         "task_type": "dev",
+        # NEW: forward bobctl dev JSON (if any) so Dev Council can see it
+        "details": input_payload.get("details"),
     }
 
     # 2) Call Dev Council on this node
