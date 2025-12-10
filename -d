@@ -1,0 +1,9 @@
+{"detail":[{"type":"missing","loc":["body"],"msg":"Field required","input":null}]}--_curl_--
+>     "task_id": "kb-test-001"
+--_curl_--
+>     "task_type": "knowledge"
+--_curl_--
+>     "question": "Explain the difference between RAM and storage in simple terms."
+--_curl_--
+>     "extra_context": "User is non-technical and prefers analogies."
+>   
