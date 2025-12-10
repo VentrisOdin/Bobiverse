@@ -3,7 +3,7 @@
 bobctl monitor
 
 Real-time streaming dashboard for the Bobiverse.
-Shows node status, task summary, and Dev Council stats.
+Shows node status, task summary, and Dev/Architect Bob stats.
 """
 
 import os
@@ -75,9 +75,8 @@ def fetch_tasks(limit: int = 100) -> List[Dict[str, Any]]:
       {
         "task_uuid": "...",
         "high_level_type": "dev",
-        "submitted_at": "2025-12-05T18:59:01.123456Z",
+        "submitted_at": "...Z",
         "final_status": "running" | "pending" | "completed" | "failed",
-        "last_execution_id": "...",
         ...
       },
       ...
@@ -90,11 +89,9 @@ def iso_to_dt(s: Optional[str]) -> Optional[datetime]:
     if not s:
         return None
     try:
-        # Handle both "...Z" and offset forms
         if s.endswith("Z"):
             s = s[:-1] + "+00:00"
         dt = datetime.fromisoformat(s)
-        # Normalise: if no timezone, assume UTC
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
         return dt
@@ -121,7 +118,7 @@ def human_age(dt_obj: Optional[datetime]) -> str:
 
 def build_nodes_panel(nodes: List[Dict[str, Any]]) -> Panel:
     """
-    Adapted to your actual /nodes response, e.g.:
+    /nodes example:
 
     {
       "name": "data-mainpc",
@@ -131,7 +128,7 @@ def build_nodes_panel(nodes: List[Dict[str, Any]]) -> Panel:
       "last_seen": "2025-12-07T17:35:32.599280Z",
       "load": 0.0x,
       "free_memory_mb": 6119,
-      "active_councils": ["dev"]
+      "active_councils": ["dev_council", "architect_bob"]
     }
     """
     table = Table(box=box.SIMPLE_HEAVY, expand=True)
@@ -147,7 +144,6 @@ def build_nodes_panel(nodes: List[Dict[str, Any]]) -> Panel:
     now = datetime.now(timezone.utc)
 
     for n in nodes:
-        # Derive status from last_seen freshness
         last_seen_dt = iso_to_dt(n.get("last_seen"))
         if last_seen_dt:
             age_sec = (now - last_seen_dt).total_seconds()
@@ -189,7 +185,6 @@ def build_nodes_panel(nodes: List[Dict[str, Any]]) -> Panel:
 
 
 def build_tasks_panel(tasks: List[Dict[str, Any]]) -> Panel:
-    # Aggregate counts
     pending = running = completed = failed = 0
     newest = None
     oldest = None
@@ -205,7 +200,6 @@ def build_tasks_panel(tasks: List[Dict[str, Any]]) -> Panel:
         elif status in ("failed", "error"):
             failed += 1
 
-        # Try multiple possible timestamp fields from the API
         ts_raw = (
             t.get("submitted_at")
             or t.get("created_at")
@@ -219,7 +213,6 @@ def build_tasks_panel(tasks: List[Dict[str, Any]]) -> Panel:
             if newest is None or sub_at > newest:
                 newest = sub_at
 
-    # Summary table
     summary_table = Table(box=box.SIMPLE_HEAVY, expand=True)
     summary_table.add_column("Metric", style="bold")
     summary_table.add_column("Value")
@@ -233,18 +226,19 @@ def build_tasks_panel(tasks: List[Dict[str, Any]]) -> Panel:
     summary_table.add_row("Oldest age", human_age(oldest))
     summary_table.add_row("Newest age", human_age(newest))
 
-    # Recent tasks table
     recent_table = Table(box=box.MINIMAL, show_header=True, expand=True)
     recent_table.add_column("UUID", no_wrap=True)
     recent_table.add_column("Type", style="magenta")
     recent_table.add_column("Status")
     recent_table.add_column("Age")
 
-    # Sort newest first
     tasks_sorted = sorted(
         tasks,
         key=lambda t: iso_to_dt(
-            t.get("submitted_at") or t.get("created_at") or t.get("created_at_utc") or t.get("updated_at")
+            t.get("submitted_at")
+            or t.get("created_at")
+            or t.get("created_at_utc")
+            or t.get("updated_at")
         ) or datetime.min.replace(tzinfo=timezone.utc),
         reverse=True,
     )[:10]
@@ -261,7 +255,12 @@ def build_tasks_panel(tasks: List[Dict[str, Any]]) -> Panel:
         else:
             status_text.stylize("dim")
 
-        ts_raw = t.get("submitted_at") or t.get("created_at") or t.get("created_at_utc") or t.get("updated_at")
+        ts_raw = (
+            t.get("submitted_at")
+            or t.get("created_at")
+            or t.get("created_at_utc")
+            or t.get("updated_at")
+        )
         age = human_age(iso_to_dt(ts_raw))
         recent_table.add_row(
             (t.get("task_uuid") or "")[:8] + "…",
@@ -270,7 +269,6 @@ def build_tasks_panel(tasks: List[Dict[str, Any]]) -> Panel:
             age,
         )
 
-    # Combine summary + recent into a grid
     grid = Table.grid(expand=True)
     grid.add_row(summary_table)
     grid.add_row(recent_table)
@@ -278,97 +276,328 @@ def build_tasks_panel(tasks: List[Dict[str, Any]]) -> Panel:
     return Panel(grid, title="[b]Tasks[/b]", border_style="magenta")
 
 
-def build_dev_panel(tasks: List[Dict[str, Any]]) -> Panel:
+def node_status_from_name(nodes: List[Dict[str, Any]], name: str) -> str:
     """
-    Extract dev-focused metrics from tasks list.
-    """
-    dev_tasks = [t for t in tasks if (t.get("high_level_type") or "").startswith("dev")]
-    total = len(dev_tasks)
+    Look up a node by name in the nodes list and return a status string:
+    'online', 'stale', 'offline', or 'unknown'.
 
-    # Last 3 summaries
-    last_three = sorted(
+    This is used to show Dev Bob / Architect Bob status even if they
+    aren't explicitly listed in active_councils.
+    """
+    now = datetime.now(timezone.utc)
+
+    for n in nodes:
+        if str(n.get("name")) != name:
+            continue
+
+        last_seen_dt = iso_to_dt(n.get("last_seen"))
+        if not last_seen_dt:
+            return "unknown"
+
+        age_sec = (now - last_seen_dt).total_seconds()
+        if age_sec < 15:
+            return "online"
+        elif age_sec < 60:
+            return "stale"
+        else:
+            return "offline"
+
+    return "unknown"
+
+
+def _council_status_text(
+    nodes: List[Dict[str, Any]],
+    council_keys: List[str],
+    fallback_node: Optional[str] = None,
+) -> Text:
+    """
+    Infer council status (online/stale/offline/missing) from nodes' active_councils + last_seen.
+    council_keys = any of these values present in node['active_councils'] (to allow aliasing).
+    fallback_node = if not present in active_councils, fall back to node's own online/offline state.
+    """
+    now = datetime.now(timezone.utc)
+    ages: List[float] = []
+
+    # First: use active_councils if present
+    for n in nodes:
+        active = n.get("active_councils") or []
+        if not isinstance(active, list):
+            continue
+
+        if not any(k in active for k in council_keys):
+            continue
+
+        last_seen_dt = iso_to_dt(n.get("last_seen"))
+        if not last_seen_dt:
+            continue
+
+        age_sec = (now - last_seen_dt).total_seconds()
+        if age_sec >= 0:
+            ages.append(age_sec)
+
+    # If no council-level ages found, optionally fall back to node status
+    if not ages and fallback_node:
+        for n in nodes:
+            if n.get("name") == fallback_node:
+                last_seen_dt = iso_to_dt(n.get("last_seen"))
+                if not last_seen_dt:
+                    break
+                age_sec = (now - last_seen_dt).total_seconds()
+                if age_sec < 15:
+                    return Text("online (node)", style="bold green")
+                elif age_sec < 60:
+                    return Text("stale (node)", style="bold yellow")
+                else:
+                    return Text("offline (node)", style="bold red")
+
+    # Truly missing
+    if not ages:
+        return Text("missing", style="bold red")
+
+    # Council found — determine freshness
+    min_age = min(ages)
+    if min_age < 15:
+        return Text("online", style="bold green")
+    elif min_age < 60:
+        return Text("stale", style="bold yellow")
+    else:
+        return Text("offline", style="bold red")
+
+
+def build_dev_panel(nodes: List[Dict[str, Any]], tasks: List[Dict[str, Any]]) -> Panel:
+    """
+    Dev-, Architect-, and Knowledge-Bob focused metrics from tasks + node status.
+    This panel ALWAYS shows Dev Bob, Architect Bob, and Knowledge Bob, even if missing.
+    """
+    # ----- Dev tasks -----
+    dev_tasks = [
+        t for t in tasks
+        if (t.get("high_level_type") or "").startswith("dev")
+    ]
+    dev_total = len(dev_tasks)
+
+    dev_last_three = sorted(
         dev_tasks,
         key=lambda t: iso_to_dt(
-            t.get("submitted_at") or t.get("created_at") or t.get("created_at_utc") or t.get("updated_at")
+            t.get("submitted_at")
+            or t.get("created_at")
+            or t.get("created_at_utc")
+            or t.get("updated_at")
         ) or datetime.min.replace(tzinfo=timezone.utc),
         reverse=True,
     )[:3]
 
-    # Latency stats: look at durations from executions if embedded
-    durations: List[float] = []
-    running_task: Optional[Dict[str, Any]] = None
+    dev_durations: List[float] = []
+    dev_running_task: Optional[Dict[str, Any]] = None
 
     for t in dev_tasks:
-        # Recognise a running one
         status = (t.get("final_status") or "").lower()
-        if status in ("running", "in_progress") and running_task is None:
-            running_task = t
+        if status in ("running", "in_progress") and dev_running_task is None:
+            dev_running_task = t
 
-        # If task has a "last_duration_ms" field we can use it
         d_ms = t.get("last_duration_ms")
         if isinstance(d_ms, (int, float)) and d_ms > 0:
-            durations.append(d_ms / 1000.0)
+            dev_durations.append(d_ms / 1000.0)
 
-    avg_latency = sum(durations) / len(durations) if durations else None
+    dev_avg_latency = sum(dev_durations) / len(dev_durations) if dev_durations else None
 
+    # ----- Knowledge tasks -----
+    knowledge_tasks = [
+        t for t in tasks
+        if (t.get("high_level_type") or "") == "knowledge"
+    ]
+    knowledge_total = len(knowledge_tasks)
+
+    knowledge_last_three = sorted(
+        knowledge_tasks,
+        key=lambda t: iso_to_dt(
+            t.get("submitted_at")
+            or t.get("created_at")
+            or t.get("created_at_utc")
+            or t.get("updated_at")
+        ) or datetime.min.replace(tzinfo=timezone.utc),
+        reverse=True,
+    )[:3]
+
+    knowledge_durations: List[float] = []
+    knowledge_running_task: Optional[Dict[str, Any]] = None
+
+    for t in knowledge_tasks:
+        status = (t.get("final_status") or "").lower()
+        if status in ("running", "in_progress") and knowledge_running_task is None:
+            knowledge_running_task = t
+
+        d_ms = t.get("last_duration_ms")
+        if isinstance(d_ms, (int, float)) and d_ms > 0:
+            knowledge_durations.append(d_ms / 1000.0)
+
+    knowledge_avg_latency = (
+        sum(knowledge_durations) / len(knowledge_durations)
+        if knowledge_durations else None
+    )
+
+    # ----- Models and locations from env or defaults -----
+    dev_model = os.getenv("DEV_BOB_MODEL", "DeepSeek-Coder:6.7b (configured)")
+    architect_model = os.getenv("ARCHITECT_BOB_MODEL", "llama3 (planned/default)")
+    knowledge_model = os.getenv("KNOWLEDGE_BOB_MODEL", "llama3.1 (configured)")
+
+    dev_node = os.getenv("DEV_BOB_NODE_NAME", "data-mainpc")
+    architect_node = os.getenv("ARCHITECT_BOB_NODE_NAME", "data-mainpc")
+    knowledge_node = os.getenv("KNOWLEDGE_BOB_NODE_NAME", "data-mainpc")
+
+    dev_port = os.getenv("DEV_BOB_PORT", "8011")
+    architect_port = os.getenv("ARCHITECT_BOB_PORT", "8012")
+    knowledge_port = os.getenv("KNOWLEDGE_BOB_PORT", "8021")
+
+    # ----- Status derived from node last_seen -----
+    dev_status_raw = node_status_from_name(nodes, dev_node)
+    architect_status_raw = node_status_from_name(nodes, architect_node)
+    knowledge_status_raw = node_status_from_name(nodes, knowledge_node)
+
+    def style_status(s: str) -> Text:
+        txt = Text(s or "unknown")
+        if s.startswith("online"):
+            txt.stylize("bold green")
+        elif s.startswith("stale"):
+            txt.stylize("bold yellow")
+        elif s.startswith("offline"):
+            txt.stylize("bold red")
+        else:
+            txt.stylize("dim")
+        return txt
+
+    dev_status = style_status(dev_status_raw)
+    architect_status = style_status(architect_status_raw)
+    knowledge_status = style_status(knowledge_status_raw)
+
+    # ----- Top table: council status + stats -----
     table = Table(box=box.SIMPLE_HEAVY, expand=True)
     table.add_column("Metric", style="bold")
     table.add_column("Value")
 
-    model = os.getenv("DEV_BOB_MODEL", "DeepSeek-Coder:6.7b (configured)")
-    table.add_row("Model", model)
-    table.add_row("Total dev tasks (window)", str(total))
+    # Dev Bob rows
+    table.add_row("Dev Bob status", dev_status)
+    table.add_row("Dev Bob node", dev_node)
+    table.add_row("Dev Bob port", dev_port)
+    table.add_row("Dev Bob model", dev_model)
+    table.add_row("Total dev tasks (window)", str(dev_total))
     table.add_row(
-        "Avg latency (s, if reported)",
-        f"{avg_latency:.2f}" if avg_latency is not None else "-",
+        "Avg dev latency (s, if reported)",
+        f"{dev_avg_latency:.2f}" if dev_avg_latency is not None else "-",
     )
-
-    if running_task:
+    if dev_running_task:
         ts_raw = (
-            running_task.get("submitted_at")
-            or running_task.get("created_at")
-            or running_task.get("created_at_utc")
-            or running_task.get("updated_at")
+            dev_running_task.get("submitted_at")
+            or dev_running_task.get("created_at")
+            or dev_running_task.get("created_at_utc")
+            or dev_running_task.get("updated_at")
         )
         age = human_age(iso_to_dt(ts_raw))
-        table.add_row("Current dev task", (running_task.get("task_uuid") or "")[:8] + "…")
+        table.add_row(
+            "Current dev task",
+            (dev_running_task.get("task_uuid") or "")[:8] + "…",
+        )
         table.add_row("Current dev age", age)
     else:
         table.add_row("Current dev task", "None")
 
-    # Last 3 summaries
-    lt_table = Table(box=box.MINIMAL)
-    lt_table.add_column("When")
-    lt_table.add_column("Summary")
+    # Architect Bob rows – always shown
+    table.add_row("Architect Bob status", architect_status)
+    table.add_row("Architect Bob node", architect_node)
+    table.add_row("Architect Bob port", architect_port)
+    table.add_row("Architect Bob model", architect_model)
 
-    for t in last_three:
-        ts_raw = t.get("submitted_at") or t.get("created_at") or t.get("created_at_utc") or t.get("updated_at")
+    # Knowledge Bob rows – always shown
+    table.add_row("Knowledge Bob status", knowledge_status)
+    table.add_row("Knowledge Bob node", knowledge_node)
+    table.add_row("Knowledge Bob port", knowledge_port)
+    table.add_row("Knowledge Bob model", knowledge_model)
+    table.add_row("Total knowledge tasks (window)", str(knowledge_total))
+    table.add_row(
+        "Avg knowledge latency (s, if reported)",
+        f"{knowledge_avg_latency:.2f}" if knowledge_avg_latency is not None else "-",
+    )
+    if knowledge_running_task:
+        ts_raw = (
+            knowledge_running_task.get("submitted_at")
+            or knowledge_running_task.get("created_at")
+            or knowledge_running_task.get("created_at_utc")
+            or knowledge_running_task.get("updated_at")
+        )
+        age = human_age(iso_to_dt(ts_raw))
+        table.add_row(
+            "Current knowledge task",
+            (knowledge_running_task.get("task_uuid") or "")[:8] + "…",
+        )
+        table.add_row("Current knowledge age", age)
+    else:
+        table.add_row("Current knowledge task", "None")
+
+    # ----- Bottom: last 3 dev + last 3 knowledge tasks -----
+    dev_table = Table(box=box.MINIMAL)
+    dev_table.add_column("When")
+    dev_table.add_column("Summary")
+
+    for t in dev_last_three:
+        ts_raw = (
+            t.get("submitted_at")
+            or t.get("created_at")
+            or t.get("created_at_utc")
+            or t.get("updated_at")
+        )
         ts = iso_to_dt(ts_raw)
         ts_str = ts.astimezone(timezone.utc).strftime("%H:%M:%S") if ts else "?"
         summary = t.get("output_summary") or t.get("title") or "(no summary)"
         if len(summary) > 80:
             summary = summary[:77] + "…"
-        lt_table.add_row(ts_str, summary)
+        dev_table.add_row(ts_str, summary)
 
+    knowledge_table = Table(box=box.MINIMAL)
+    knowledge_table.add_column("When")
+    knowledge_table.add_column("Summary")
+
+    for t in knowledge_last_three:
+        ts_raw = (
+            t.get("submitted_at")
+            or t.get("created_at")
+            or t.get("created_at_utc")
+            or t.get("updated_at")
+        )
+        ts = iso_to_dt(ts_raw)
+        ts_str = ts.astimezone(timezone.utc).strftime("%H:%M:%S") if ts else "?"
+        # Prefer output_summary (which is the human answer)
+        summary = t.get("output_summary") or t.get("question") or "(no summary)"
+        if len(summary) > 80:
+            summary = summary[:77] + "…"
+        knowledge_table.add_row(ts_str, summary)
+
+    # Build a proper bottom grid (no method chaining that returns None)
+    bottom_grid = Table.grid(expand=True)
+    bottom_grid.add_row(
+        Panel(dev_table, title="Last 3 dev tasks", border_style="dim"),
+        Panel(knowledge_table, title="Last 3 knowledge tasks", border_style="blue"),
+    )
+
+    # Compose final grid
     grid = Table.grid(expand=True)
     grid.add_row(table)
-    grid.add_row(Panel(lt_table, title="Last 3 dev tasks", border_style="dim"))
+    grid.add_row(Panel(bottom_grid, border_style="dim"))
 
-    return Panel(grid, title="[b]Dev Council[/b]", border_style="green")
+    return Panel(grid, title="[b]Bobs (Dev, Architect & Knowledge)[/b]", border_style="green")
 
 
 def build_layout(nodes: List[Dict[str, Any]], tasks: List[Dict[str, Any]]) -> Layout:
     layout = Layout()
 
     layout.split_column(
-        Layout(name="upper", size=14),
-        Layout(name="middle", size=14),
-        Layout(name="lower"),
+        Layout(name="upper", ratio=1),
+        Layout(name="middle", ratio=1),
+        Layout(name="lower", ratio=2),  # more room for Dev + Architect Bob
     )
 
     layout["upper"].update(build_nodes_panel(nodes))
     layout["middle"].update(build_tasks_panel(tasks))
-    layout["lower"].update(build_dev_panel(tasks))
+    layout["lower"].update(build_dev_panel(nodes, tasks))
 
     return layout
 

@@ -150,6 +150,82 @@ Risks
 
 ./bobctl show-dev <task_uuid>
 
+📝 Dev Bob — Code Analysis via bobctl
+
+Dev Bob is the Dev Council agent that reviews code, suggests improvements, and surfaces risks.
+
+Single file analysis
+
+Analyse one file and get feedback:
+
+cd ~/bobiverse/tools
+./bobctl dev analyse bobctl.py --ask "Review this CLI, find issues, and suggest improvements."
+
+
+Then inspect the result:
+
+./bobctl show-dev <task-uuid>
+
+
+show-dev prints:
+
+Summary
+
+Reasoning
+
+Suggested changes (if any)
+
+Test ideas
+
+Risks
+
+stdin mode (paste code like ChatGPT)
+
+Use --stdin to paste any code from anywhere:
+
+./bobctl dev analyse --stdin --ask "Explain this code and point out any bugs or bad patterns."
+# paste code here
+# Ctrl+D to finish (Linux/Mac) or Ctrl+Z + Enter (Windows)
+
+
+Then:
+
+./bobctl show-tasks --limit 5
+./bobctl show-dev <latest-dev-task-uuid>
+
+
+Directory analysis
+
+Analyse an entire directory (automatically tar+base64 encoded):
+
+./bobctl dev analyse ~/bobiverse/orchestrator --ask "Review the orchestrator service architecture."
+
+
+Interpreting results
+
+If SUMMARY and REASONING mention your file and specific issues → Dev Bob understood the context.
+
+If SUGGESTED CHANGES is empty, treat it as "no concrete patch suggested yet" – the analysis is still useful but not patch-ready.
+
+If you want more aggressive suggestions, use a stronger --ask, e.g.:
+
+./bobctl dev analyse bobctl.py \
+  --ask "Be very picky. Propose concrete refactors with clear justifications."
+
+
+Available intents
+
+analyse — General code review
+
+fix — Focus on bugs and fixes
+
+refactor — Focus on structural improvements
+
+Example:
+
+./bobctl dev fix my_script.py --ask "Find and fix any bugs."
+./bobctl dev refactor my_service/ --ask "Improve code quality and structure."
+
 5. Live Monitoring
 📡 live-status
 ./bobctl live-status --interval 3
@@ -349,3 +425,256 @@ show-nodes shows data-mainpc and server
 councils displays dev_council as active
 
 Dev tasks flow end-to-end
+
+14. Dev Bob — Code Analysis / Refactor Engine
+
+Dev Bob is the LLM-powered code assistant of the Bobiverse.
+It accepts:
+
+A file
+
+A directory
+
+Raw text
+
+A code snippet pasted into STDIN
+
+Arbitrary instructions
+
+And returns:
+
+Summary
+
+Reasoning
+
+Suggested changes
+
+Full structured JSON
+
+Safe fallback analysis
+
+🔧 14.1 Single File Mode
+./bobctl dev analyse myscript.py --ask "Find issues and propose refactor."
+
+
+Dev Bob receives:
+
+✓ The file's contents
+✓ Your instructions
+✓ Its intent ("analyse")
+
+📁 14.2 Directory Mode
+./bobctl dev analyse ~/myproject --ask "Give architectural review."
+
+
+bobctl will:
+
+Tar + base64 encode the directory
+
+Create a file manifest
+
+Send every file to Dev Bob as context
+
+This is ideal for:
+
+Reviewing an entire service
+
+Scanning a multi-file module
+
+📋 14.3 STDIN Paste Mode (ChatGPT-Style)
+
+This is the "paste anything" mode.
+
+./bobctl dev analyse --stdin --ask "Explain what this does and fix any bugs."
+
+
+Paste your code (any language, any size), then press:
+
+Ctrl+D (Linux/Mac)
+
+Ctrl+Z + Enter (Windows)
+
+Dev Bob will:
+
+Treat the entire pasted content as the code
+
+Create a synthetic file bobctl_dev/stdin_blob
+
+Analyse exactly what you pasted
+
+This replicates ChatGPT's "paste code into the chat box" but inside your distributed AI system.
+
+🔍 14.4 View the Analysis
+./bobctl show-dev <task_uuid>
+
+
+You'll see:
+
+Summary
+
+Reasoning
+
+Suggested changes
+
+Example code
+
+Tests suggested
+
+Risks
+
+The raw JSON output
+
+🔄 14.5 End-to-End Pipeline (Summary)
+
+bobctl creates a task with payload
+
+Orchestrator logs it
+
+Node Agent picks it up
+
+Dev Council loads:
+
+context_files
+
+your code (from JSON details)
+
+DeepSeek/Llama3 returns JSON
+
+Results stored + visible via bobctl
+
+15. How Dev Bob Processes Code (Internals)
+
+This is how your code enters the LLM context.
+
+15.1 bobctl generates a structured payload
+
+For files, dirs, or stdin, bobctl produces:
+
+{
+  "mode": "single_file | directory | stdin_blob",
+  "filename": "...",
+  "code": "...",
+  "instructions": "...",
+  "intent": "analyse|fix|refactor"
+}
+
+
+This is JSON-encoded inside req.details.
+
+15.2 Orchestrator stores it untouched
+
+It doesn't parse or interfere — this preserves isolation and prevents breakage.
+
+15.3 Node Agent delivers the payload to Dev Council
+
+Exact contents delivered.
+
+15.4 Dev Council parses the incoming JSON
+
+If details contains JSON with "code":
+
+It extracts the code
+
+Creates a synthetic context file:
+
+bobctl_dev/<filename>
+
+
+Adds it to context_files
+
+Merges with orchestrator context (normal mode)
+
+Or replaces orchestrator context (solo mode)
+
+This now becomes the entire context block for DeepSeek/Llama.
+
+15.5 The LLM sees all code as a list of files
+
+Example:
+
+### FILE: bobctl_dev/bobctl.py
+<full file contents>
+
+### FILE: orchestrator/main.py
+<existing orchestrator context>
+
+
+From there, Dev Bob generates:
+
+Summary
+
+Reasoning
+
+JSON diffs
+
+Proposed fixes
+
+All validated before returning.
+
+16. Phase 5 — Unified Input Router (Future Vision)
+
+This is the eventual goal:
+
+Paste anything into Bobiverse → Prime Bob decides which council handles it.
+
+16.1 Desired UX
+./bobctl ask --stdin
+
+
+Paste:
+
+Code
+
+Medical text
+
+Research
+
+Logs
+
+Plans
+
+Arbitrary mixed content
+
+Press Ctrl+D.
+
+Bobiverse automatically routes:
+
+Code → Dev Bob
+
+Medical → HALMed Council
+
+Trading → Money Council
+
+Knowledge → Knowledge Bob
+
+System → Ops Bob
+
+No user needs to specify anything.
+
+16.2 How it will work (Phase-5 Plan)
+
+Lightweight classifier inside orchestrator
+
+Orchestrator assigns high_level_type
+
+Node Agent runs the correct council model
+
+Reflector analyses routing accuracy
+
+Routing becomes self-improving over time
+
+16.3 Why this is Phase 5
+
+Because it depends on:
+
+Multiple active councils
+
+Refined prompt schemas
+
+Reflector scoring
+
+Reliability of Dev Bob pipeline
+
+Fully stable task/execution loop
+
+You're now completing Phase 2–3, so routing comes after that.

@@ -85,6 +85,33 @@ class ReflectorExecution(BaseModel):
     started_at: Optional[str] = None
     completed_at: Optional[str] = None
 
+
+# ---------- Knowledge Council Models ---------- #
+
+class KnowledgeTaskCreate(BaseModel):
+    """
+    Payload for creating a Knowledge Council task via /tasks/knowledge.
+    """
+    question: str
+    extra_context: Optional[str] = None
+    submitted_by: str = "bobctl"
+    priority: Literal["low", "normal", "high"] = "normal"
+
+
+class KnowledgeTaskNextResponse(BaseModel):
+    task_uuid: str
+    input_payload: Dict[str, Any]
+    submitted_by: str
+    created_at: str
+    execution_id: int
+
+
+class KnowledgeTaskResultIn(BaseModel):
+    execution_id: int
+    status: Literal["success", "partial", "failed"]
+    output_summary: str
+    full_response: Optional[Dict[str, Any]] = None
+
 # Load .env if present
 load_dotenv()
 
@@ -880,6 +907,212 @@ def create_dev_task(payload: DevTaskCreate):
 
     logger.info(
         "[DEV_TASK_CREATE] uuid=%s priority=%s submitted_by=%s",
+        task_uuid,
+        payload.priority,
+        payload.submitted_by,
+    )
+
+    return {
+        "task_uuid": task_uuid,
+        "status": "CREATED",
+    }
+
+
+# ---------- Knowledge Council Routes ---------- #
+
+@app.get("/knowledge/tasks/next", response_model=Optional[KnowledgeTaskNextResponse])
+def knowledge_next_task(node_name: str):
+    """
+    Claim the next PENDING 'knowledge' task from the DB for the given node.
+
+    - Picks the oldest PENDING knowledge task.
+    - Marks it RUNNING (and, if columns exist, assigns target_node/target_module).
+    - Creates a task_executions row.
+    - Returns the input_payload plus execution_id.
+
+    Matches what node_agent.process_one_knowledge_task() expects.
+    """
+    if node_name not in NODE_REGISTRY:
+        raise HTTPException(status_code=404, detail=f"Node '{node_name}' not registered.")
+
+    node = NODE_REGISTRY[node_name]
+    if "knowledge" not in (node.capabilities or []):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Node '{node_name}' does not advertise 'knowledge' capability.",
+        )
+
+    with get_connection() as conn:
+        cur = conn.cursor()
+
+        # 1) Grab oldest PENDING knowledge task
+        cur.execute(
+            """
+            SELECT *
+            FROM tasks
+            WHERE high_level_type = 'knowledge'
+              AND (final_status IS NULL OR final_status = 'PENDING')
+            ORDER BY id ASC
+            LIMIT 1
+            """
+        )
+        row = cur.fetchone()
+        if not row:
+            # No pending knowledge tasks
+            return None
+
+        row_dict = dict(row)
+        task_uuid = row_dict["task_uuid"]
+        input_payload_raw = row_dict.get("input_payload")
+        submitted_by = row_dict.get("submitted_by", "unknown")
+        created_at = (
+            row_dict.get("created_at")
+            or row_dict.get("submitted_at")
+            or row_dict.get("created")
+            or row_dict.get("submitted")
+            or ""
+        )
+
+        # Safely parse JSON payload
+        try:
+            input_payload = json.loads(input_payload_raw) if input_payload_raw else {}
+        except json.JSONDecodeError:
+            input_payload = {}
+
+        # Ensure Knowledge Bob always has a task_id to work with
+        if not input_payload.get("task_id"):
+            input_payload["task_id"] = task_uuid
+
+        # 2) Introspect tasks table columns
+        cur.execute("PRAGMA table_info(tasks)")
+        cols_info = cur.fetchall()
+        cols = {c["name"] for c in cols_info}
+
+        # 3) Build dynamic UPDATE depending on which columns exist
+        update_parts = []
+        params: List[Any] = []
+
+        if "final_status" in cols:
+            update_parts.append("final_status = ?")
+            params.append("RUNNING")
+        if "target_node" in cols:
+            update_parts.append("target_node = ?")
+            params.append(node_name)
+        if "target_module" in cols:
+            update_parts.append("target_module = ?")
+            params.append("knowledge_council")
+
+        if update_parts:
+            sql = f"UPDATE tasks SET {', '.join(update_parts)} WHERE task_uuid = ?"
+            params.append(task_uuid)
+            cur.execute(sql, params)
+
+    # 4) Create an execution record
+    exec_row = create_task_execution(
+        task_uuid=task_uuid,
+        target_module="knowledge_council",
+        target_node=node_name,
+        strategy_name=None,
+    )
+
+    return KnowledgeTaskNextResponse(
+        task_uuid=task_uuid,
+        input_payload=input_payload,
+        submitted_by=submitted_by,
+        created_at=str(created_at),
+        execution_id=exec_row["id"],
+    )
+
+
+@app.post("/knowledge/tasks/{task_uuid}/result")
+def knowledge_task_result(task_uuid: str, body: KnowledgeTaskResultIn):
+    """
+    Node reports back the result of a Knowledge Council task.
+
+    - Updates the tasks row final_status.
+    - Completes the corresponding task_executions row with summary + full_response.
+    """
+    status_map = {
+        "success": "SUCCESS",
+        "partial": "PARTIAL",
+        "failed": "FAILED",
+    }
+    final_status_db = status_map.get(body.status, "FAILED")
+
+    error_msg = None
+    if body.status == "failed":
+        error_msg = body.output_summary
+
+    # 1) Update the task row
+    try:
+        update_task_status(
+            task_uuid=task_uuid,
+            final_status=final_status_db,
+            error_type=error_msg,
+        )
+        logger.info(
+            "[KNOWLEDGE_TASK_RESULT_DB_STATUS] uuid=%s final_status=%s",
+            task_uuid,
+            final_status_db,
+        )
+    except Exception as e:
+        logger.exception("Failed to update knowledge task status in DB: %s", e)
+
+    # 2) Update the execution row
+    try:
+        complete_task_execution(
+            execution_id=body.execution_id,
+            status=final_status_db,
+            output_summary=body.output_summary,
+            error_type=error_msg,
+            latency_ms=None,              # can wire timing later
+            metrics=body.full_response,   # store full KnowledgeTaskResponse JSON in metrics_json
+        )
+        logger.info(
+            "[KNOWLEDGE_TASK_RESULT_DB_EXEC] uuid=%s exec_id=%s status=%s",
+            task_uuid,
+            body.execution_id,
+            final_status_db,
+        )
+    except Exception as e:
+        logger.exception("Failed to complete knowledge task execution in DB: %s", e)
+
+    return {"status": "ok", "task_uuid": task_uuid, "final_status": final_status_db}
+
+
+@app.post("/tasks/knowledge")
+def create_knowledge_task(payload: KnowledgeTaskCreate):
+    """
+    Create a new 'knowledge' task row in the tasks table so it shows up
+    and can be picked up by a node running Knowledge Council.
+    """
+    # Build what the Knowledge Council will see as input_payload
+    input_payload: Dict[str, Any] = {
+        "kind": "knowledge_query",
+        "question": payload.question,
+        "extra_context": payload.extra_context,
+        "task_type": "knowledge",
+        "priority": payload.priority,
+        "origin": {
+            "submitted_by": payload.submitted_by,
+            "origin_type": "bobctl",
+            "source_node": "orchestrator-server",
+            "source_tool": "bobctl submit-knowledge",
+        },
+    }
+
+    db_task = create_task(
+        high_level_type="knowledge",
+        input_payload=input_payload,
+        submitted_by=payload.submitted_by,
+        is_experiment=False,
+        input_hash=None,
+    )
+
+    task_uuid = db_task["task_uuid"]
+
+    logger.info(
+        "[KNOWLEDGE_TASK_CREATE] uuid=%s priority=%s submitted_by=%s",
         task_uuid,
         payload.priority,
         payload.submitted_by,

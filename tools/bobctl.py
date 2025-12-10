@@ -12,6 +12,9 @@ DASH_DIR = os.path.join(TOOLS_DIR, "dashboards")
 
 DEFAULT_ORCH_URL = "http://100.111.201.26:5080"
 
+# Import for dev command
+from scripts.bobctl_dev_cli import bobctl_dev_command
+
 
 def cmd_monitor(args: argparse.Namespace) -> None:
     """
@@ -177,7 +180,19 @@ def main():
     )
     p_top.set_defaults(func=cmd_top)
 
+    # ---- dev ----
+    p_dev = subparsers.add_parser(
+        "dev",
+        help="Developer tools using Dev Bob (analyse, fix, refactor)",
+    )
+    # Everything after 'dev' is passed untouched to bobctl_dev_command
+    p_dev.add_argument("rest", nargs=argparse.REMAINDER)
+
     args = parser.parse_args()
+
+    # Handle dev command
+    if args.command == "dev":
+        return bobctl_dev_command(args.rest)
 
     # Handle direct function calls (monitor, top)
     if hasattr(args, "func"):
@@ -192,4 +207,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() or 0)

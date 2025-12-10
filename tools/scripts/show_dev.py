@@ -10,20 +10,41 @@ import requests
 DEFAULT_ORCH_URL = os.getenv("BOBIVERSE_ORCH_URL", "http://100.111.201.26:5080")
 
 
-def _print_section(title: str, body: str | None):
-    print()
+def _format_body(body) -> str:
+    """
+    Normalize different body types into a string for display.
+    - str -> returned as-is
+    - list/dict -> pretty-printed JSON
+    - None/empty -> '(none)'
+    - anything else -> str()
+    """
+    if body is None:
+        return "(none)"
+
+    if isinstance(body, str):
+        return body if body.strip() else "(none)"
+
+    if isinstance(body, (list, dict)):
+        try:
+            return json.dumps(body, indent=2)
+        except TypeError:
+            return str(body)
+
+    # Fallback for any other type
+    return str(body)
+
+
+def _print_section(title: str, body):
     print(f"{title}:")
-    print("-" * (len(title) + 1))
     if not body:
         print("  (none)")
+        print()
         return
 
-    # Simple indent for readability
-    for line in body.splitlines():
-        if line.strip():
-            print("  " + line)
-        else:
-            print()
+    text = _format_body(body)
+    for line in text.splitlines():
+        print(f"  {line}")
+    print()
 
 
 def cli(args: argparse.Namespace, orch_url: str = DEFAULT_ORCH_URL):
@@ -122,12 +143,10 @@ def cli(args: argparse.Namespace, orch_url: str = DEFAULT_ORCH_URL):
         print("```")
 
     if tests_suggested:
-        body = tests_suggested if isinstance(tests_suggested, str) else json.dumps(tests_suggested, indent=2)
-        _print_section("TESTS SUGGESTED", body)
+        _print_section("TESTS SUGGESTED", tests_suggested)
 
     if risks:
-        body = risks if isinstance(risks, str) else json.dumps(risks, indent=2)
-        _print_section("RISKS", body)
+        _print_section("RISKS", risks)
 
 
 def build_argparser() -> argparse.ArgumentParser:
