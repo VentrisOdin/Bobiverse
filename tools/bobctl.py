@@ -116,6 +116,28 @@ COMMANDS = {
         "help": "Manage Reflector proposals (list, create)",
         "args": [],
     },
+    "reflector-run": {
+        "handler": "reflector_run_cli:cli",
+        "help": "Trigger a Reflector analysis cycle",
+        "args": [
+            (
+                "--module",
+                {
+                    "type": str,
+                    "default": None,
+                    "help": "Optional target module (e.g. dev_council). Omit for global analysis.",
+                },
+            ),
+            (
+                "--limit",
+                {
+                    "type": int,
+                    "default": 200,
+                    "help": "How many recent executions to analyse (hint to the Reflector service).",
+                },
+            ),
+        ],
+    },
 }
 
 

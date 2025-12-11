@@ -10,7 +10,10 @@ import requests
 USE_LLM = True
 
 REFLECTOR_HOST = os.environ.get("BOBIVERSE_REFLECTOR_HOST", "http://localhost:5081")
-ARCHITECT_BOB_URL = "http://100.72.252.66:8012/architect/propose"
+ARCHITECT_BOB_URL = os.environ.get(
+    "ARCHITECT_COUNCIL_URL",
+    "http://localhost:8012/architect/propose",
+)
 
 
 def fetch_insights():

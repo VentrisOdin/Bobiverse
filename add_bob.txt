@@ -1,0 +1,211 @@
+BEGIN BOBIVERSE NEW BOB BLUEPRINT (TEXT VERSION)
+BOBIVERSE BLUEPRINT: HOW TO ADD ANY NEW BOB EASILY
+Overview
+
+This document defines the standard process and architecture for adding new Bobs
+(e.g. Trading Bob, Medical Bob, Ops Bob) into the Bobiverse without rewriting
+infrastructure each time. Each Bob is treated as a plugin module with a common
+interface.
+
+A Bob consists of:
+
+A council module in bobiverse/councils/<bob_name>_council/
+
+A FastAPI service exposing a standard /analyse endpoint
+
+A common task input/output schema
+
+A client inside the Node Agent
+
+Two CLI commands: submit-<bob>, show-<bob>
+
+An entry in the monitor UI
+
+Optional systemd service file for autostart
+
+The orchestrator, DB, Node Agent, and Reflector do not need special logic for
+each Bob. They remain generic.
+
+PHASE A — STANDARDISE THE BOB INTERFACE
+
+Define shared council I/O schemas (one place for all Bobs)
+File: orchestrator/schemas/council_io.py
+
+CouncilTaskInput:
+
+task_id (str)
+
+task_type (str) # "dev", "knowledge", "trading", etc.
+
+payload (dict)
+
+CouncilTaskResult:
+
+status: SUCCESS / ERROR / PARTIAL
+
+output_summary (str)
+
+analysis (dict) # structured content from the Bob
+
+metrics (dict) # model name, latency, token usage, etc.
+
+error_type (optional)
+
+Every Bob must accept CouncilTaskInput and return CouncilTaskResult.
+
+Update Dev Bob and Knowledge Bob to use these schemas.
+This ensures all future Bobs speak the same protocol.
+
+PHASE B — CREATE A REUSABLE BOB TEMPLATE
+
+Folder: bobiverse/councils/bob_template_council/
+
+Template Files:
+
+init.py
+
+service.py (FastAPI app with /analyse stub)
+
+client.py (Node Agent async client)
+
+llm_backend.py (stub where the Bob’s LLM logic lives)
+
+config.py (model name, temperature, etc.)
+
+schemas.py (imports from common council_io)
+
+systemd/bob_template.service (unit file example)
+
+service.py should:
+
+Import CouncilTaskInput and CouncilTaskResult
+
+Validate task_type
+
+Route to llm_backend.py
+
+Return CouncilTaskResult
+
+PHASE C — NODE AGENT: GENERIC COUNCIL REGISTRY
+
+Node Agent contains a registry of all councils:
+
+COUNCIL_CLIENTS = {
+"dev_council": analyse_dev_task_async,
+"knowledge_council": analyse_knowledge_task_async,
+# Future Bobs are added here:
+# "trading_council": analyse_trading_task_async,
+# "medical_council": analyse_medical_task_async,
+}
+
+Adding a new Bob only requires:
+
+Creating <bob_name>_council/client.py
+
+Adding one line to COUNCIL_CLIENTS
+
+No further Node Agent modifications.
+
+PHASE D — BOBCTL: GENERIC SUBMIT/SHOW FOR BOBS
+
+We create a helper in bobctl that registers a pair of commands for each Bob:
+
+register_council_cli(name, display, high_level_type, target_module)
+
+This automatically creates:
+
+submit-<name> (e.g. submit-knowledge, submit-trading)
+
+show-<name> (e.g. show-knowledge, show-trading)
+
+Example registration:
+
+register_council_cli("dev", "Dev Council", "dev", "dev_council")
+register_council_cli("knowledge", "Knowledge Council", "knowledge", "knowledge_council")
+
+Future:
+register_council_cli("trading", "Trading Council", "trading", "trading_council")
+register_council_cli("medical", "HALMed Council", "medical", "medical_council")
+
+submit-<bob> posts to /submit_task with:
+
+high_level_type = "trading" or appropriate
+
+target_module = "<bob_name>_council"
+
+show-<bob> queries /db/task_executions and filters by target_module.
+
+PHASE E — MONITOR UI TEMPLATE
+
+Create a helper:
+
+build_council_panel(name, display, nodes, tasks, target_module, node_name)
+
+This panel shows:
+
+Council health (UP/DOWN)
+
+Last N tasks for that Bob
+
+Latest execution summary
+
+Latency stats
+
+Active task
+
+Monitor adds new Bobs by adding one line:
+trading_panel = build_council_panel("trading", "Trading Council", nodes, tasks, "trading_council", "data-mainpc")
+
+This avoids custom UI code for each Bob.
+
+PHASE F — BOB SCAFFOLDER COMMAND
+
+Add a command to bobctl:
+
+bobctl new-bob <name> --display "Trading Council" --node data-mainpc --model "llama3.1"
+
+This command automatically:
+
+Creates folder bobiverse/councils/<name>_council/ from bob_template_council
+
+Injects correct names into service.py, client.py, config.py
+
+Adds one line to Node Agent COUNCIL_CLIENTS
+
+Adds CLI support using register_council_cli
+
+Inserts panel entry into monitor.py
+
+Generates a systemd service file
+
+After running:
+
+You only need to implement the Bob’s LLM logic in llm_backend.py
+
+This reduces “add a new Bob” from a day of surgery to a 1–2 minute template generation.
+
+FUTURE COMPATIBILITY
+
+This blueprint fully supports:
+
+RAG-enabled Knowledge Bobs
+
+Trading Bobs with stateful strategy handlers
+
+Medical Bobs with guideline engines
+
+Ops Bobs with system monitoring
+
+Autonomous Architect/Reflector experiments across Bobs
+
+All Bobs follow identical data flow:
+Task → Node Agent → Bob LLM → Task Execution → Reflector
+
+END BOBIVERSE NEW BOB BLUEPRINT
+
+If you want, I can also produce a ready-to-run file that you can drop into your repo under /docs or /bobiverse_blueprints/.
+
+
+
+
+ChatGPT can make mistakes. Check important info. See Cookie Preferences.

@@ -132,6 +132,11 @@ class ReflectorProposal(BaseModel):
     applied_at: Optional[str] = None
 
 
+class ReflectorRunRequest(BaseModel):
+    module: Optional[str] = None   # e.g. "dev_council"
+    limit: int = 200               # hint for scope; currently used for failure snapshot
+
+
 # ---------- Helpers ---------- #
 
 def _safe_div(numerator: int, denominator: int) -> float:
@@ -712,6 +717,80 @@ def get_recent_reflector_proposals(limit: int = 20):
 
     logger.info("[REFLECTOR_PROPOSALS_RECENT] count=%s", len(proposals))
     return proposals
+
+
+@app.post("/reflector/run")
+def reflector_run(body: ReflectorRunRequest):
+    """
+    Trigger a Reflector analysis cycle.
+
+    This is called by `./bobctl reflector-run`.
+
+    v1 behaviour:
+      - Generate an analytics snapshot (via reflector_insights()).
+      - Store it as an auto-generated lesson in reflector_lessons.
+      - (Future) Optionally generate proposals via an LLM.
+      - Return a compact summary including how many lessons/proposals were created.
+    """
+    # 1) Generate a snapshot – we can treat `limit` as a hint for recent failures
+    #    while keeping the rest of the aggregations global.
+    limit_failures = max(1, min(body.limit, 500))
+    insights = reflector_insights(limit_failures=limit_failures)
+    snapshot_json = insights.model_dump()
+
+    # 2) Build a human-readable summary string
+    summary_obj = insights.summary
+    module_label = body.module or "all"
+    summary_text = (
+        f"Auto Reflector run over last {limit_failures} failures "
+        f"(module={module_label}). "
+        f"Total tasks={summary_obj.total_tasks}, "
+        f"success={summary_obj.success_count}, "
+        f"failed={summary_obj.failed_count}, "
+        f"success_rate={summary_obj.success_rate:.3f}."
+    )
+
+    # 3) Persist as a lesson (source='auto-run', tagged with module + maybe 'auto')
+    with get_connection() as conn:
+        cur = conn.cursor()
+        tags = [f"auto-run", f"module:{module_label}"]
+        tags_str = _pack_tags(tags)
+
+        cur.execute(
+            """
+            INSERT INTO reflector_lessons (summary_text, raw_snapshot_json, source, tags)
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                summary_text,
+                json.dumps(snapshot_json),
+                "auto-run",
+                tags_str,
+            ),
+        )
+        lesson_id = cur.lastrowid
+
+    logger.info(
+        "[REFLECTOR_RUN] module=%s limit=%s lesson_id=%s",
+        body.module,
+        body.limit,
+        lesson_id,
+    )
+
+    # v1: we only create a lesson; proposals are for a future LLM-powered step
+    lessons_created = 1
+    proposals_created = 0
+
+    return {
+        "status": "ok",
+        "module": body.module,
+        "limit": body.limit,
+        "execution_id": None,      # reserved for future if we log runs separately
+        "task_uuid": None,         # reserved for future if we model runs as tasks
+        "lessons_created": lessons_created,
+        "proposals_created": proposals_created,
+        "summary": summary_text,
+    }
 
 
 # ---------- Dev-only: local run ---------- #

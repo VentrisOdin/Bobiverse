@@ -1,680 +1,664 @@
-bobctl — Bobiverse Command-Line Interface
+# Bobiverse – Operator Manual
 
-The bobctl tool is the unified command-line interface for interacting with:
+Bobiverse is a multi-node, self-improving AI system composed of cooperating agents ("Bobs") coordinated by a central Orchestrator ("Prime Bob").
 
-🧠 Prime Bob (the Orchestrator)
+Phase 1 establishes:
 
-🏗️ Node Agents (worker machines)
+- A central Orchestrator service (Prime Bob)
+- One or more Node Agents (worker Bobs) on different machines
+- Councils (Dev Bob, Knowledge Bob, etc.) as specialised services
+- A Reflector service for analytics + self-reflection
+- A unified CLI: `bobctl`
 
-👨‍💻 Dev Council (LLM-powered Dev Bob)
+This document is the **operator manual**: where everything lives, how to run it, and how to use `bobctl` day to day.
 
-🪞 Reflector (self-learning analytics engine)
+---
 
-It is the administrative shell for the entire Bobiverse distributed AI system.
+## 1. High-Level Architecture
 
-Run bobctl from:
+### 1.1 Components
 
-cd ~/bobiverse/tools
-./bobctl <command> [args...]
+- **Orchestrator (Prime Bob)**  
+  - FastAPI service on the **server**  
+  - Receives tasks, routes them to nodes, logs everything into SQLite  
+  - Exposes dev/knowledge task APIs  
+  - Exposes DB inspection and reflector-facing APIs
 
+- **Node Agents**  
+  - Run on each worker machine (main PC, Lenovo, etc.)  
+  - Register with Prime Bob (`/register`), send heartbeats (`/heartbeat`)  
+  - Advertise capabilities (e.g. `["dev", "knowledge"]`)  
+  - Pull tasks for their capabilities and call local councils
 
-To use a non-default orchestrator:
+- **Councils**  
+  - Specialised services running on nodes, e.g.:
+    - `dev_council` – Dev Bob: code analysis, refactors, etc.
+    - `knowledge_council` – Knowledge Bob: RAG / Q&A (scaffold in place)
+  - Each has its own API (`/dev/tasks/next`, `/knowledge/tasks/next`, etc.)
 
-./bobctl --orch-url http://<host>:<port> <command>
+- **Reflector**  
+  - Separate FastAPI service on port **5081**  
+  - Reads the same SQLite DB via `db_manager`  
+  - Provides analytics and stores:
+    - **lessons** (`reflector_lessons` table)
+    - **proposals** (`reflector_proposals` table)
+  - New: supports `bobctl reflector-run` to trigger an auto-run analysis
 
+- **bobctl (CLI)**  
+  - Lives in `~/bobiverse/tools/bobctl`  
+  - Single entrypoint for:
+    - Node + task inspection
+    - Dev Bob usage
+    - Reflector insights + runs
+    - Dashboards (monitor + top)
+    - DB inspection & logs
 
-Default orchestrator URL (Tailscale):
+---
 
-http://100.111.201.26:5080
+## 2. Directory Layout
 
-TABLE OF CONTENTS
+From `~/bobiverse`:
 
-Node Inspection
-
-Task Management
-
-Submitting Tasks
-
-Dev Council Introspection
-
-Live Monitoring
-
-Database Debugging
-
-Orchestrator Logs
-
-Common Workflows
-
-Service Locations & File Paths
-
-Starting Everything Manually (uvicorn)
-
-Systemd Unit Files
-
-Systemd Status & Logs
-
-LLM Storage Locations (Main PC)
-
-Cluster Health Checklist
-
-1. Node Inspection
-🔍 show-nodes
-
-Lists all known nodes, their roles, loads, memory, and capability flags.
-
-./bobctl show-nodes
-
-
-Example:
-
-NAME            ROLE    LOAD   FREE_MB   LAST_SEEN                            CAPABILITIES
--------------------------------------------------------------------------------------------
-data-mainpc     worker  0.012  5746      2025-12-04T18:42:18.383625Z          shell, python, dev
-
-
-Use this to:
-
-Confirm nodes are online
-
-Ensure Dev node is available
-
-Debug node-agent registration
-
-2. Task Management
-📋 show-tasks
-./bobctl show-tasks --limit 10
-
-
-Shows:
-
-Task UUID
-
-Type
-
-Status (PENDING → RUNNING → SUCCESS/FAILURE)
-
-Summary
-
-Useful for tracking flow through the entire pipeline.
-
-3. Submitting Tasks
-🧠 submit-dev
-
-Submit a Dev Council task:
-
-./bobctl submit-dev "Fix memory leak" --details "Investigate foo() line 42"
-
-
-Pipeline:
-
-Task enters orchestrator database
-
-Node Agent requests work
-
-Dev Council calls DeepSeek/LLama3 LLM
-
-Structured JSON returned
-
-DB updated
-
-View with show-dev
-
-🐚 submit-shell
-./bobctl submit-shell "echo hello"
-
-
-Runs on a node with shell capability.
-
-🐍 submit-python
-./bobctl submit-python "print(2 + 2)"
-
-
-Runs via node-agent Python executor.
-
-4. Dev Council Introspection
-🔬 show-dev <uuid>
-
-Shows complete structured Dev Council output, including:
-
-Summary
-
-Reasoning
-
-Suggested Changes
-
-Example Code
-
-Tests Suggested
-
-Risks
-
-./bobctl show-dev <task_uuid>
-
-📝 Dev Bob — Code Analysis via bobctl
-
-Dev Bob is the Dev Council agent that reviews code, suggests improvements, and surfaces risks.
-
-Single file analysis
-
-Analyse one file and get feedback:
-
-cd ~/bobiverse/tools
-./bobctl dev analyse bobctl.py --ask "Review this CLI, find issues, and suggest improvements."
-
-
-Then inspect the result:
-
-./bobctl show-dev <task-uuid>
-
-
-show-dev prints:
-
-Summary
-
-Reasoning
-
-Suggested changes (if any)
-
-Test ideas
-
-Risks
-
-stdin mode (paste code like ChatGPT)
-
-Use --stdin to paste any code from anywhere:
-
-./bobctl dev analyse --stdin --ask "Explain this code and point out any bugs or bad patterns."
-# paste code here
-# Ctrl+D to finish (Linux/Mac) or Ctrl+Z + Enter (Windows)
-
-
-Then:
-
-./bobctl show-tasks --limit 5
-./bobctl show-dev <latest-dev-task-uuid>
-
-
-Directory analysis
-
-Analyse an entire directory (automatically tar+base64 encoded):
-
-./bobctl dev analyse ~/bobiverse/orchestrator --ask "Review the orchestrator service architecture."
-
-
-Interpreting results
-
-If SUMMARY and REASONING mention your file and specific issues → Dev Bob understood the context.
-
-If SUGGESTED CHANGES is empty, treat it as "no concrete patch suggested yet" – the analysis is still useful but not patch-ready.
-
-If you want more aggressive suggestions, use a stronger --ask, e.g.:
-
-./bobctl dev analyse bobctl.py \
-  --ask "Be very picky. Propose concrete refactors with clear justifications."
-
-
-Available intents
-
-analyse — General code review
-
-fix — Focus on bugs and fixes
-
-refactor — Focus on structural improvements
-
-Example:
-
-./bobctl dev fix my_script.py --ask "Find and fix any bugs."
-./bobctl dev refactor my_service/ --ask "Improve code quality and structure."
-
-5. Live Monitoring
-📡 live-status
-./bobctl live-status --interval 3
-
-
-Displays:
-
-Auto-updating node list
-
-Recent tasks
-
-Health metrics
-
-Great for running on a second monitor.
-
-6. Database Debugging
-🗃️ db-inspect
-./bobctl db-inspect --limit 10
-
-
-Reads raw rows from:
-
-tasks
-
-task_executions
-
-Use this to inspect malformed tasks or reflector metrics.
-
-7. Orchestrator Logs
-🪵 tail-orch-logs
-./bobctl tail-orch-logs
-
-
-Wraps:
-
-~/bobiverse/logs/orchestrator.log
-
-
-Shows:
-
-Node registration
-
-Task routing
-
-Dev Council errors
-
-Reflector calls
-
-8. Common Workflows
-🧪 Smoke Test Dev Council
-./bobctl submit-dev "Bobctl smoke test"
-./bobctl show-tasks --limit 5
-./bobctl show-dev <uuid>
-
-🚦 Check Cluster Health
-./bobctl show-nodes
-./bobctl live-status --interval 2
-
-🧹 Debug failing Dev Council task
-./bobctl show-dev <uuid>
-./bobctl db-inspect --limit 20
-./bobctl tail-orch-logs
-
-9. Service Locations & File Paths
-~/bobiverse/
+```text
+bobiverse/
+│
 ├── orchestrator/
-│   ├── main.py
-│   └── db/
-│       ├── db_manager.py
-│       ├── schema.sql
-│       └── bobiverse.db
+│   ├── main.py                 # Prime Bob (FastAPI)
+│   ├── models.py               # Node + task Pydantic models
+│   ├── db/
+│   │   ├── db_manager.py       # SQLite helpers
+│   │   ├── schema.sql          # DB schema
+│   │   └── bobiverse.db        # Database file
+│   ├── reflector_service.py    # Reflector API (port 5081)
+│   └── logs/                   # Orchestrator logs live here
+│
 ├── node_agent/
-│   └── node_agent_service.py
+│   ├── main.py                 # Node Agent (polls /tasks/next etc.)
+│   └── logs/                   # Node-specific logs
+│
 ├── councils/
-│   └── dev_council/
-│       ├── dev_council_service.py
-│       ├── schemas.py
-│       └── model_prompts/
-├── reflector/
-│   └── reflector_service.py
-├── tools/
-│   └── bobctl
-└── logs/
-    ├── orchestrator.log
-    ├── node_agent.log
-    ├── dev_council.log
-    └── reflector.log
+│   ├── dev_council/
+│   │   ├── dev_council_service.py   # Dev Bob service (FastAPI)
+│   │   ├── dev_council_client.py    # Node Agent client
+│   │   ├── prompts/                 # Prompt templates
+│   │   └── logs/
+│   └── knowledge_council/           # (scaffold similarly)
+│
+└── tools/
+    ├── bobctl                       # Main CLI
+    ├── scripts/
+    │   ├── show_nodes.py
+    │   ├── show_tasks.py
+    │   ├── show_dev.py
+    │   ├── submit_dev.py
+    │   ├── submit_shell.py
+    │   ├── submit_python.py
+    │   ├── tail_orchestrator_logs.py
+    │   ├── db_inspect.py
+    │   ├── dashboards/
+    │   │   └── live_status.py
+    │   ├── reflector_cli.py
+    │   ├── reflector_lessons_cli.py
+    │   ├── reflector_proposals_cli.py
+    │   ├── reflector_run_cli.py     # NEW: used by `bobctl reflector-run`
+    │   └── bobctl_dev_cli.py        # Dev Bob subcommand handler
+    ├── monitor.py                   # Dash monitor (web/TUI)
+    └── top.py                       # Task-centric TUI
+```
 
-10. Starting Everything Manually (uvicorn)
+---
 
-Run inside .venv
-All commands assume cd ~/bobiverse
+## 3. Services & Ports
 
-Orchestrator
-uvicorn orchestrator.main:app --host 0.0.0.0 --port 5080 --reload
+### Orchestrator (Prime Bob)
 
-Node Agent (server)
-uvicorn node_agent.node_agent_service:app --host 0.0.0.0 --port 7000 --reload
+- **File**: `orchestrator/main.py`
+- **Port**: `ORCHESTRATOR_PORT` (default 5080)
+- **Health**: `GET /health`
 
-Node Agent (main PC)
+### Reflector
 
-Typical port: 8001
+- **File**: `orchestrator/reflector_service.py`
+- **Port**: 5081
+- **Key endpoints**:
+  - `GET /reflector/summary`
+  - `GET /reflector/insights`
+  - `GET /reflector/lessons/recent`
+  - `POST /reflector/lessons`
+  - `GET /reflector/proposals/recent`
+  - `POST /reflector/proposals`
+  - `POST /reflector/run` ← used by `bobctl reflector-run`
 
-uvicorn node_agent.node_agent_service:app --host 0.0.0.0 --port 8001 --reload
+### Dev Council
 
-Dev Council (main PC)
+- **File**: `councils/dev_council/dev_council_service.py`
+- **Port**: whatever you defined (e.g. 8011)
+- Node Agent calls `GET /dev/tasks/next` and `POST /dev/tasks/{task_uuid}/result`
 
-Port: 8011
+### Knowledge Council
 
-uvicorn councils.dev_council.dev_council_service:app --host 0.0.0.0 --port 8011 --reload
+- Similar pattern: `/knowledge/tasks/next`, `/knowledge/tasks/{task_uuid}/result`
 
-Reflector (server)
-uvicorn reflector.reflector_service:app --host 0.0.0.0 --port 5090 --reload
+---
 
-11. Systemd Unit Files
+## 4. Environment Variables
 
-Place in:
+Set appropriately on each machine.
 
-/etc/systemd/system/
+### 4.1 Common (Node Agent)
 
+```bash
+BOBIVERSE_NODE_NAME=data-mainpc             # unique per node
+NODE_ROLE=worker                            # or 'orchestrator'
+TAILSCALE_IP=100.111.x.x                    # node's Tailscale IP (optional)
+ORCHESTRATOR_URL=http://100.111.201.26:5080 # Prime Bob base URL
+```
 
-Enable all:
+### 4.2 Orchestrator
 
-sudo systemctl enable orchestrator.service
-sudo systemctl enable node_agent.service
-sudo systemctl enable dev_council.service
-sudo systemctl enable reflector.service
+```bash
+ORCHESTRATOR_NODE_NAME=prime-bob
+ORCHESTRATOR_PORT=5080
+```
 
+### 4.3 Reflector
 
-Start/Stop:
+```bash
+# Optional override for CLI tools:
+BOBIVERSE_REFLECTOR_HOST=http://100.111.201.26:5081
+ORCHESTRATOR_URL=http://100.111.201.26:5080  # used by reflector_service to read DB via API
+```
 
-sudo systemctl restart orchestrator.service
-sudo systemctl status dev_council.service
+### 4.4 Dev Council Node
 
+```bash
+DEV_COUNCIL_PORT=8011
+# plus any LLM-related envs (e.g. OLLAMA_HOST, model name, etc.)
+```
 
-Log tail:
+---
 
-journalctl -u orchestrator.service -f
-journalctl -u dev_council.service -f
+## 5. bobctl – Command Reference
 
-12. LLM STORAGE LOCATIONS (MAIN PC)
-Ollama installation
+From `~/bobiverse/tools`:
 
-WSL path:
+```bash
+./bobctl -h
+```
 
-/home/matt/.ollama/
+Current commands (from the COMMANDS registry + special ones):
 
-Model files
+### 5.1 Node & Task Inspection
 
-Ollama stores models at:
+**show-nodes**  
+List registered nodes from the orchestrator.
 
-/home/matt/.ollama/models/
+```bash
+./bobctl show-nodes
+```
 
+**show-tasks**  
+List recent tasks from Prime Bob's in-memory task list.
+
+```bash
+./bobctl show-tasks --limit 20
+```
+
+**show-dev**  
+Show Dev Council tasks recorded in the DB (via helper script).
+
+```bash
+./bobctl show-dev                     # last 20 dev tasks
+./bobctl show-dev <task-uuid>        # detailed view for one task
+./bobctl show-dev --limit 50
+```
+
+### 5.2 Submitting Tasks (generic / legacy paths)
+
+**submit-dev**  
+Simple, structured Dev task creation via `POST /tasks/dev`.
+
+```bash
+./bobctl submit-dev "Short description of the dev task" \
+    --details "Longer explanation or notes"
+```
+
+**submit-shell** (stub for future automation)
+
+```bash
+./bobctl submit-shell "ls -la /some/path" --target-node data-mainpc
+```
+
+**submit-python** (stub for future automation)
+
+```bash
+./bobctl submit-python "print('hello')" --target-node data-mainpc
+```
+
+### 5.3 Logs & DB
+
+**tail-orch-logs**  
+Tail the orchestrator log file (`orchestrator.log`).
+
+```bash
+./bobctl tail-orch-logs
+```
+
+**db-inspect**  
+Inspect tasks + executions stored in SQLite.
+
+```bash
+./bobctl db-inspect --limit 50
+```
+
+### 5.4 Live Dashboards
+
+**live-status**  
+Lightweight dashboard showing nodes + tasks (uses `dashboards.live_status`):
+
+```bash
+./bobctl live-status --interval 2.0
+```
+
+**monitor**  
+Rich monitor (Dev Bob, Architect Bob view, etc.):
+
+```bash
+./bobctl monitor
+./bobctl monitor --interval 1.0
+```
+
+**top**  
+Task-centric TUI; "which councils/nodes are hot right now":
+
+```bash
+./bobctl top
+./bobctl top --interval 0.5
+```
+
+### 5.5 Reflector Commands
+
+These talk to the Reflector service (port 5081).
+
+**show-reflector**  
+Show overall error rates, modules, nodes, and recent failures.
+
+```bash
+./bobctl show-reflector
+```
+
+**reflector-lessons**  
+List and manage Reflector lessons (wrapper around `/reflector/lessons/recent` and `/reflector/lessons`).
+
+```bash
+./bobctl reflector-lessons
+```
+
+**reflector-proposals**  
+List and manage Reflector proposals (wrapper around `/reflector/proposals/recent` and `/reflector/proposals`).
+
+```bash
+./bobctl reflector-proposals
+```
+
+**reflector-run** ✅ NEW
+
+Trigger a Reflector analysis cycle. This:
+
+- Calls `POST /reflector/run` on the Reflector service.
+- Generates a snapshot via `/reflector/insights`.
+- Stores it as an auto-run lesson in `reflector_lessons`.
+- Returns a summary plus counts of lessons/proposals created.
+
+```bash
+./bobctl reflector-run
+./bobctl reflector-run --module dev_council --limit 200
+```
+
+Example output:
+
+```
+=== Reflector Run ===
+Status  : ok
+Module  : dev_council
+Scope   : last 200 executions
+
+Artifacts:
+  Lessons   : 1
+  Proposals : 0
+
+Summary:
+  Auto Reflector run over last 200 failures (module=dev_council). Total tasks=63, success=42, failed=16, success_rate=0.667.
+```
+
+### 5.6 Dev Bob High-Power Mode: `bobctl dev`
+
+The `dev` subcommand sends everything after `dev` straight into `bobctl_dev_command` (in `scripts/bobctl_dev_cli.py`), which in turn talks to Dev Bob.
+
+General pattern:
+
+```bash
+./bobctl dev <subcommand> [options...]
+```
+
+Examples (exact subcommands are defined inside `bobctl_dev_cli.py`; use `./bobctl dev --help` for the authoritative list):
+
+**Analyse a single file:**
+
+```bash
+./bobctl dev analyse path/to/file.py
+```
+
+**Analyse all code in a directory:**
+
+```bash
+./bobctl dev analyse-dir path/to/project/
+```
+
+**Feed a JSON task spec:**
+
+```bash
+./bobctl dev from-json path/to/task.json
+```
+
+Internally, these:
+
+1. Build a rich `input_payload` describing code, context, and requested operation.
+2. Create a dev task via `POST /tasks/dev`.
+3. Dev Council pulls it from `/dev/tasks/next`, calls the LLM, and writes:
+   - `tasks.final_status`
+   - `task_executions` row with full response in `metrics_json`.
+4. `show-dev` and the dashboards let you inspect outcomes and latency.
+
+---
+
+## 6. Reflector Behaviour
+
+### 6.1 Analytics Endpoints
+
+Reflector reads the same DB as the orchestrator and exposes:
+
+**GET /reflector/summary**  
+Overall tasks, success/failure counts.
+
+**GET /reflector/nodes/errors**  
+Error rates per node.
+
+**GET /reflector/modules/errors**  
+Error rates per module / council.
+
+**GET /reflector/errors/by_type**  
+Aggregated error types from `tasks.error_type`.
+
+**GET /reflector/strategies/summary**  
+Strategy-level performance (if `strategy_name` column exists).
+
+**GET /reflector/insights**  
+Bundled snapshot used by the Reflector Brain and for lessons.
+
+### 6.2 Lessons
+
+**POST /reflector/lessons**  
+Creates a lesson with:
+
+- `summary_text`
+- A captured snapshot of `/reflector/insights`
+- `source` (manual, auto-run, etc.)
+- Optional tags
+
+**GET /reflector/lessons/recent**  
+Lists recent lessons.
+
+### 6.3 Proposals
+
+**POST /reflector/proposals**  
+Stores a proposal produced by the Reflector Brain or manually:
+
+- `proposal_uuid`
+- `proposal_type` (PROMPT_TWEAK, ROUTING_POLICY, etc.)
+- `target_module`
+- `risk_score`, `description`, `action_payload`, `source`
+
+**GET /reflector/proposals/recent**
+
+### 6.4 Auto-Run (/reflector/run)
+
+`POST /reflector/run` payload:
+
+```json
+{
+  "module": "dev_council" | null,
+  "limit": 200
+}
+```
+
+Behaviour (v1):
+
+1. Calls `reflector_insights(limit_failures=limit)` to get a snapshot.
+2. Builds an auto summary string.
+3. Inserts a new row into `reflector_lessons` with:
+   - `summary_text`
+   - `raw_snapshot_json` = insights snapshot
+   - `source` = "auto-run"
+   - tags including "auto-run" and "module:<module or all>".
+4. Returns JSON used by `bobctl reflector-run`.
+
+---
+
+## 7. Typical Workflows
+
+### 7.1 Use Dev Bob on some code
+
+Make sure:
+
+- Orchestrator is running.
+- Dev Council service is running on a node with capability `dev`.
+- Node Agent is running on that node.
+
+From `~/bobiverse/tools`:
+
+```bash
+./bobctl dev analyse path/to/file.py
+# or:
+./bobctl submit-dev "Refactor this module" --details "See src/foo/bar.py"
+```
+
+Inspect results:
+
+```bash
+./bobctl show-dev                # list latest dev tasks
+./bobctl show-dev <task-uuid>    # full reasoning + suggestions
+./bobctl monitor                 # watch dev tasks live
+```
+
+### 7.2 Run Reflector and see what it learned
+
+```bash
+./bobctl reflector-run --module dev_council --limit 200
+./bobctl reflector-lessons
+./bobctl reflector-proposals
+./bobctl show-reflector
+```
+
+---
+
+## 8. Restarting Components
+
+### Orchestrator
+
+```bash
+sudo systemctl restart orchestrator.service    # if using systemd
+# or:
+cd ~/bobiverse/orchestrator
+python main.py
+```
+
+### Reflector
+
+```bash
+sudo systemctl restart reflector.service
+# or:
+cd ~/bobiverse/orchestrator
+python reflector_service.py
+```
+
+### Node Agent
+
+```bash
+sudo systemctl restart node_agent.service
+# or:
+cd ~/bobiverse/node_agent
+python main.py
+```
+
+### Dev Council
+
+```bash
+sudo systemctl restart dev_council.service
+# or:
+cd ~/bobiverse/councils/dev_council
+python dev_council_service.py
+```
+
+---
+
+## 9. Adding New Councils (Pattern)
+
+To add, say, **Money Council**:
+
+1. Create `councils/money_council/` with:
+   - `money_council_service.py`
+   - `money_council_client.py`
+   - `schemas.py`
+   - `prompts/`
+   - `logs/`
+
+2. Add API endpoints in orchestrator similar to Dev/Knowledge:
+   - `POST /tasks/money`
+   - `GET /money/tasks/next`
+   - `POST /money/tasks/{task_uuid}/result`
+
+3. Ensure the node running it advertises `"money"` in capabilities.
+
+4. Extend dashboards + bobctl commands as needed.
+
+---
+
+---
+
+## 10. LLM Storage Locations (Main PC)
+
+### Ollama installation
+
+WSL path: `/home/matt/.ollama/`
+
+### Model files
+
+Ollama stores models at: `/home/matt/.ollama/models/`
 
 Examples:
-
-llama3:8b  
-deepseek-coder:6.7b  
-mistral-nemo  
-
+- `llama3:8b`
+- `deepseek-coder:6.7b`
+- `mistral-nemo`
 
 You pull them via:
 
+```bash
 ollama pull llama3
 ollama pull deepseek-coder:6.7b
+```
 
-Dev Council LLM Selection
+### Dev Council LLM Selection
 
 In Dev Council config:
 
+```bash
 LLM_HOST=http://localhost:11434
 MODEL_NAME=deepseek-coder:6.7b
-
+```
 
 You can change to:
 
+```bash
 MODEL_NAME=llama3
+```
 
-13. Cluster Health Checklist After Reboot
-On the Server
+---
+
+## 11. Cluster Health Checklist After Reboot
+
+### On the Server
+
+```bash
 systemctl status orchestrator
 systemctl status node_agent
 systemctl status reflector
 bobctl show-nodes
 bobctl councils
+```
 
-On the Main PC
+### On the Main PC
+
+```bash
 systemctl status dev_council
 systemctl status node_agent
+```
 
 Everything is healthy if:
 
-All services show active (running)
+- All services show `active (running)`
+- `show-nodes` shows `data-mainpc` and `server`
+- `councils` displays `dev_council` as active
+- Dev tasks flow end-to-end
 
-show-nodes shows data-mainpc and server
+---
 
-councils displays dev_council as active
-
-Dev tasks flow end-to-end
-
-14. Dev Bob — Code Analysis / Refactor Engine
-
-Dev Bob is the LLM-powered code assistant of the Bobiverse.
-It accepts:
-
-A file
-
-A directory
-
-Raw text
-
-A code snippet pasted into STDIN
-
-Arbitrary instructions
-
-And returns:
-
-Summary
-
-Reasoning
-
-Suggested changes
-
-Full structured JSON
-
-Safe fallback analysis
-
-🔧 14.1 Single File Mode
-./bobctl dev analyse myscript.py --ask "Find issues and propose refactor."
-
-
-Dev Bob receives:
-
-✓ The file's contents
-✓ Your instructions
-✓ Its intent ("analyse")
-
-📁 14.2 Directory Mode
-./bobctl dev analyse ~/myproject --ask "Give architectural review."
-
-
-bobctl will:
-
-Tar + base64 encode the directory
-
-Create a file manifest
-
-Send every file to Dev Bob as context
-
-This is ideal for:
-
-Reviewing an entire service
-
-Scanning a multi-file module
-
-📋 14.3 STDIN Paste Mode (ChatGPT-Style)
-
-This is the "paste anything" mode.
-
-./bobctl dev analyse --stdin --ask "Explain what this does and fix any bugs."
-
-
-Paste your code (any language, any size), then press:
-
-Ctrl+D (Linux/Mac)
-
-Ctrl+Z + Enter (Windows)
-
-Dev Bob will:
-
-Treat the entire pasted content as the code
-
-Create a synthetic file bobctl_dev/stdin_blob
-
-Analyse exactly what you pasted
-
-This replicates ChatGPT's "paste code into the chat box" but inside your distributed AI system.
-
-🔍 14.4 View the Analysis
-./bobctl show-dev <task_uuid>
-
-
-You'll see:
-
-Summary
-
-Reasoning
-
-Suggested changes
-
-Example code
-
-Tests suggested
-
-Risks
-
-The raw JSON output
-
-🔄 14.5 End-to-End Pipeline (Summary)
-
-bobctl creates a task with payload
-
-Orchestrator logs it
-
-Node Agent picks it up
-
-Dev Council loads:
-
-context_files
-
-your code (from JSON details)
-
-DeepSeek/Llama3 returns JSON
-
-Results stored + visible via bobctl
-
-15. How Dev Bob Processes Code (Internals)
-
-This is how your code enters the LLM context.
-
-15.1 bobctl generates a structured payload
-
-For files, dirs, or stdin, bobctl produces:
-
-{
-  "mode": "single_file | directory | stdin_blob",
-  "filename": "...",
-  "code": "...",
-  "instructions": "...",
-  "intent": "analyse|fix|refactor"
-}
-
-
-This is JSON-encoded inside req.details.
-
-15.2 Orchestrator stores it untouched
-
-It doesn't parse or interfere — this preserves isolation and prevents breakage.
-
-15.3 Node Agent delivers the payload to Dev Council
-
-Exact contents delivered.
-
-15.4 Dev Council parses the incoming JSON
-
-If details contains JSON with "code":
-
-It extracts the code
-
-Creates a synthetic context file:
-
-bobctl_dev/<filename>
-
-
-Adds it to context_files
-
-Merges with orchestrator context (normal mode)
-
-Or replaces orchestrator context (solo mode)
-
-This now becomes the entire context block for DeepSeek/Llama.
-
-15.5 The LLM sees all code as a list of files
-
-Example:
-
-### FILE: bobctl_dev/bobctl.py
-<full file contents>
-
-### FILE: orchestrator/main.py
-<existing orchestrator context>
-
-
-From there, Dev Bob generates:
-
-Summary
-
-Reasoning
-
-JSON diffs
-
-Proposed fixes
-
-All validated before returning.
-
-16. Phase 5 — Unified Input Router (Future Vision)
+## 12. Phase 5 — Unified Input Router (Future Vision)
 
 This is the eventual goal:
 
-Paste anything into Bobiverse → Prime Bob decides which council handles it.
+**Paste anything into Bobiverse → Prime Bob decides which council handles it.**
 
-16.1 Desired UX
+### 12.1 Desired UX
+
+```bash
 ./bobctl ask --stdin
-
+```
 
 Paste:
+- Code
+- Medical text
+- Research
+- Logs
+- Plans
+- Arbitrary mixed content
 
-Code
-
-Medical text
-
-Research
-
-Logs
-
-Plans
-
-Arbitrary mixed content
-
-Press Ctrl+D.
+Press `Ctrl+D`.
 
 Bobiverse automatically routes:
-
-Code → Dev Bob
-
-Medical → HALMed Council
-
-Trading → Money Council
-
-Knowledge → Knowledge Bob
-
-System → Ops Bob
+- Code → Dev Bob
+- Medical → HALMed Council
+- Trading → Money Council
+- Knowledge → Knowledge Bob
+- System → Ops Bob
 
 No user needs to specify anything.
 
-16.2 How it will work (Phase-5 Plan)
+### 12.2 How it will work (Phase-5 Plan)
 
-Lightweight classifier inside orchestrator
+1. Lightweight classifier inside orchestrator
+2. Orchestrator assigns `high_level_type`
+3. Node Agent runs the correct council model
+4. Reflector analyses routing accuracy
+5. Routing becomes self-improving over time
 
-Orchestrator assigns high_level_type
-
-Node Agent runs the correct council model
-
-Reflector analyses routing accuracy
-
-Routing becomes self-improving over time
-
-16.3 Why this is Phase 5
+### 12.3 Why this is Phase 5
 
 Because it depends on:
-
-Multiple active councils
-
-Refined prompt schemas
-
-Reflector scoring
-
-Reliability of Dev Bob pipeline
-
-Fully stable task/execution loop
+- Multiple active councils
+- Refined prompt schemas
+- Reflector scoring
+- Reliability of Dev Bob pipeline
+- Fully stable task/execution loop
 
 You're now completing Phase 2–3, so routing comes after that.
