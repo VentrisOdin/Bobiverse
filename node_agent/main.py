@@ -36,6 +36,10 @@ TAILSCALE_IP = os.getenv("TAILSCALE_IP", "").strip()
 
 ORCH_URL = os.getenv("ORCHESTRATOR_URL", "http://100.111.201.26:5080").rstrip("/")
 DEV_COUNCIL_URL = os.getenv("DEV_COUNCIL_URL", "http://localhost:8011")
+KNOWLEDGE_COUNCIL_URL = os.getenv(
+    "KNOWLEDGE_COUNCIL_URL",
+    "http://localhost:8021/knowledge/analyse",
+)
 HEARTBEAT_INTERVAL = int(os.getenv("HEARTBEAT_INTERVAL_SEC", 5))
 
 # Reuse a single HTTP session for efficiency
@@ -207,6 +211,144 @@ def process_one_dev_task() -> None:
         )
 
 
+def process_one_knowledge_task() -> None:
+    """
+    One full Knowledge Council loop:
+
+    1) Ask orchestrator for the next knowledge task (/knowledge/tasks/next).
+    2) If none, return.
+    3) Call Knowledge Council on this node with a KnowledgeTaskRequest-shaped payload.
+    4) Report result back to orchestrator (/knowledge/tasks/{task_uuid}/result).
+    """
+
+    # 1) Ask Prime Bob for the next knowledge task
+    try:
+        resp = requests.get(
+            f"{ORCH_URL}/knowledge/tasks/next",
+            params={"node_name": NODE_NAME},
+            timeout=10,
+        )
+        resp.raise_for_status()
+    except requests.RequestException as e:
+        logging.error("[KNOWLEDGE_TASK] Error calling /knowledge/tasks/next: %s", e)
+        return
+
+    knowledge_task = resp.json()
+    if not knowledge_task:
+        # No knowledge work right now
+        return
+
+    task_uuid = knowledge_task["task_uuid"]
+    execution_id = knowledge_task["execution_id"]
+    input_payload = knowledge_task.get("input_payload") or {}
+
+    logging.info(
+        "[KNOWLEDGE_TASK] Received knowledge task uuid=%s exec_id=%s from %s",
+        task_uuid,
+        execution_id,
+        ORCH_URL,
+    )
+
+    # Extract fields we care about
+    # Orchestrator should store 'question' and optional 'extra_context' in input_payload
+    question = input_payload.get("question") or input_payload.get("description") or ""
+    extra_context = input_payload.get("extra_context")
+
+    if not question:
+        logging.error(
+            "[KNOWLEDGE_TASK] Task uuid=%s missing 'question' in input_payload: %s",
+            task_uuid,
+            input_payload,
+        )
+        # Report failure back to orchestrator
+        body = {
+            "execution_id": execution_id,
+            "status": "failed",
+            "output_summary": "Knowledge task missing 'question' field.",
+            "full_response": {"error": "Missing 'question' in input_payload."},
+        }
+        try:
+            result_resp = requests.post(
+                f"{ORCH_URL}/knowledge/tasks/{task_uuid}/result",
+                json=body,
+                timeout=20,
+            )
+            result_resp.raise_for_status()
+        except requests.RequestException as e:
+            logging.error(
+                "[KNOWLEDGE_TASK] Failed to report missing-question error for uuid=%s: %s",
+                task_uuid,
+                e,
+            )
+        return
+
+    # 2) Build Knowledge Council request
+    kb_request = {
+        "task_id": str(task_uuid),
+        "task_type": "knowledge",
+        "question": question,
+        "extra_context": extra_context,
+    }
+
+    # 3) Call Knowledge Council on this node
+    try:
+        kb_resp = requests.post(
+            KNOWLEDGE_COUNCIL_URL,
+            json=kb_request,
+            timeout=120,
+        )
+        kb_resp.raise_for_status()
+        kb_result = kb_resp.json()
+
+        # Prefer the structured 'answer' in analysis as summary
+        analysis = kb_result.get("analysis", {}) if isinstance(kb_result, dict) else {}
+        summary = analysis.get("answer") or analysis.get("reasoning") or \
+                  "Knowledge Council completed successfully."
+        status = "success"
+
+        logging.info(
+            "[KNOWLEDGE_TASK] Knowledge Council success for uuid=%s: %s",
+            task_uuid,
+            summary,
+        )
+    except Exception as e:
+        status = "failed"
+        summary = f"Knowledge Council error: {e}"
+        kb_result = {"error": str(e)}
+        logging.error(
+            "[KNOWLEDGE_TASK] Error calling Knowledge Council service for uuid=%s: %s",
+            task_uuid,
+            e,
+        )
+
+    # 4) Report result back to orchestrator
+    body = {
+        "execution_id": execution_id,
+        "status": status,             # "success" | "partial" | "failed"
+        "output_summary": summary,    # goes into task_executions.output_summary
+        "full_response": kb_result,   # stored as metrics_json or similar
+    }
+
+    try:
+        result_resp = requests.post(
+            f"{ORCH_URL}/knowledge/tasks/{task_uuid}/result",
+            json=body,
+            timeout=20,
+        )
+        result_resp.raise_for_status()
+        logging.info(
+            "[KNOWLEDGE_TASK] Reported result for uuid=%s with status=%s",
+            task_uuid,
+            status,
+        )
+    except requests.RequestException as e:
+        logging.error(
+            "[KNOWLEDGE_TASK] Failed to report knowledge result for uuid=%s: %s",
+            task_uuid,
+            e,
+        )
+
+
 async def handle_dev_task(task) -> Dict[str, Any]:
     """
     Handle software development tasks using Dev Council (DeepSeek).
@@ -255,7 +397,7 @@ def register_node() -> bool:
         "name": NODE_NAME,
         "role": NODE_ROLE,
         "tailscale_ip": get_tailscale_ip(),
-        "capabilities": ["shell", "python", "dev"],
+        "capabilities": ["shell", "python", "dev", "knowledge"],
     }
 
     try:
@@ -282,8 +424,11 @@ def send_heartbeat() -> None:
     if "dev" in NODE_ROLE or "dev" in os.getenv("NODE_CAPABILITIES", ""):
         active.append("dev")
 
-    # Or just hardcode for now, since dev council is always running:
-    active.append("dev")
+    # Hardcode dev & knowledge for now since both councils are running here
+    if "dev" not in active:
+        active.append("dev")
+    if "knowledge" not in active:
+        active.append("knowledge")
 
     payload = {
         "name": NODE_NAME,
@@ -444,11 +589,11 @@ def main() -> None:
             # Regular heartbeat
             send_heartbeat()
 
-            # Generic task processing (if you have it)
-            # process_one_generic_task()
-
-            # New: Dev Council pipeline
+            # Dev Council pipeline
             process_one_dev_task()
+
+            # Knowledge Council pipeline
+            process_one_knowledge_task()
 
         except Exception as e:
             logging.exception("[NODE_AGENT] Unexpected error in main loop: %s", e)
