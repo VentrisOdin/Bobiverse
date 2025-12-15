@@ -1,0 +1,318 @@
+# Bobiverse Operator Manual
+
+This document is the **authoritative, day-to-day operations manual** for the Bobiverse.
+
+If a command you need to *run, inspect, debug, recover, or evolve* the system is not documented here, **that is a bug** and this manual must be updated.
+
+---
+
+## 1. Core Assumptions
+
+* Orchestrator runs on the **server** (Prime Bob)
+* Nodes run on multiple machines (main PC, laptops, etc.)
+* All nodes connect via **Tailscale**
+* Services are managed via **systemd**
+* Most interaction happens via **bobctl**
+
+---
+
+## 2. Environment & Locations
+
+### Repository
+
+```bash
+~/bobiverse
+```
+
+### Python Environment
+
+```bash
+source .venv/bin/activate
+```
+
+### Orchestrator URL
+
+```bash
+export ORCHESTRATOR_URL=http://100.111.201.26:5080
+```
+
+---
+
+## 3. Core Services
+
+### Orchestrator
+
+Start:
+
+```bash
+sudo systemctl start bobiverse-orchestrator.service
+```
+
+Stop:
+
+```bash
+sudo systemctl stop bobiverse-orchestrator.service
+```
+
+Restart:
+
+```bash
+sudo systemctl restart bobiverse-orchestrator.service
+```
+
+Status:
+
+```bash
+systemctl status bobiverse-orchestrator.service
+```
+
+Logs:
+
+```bash
+journalctl -u bobiverse-orchestrator.service -f
+```
+
+Health:
+
+```bash
+curl http://localhost:5080/health
+```
+
+---
+
+### Node Agent
+
+Start:
+
+```bash
+sudo systemctl start bobiverse-node.service
+```
+
+Restart:
+
+```bash
+sudo systemctl restart bobiverse-node.service
+```
+
+Logs:
+
+```bash
+journalctl -u bobiverse-node.service -f
+```
+
+---
+
+## 4. Council Services
+
+### Dev Council
+
+```bash
+sudo systemctl start dev_council.service
+sudo systemctl restart dev_council.service
+systemctl status dev_council.service
+journalctl -u dev_council.service -f
+```
+
+Health:
+
+```bash
+curl http://localhost:8011/health
+```
+
+---
+
+### Teacher Council
+
+```bash
+sudo systemctl start teacher_council.service
+sudo systemctl restart teacher_council.service
+systemctl status teacher_council.service
+journalctl -u teacher_council.service -f
+```
+
+Health:
+
+```bash
+curl http://localhost:8013/health | jq
+```
+
+---
+
+### Reflector
+
+Run analysis:
+
+```bash
+./bobctl reflector-run
+```
+
+View lessons:
+
+```bash
+./bobctl reflector-lessons
+```
+
+View proposals:
+
+```bash
+./bobctl reflector-proposals
+```
+
+---
+
+## 5. bobctl – Primary Control Interface
+
+### System Inspection
+
+```bash
+./bobctl show-nodes
+./bobctl show-tasks
+./bobctl live-status
+./bobctl monitor
+./bobctl top
+```
+
+---
+
+### Task Submission
+
+Dev task:
+
+```bash
+./bobctl submit-dev "Analyse this codebase"
+```
+
+Python task:
+
+```bash
+./bobctl submit-python "script.py"
+```
+
+Shell task:
+
+```bash
+./bobctl submit-shell "ls -la"
+```
+
+---
+
+### Task Inspection
+
+```bash
+./bobctl show-dev <TASK_UUID>
+```
+
+---
+
+## 6. Database Operations
+
+Inspect database:
+
+```bash
+./bobctl db-inspect
+```
+
+Recent executions:
+
+```bash
+curl "$ORCHESTRATOR_URL/reflector/executions/recent?limit=10" | jq
+```
+
+---
+
+## 7. Vector / Knowledge Operations
+
+Test Qdrant:
+
+```bash
+python tools/qdrant_test.py
+```
+
+Restart Qdrant:
+
+```bash
+docker restart qdrant
+```
+
+---
+
+## 8. Full System Restart (Clean)
+
+**Recommended order:**
+
+```bash
+sudo systemctl restart teacher_council.service
+sudo systemctl restart dev_council.service
+sudo systemctl restart bobiverse-node.service
+sudo systemctl restart bobiverse-orchestrator.service
+```
+
+Verify:
+
+```bash
+./bobctl show-nodes
+./bobctl live-status
+```
+
+---
+
+## 9. Debugging Playbook
+
+### Council not visible
+
+```bash
+./bobctl show-nodes
+journalctl -u <council>.service -f
+```
+
+### Task stuck
+
+```bash
+./bobctl show-tasks
+```
+
+### Orchestrator unreachable
+
+```bash
+curl http://localhost:5080/health
+systemctl status bobiverse-orchestrator.service
+```
+
+---
+
+## 10. Development Workflow
+
+After code changes:
+
+```bash
+sudo systemctl restart <affected_service>.service
+```
+
+Verify:
+
+```bash
+./bobctl live-status
+```
+
+---
+
+## 11. Golden Rules
+
+* **If it runs, it must be inspectable**
+* **If it can fail, it must log**
+* **If it changes behaviour, Reflector must see it**
+* **If a command is missing, update this manual**
+
+---
+
+## 12. Operator Mindset
+
+You are not running services.
+
+You are **maintaining a distributed cognitive organism**.
+
+Treat documentation, logs, and introspection as *organs*, not accessories.
+
+---
+
+END OF OPERATOR MANUAL
