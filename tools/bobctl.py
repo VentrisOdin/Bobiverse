@@ -65,6 +65,21 @@ COMMANDS = {
             ("--details", {"type": str, "default": None}),
         ],
     },
+    "submit-knowledge": {
+        "handler": "submit_knowledge:cli",
+        "help": "Submit Knowledge Council task",
+        "args": [
+            ("description", {"type": str, "help": "Question / prompt for Knowledge Bob"}),
+            ("--details", {"type": str, "default": None, "help": "Optional extra details or hints"}),
+        ],
+    },
+    "show-knowledge": {
+        "handler": "show_knowledge:cli",
+        "help": "Show Knowledge Council tasks",
+        "args": [
+            ("--limit", {"type": int, "default": 20, "help": "How many recent tasks to show"}),
+        ],
+    },
     "submit-shell": {
         "handler": "submit_shell:cli",
         "help": "Submit shell command (stub)",
