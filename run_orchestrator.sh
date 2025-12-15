@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-# Move into orchestrator folder
-cd /home/matt-mitchell/bobiverse/orchestrator
+cd /home/matt-mitchell/bobiverse
 
-# Activate virtualenv
-source /home/matt-mitchell/bobiverse/.venv/bin/activate
+# Use the venv explicitly
+PY="/home/matt-mitchell/bobiverse/.venv/bin/python"
 
-# Run orchestrator (this is what you already do manually)
-exec python main.py
+# Start FastAPI app in package mode
+exec "$PY" -m uvicorn orchestrator.main:app \
+  --host 0.0.0.0 \
+  --port "${ORCHESTRATOR_PORT:-5080}"

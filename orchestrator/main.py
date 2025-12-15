@@ -1,3 +1,5 @@
+
+
 import os
 from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Optional, Any, Literal
@@ -7,11 +9,8 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
-from dotenv import load_dotenv
-import uuid
-import json
 
-from db.db_manager import (
+from orchestrator.db.db_manager import (
     init_db,
     create_task,
     get_task_by_uuid,
@@ -27,7 +26,8 @@ from db.db_manager import (
     update_policy_proposal_status,
     get_connection,
 )
-from models import (
+
+from orchestrator.models import (
     NodeRegistration,
     NodeHeartbeat,
     NodeInfo,
@@ -39,6 +39,11 @@ from models import (
     PolicyProposalCreate,
     PolicyProposalRecord,
 )
+
+from orchestrator.teacher_router import call_teacher
+from dotenv import load_dotenv
+import uuid
+import json
 
 
 # ---------- Dev Council Models ---------- #
@@ -106,11 +111,25 @@ class KnowledgeTaskNextResponse(BaseModel):
     execution_id: int
 
 
+
 class KnowledgeTaskResultIn(BaseModel):
     execution_id: int
     status: Literal["success", "partial", "failed"]
     output_summary: str
     full_response: Optional[Dict[str, Any]] = None
+
+# ---------- Teacher Council Models ---------- #
+
+class TeacherTaskCreate(BaseModel):
+    """
+    Payload for creating a Teacher Council task via /tasks/teacher.
+    """
+    question: str
+    max_sources: int = 6
+    domains_allow: Optional[List[str]] = None
+    include_snippets: bool = True
+    submitted_by: str = "bobctl"
+    priority: Literal["low", "normal", "high"] = "normal"
 
 # Load .env if present
 load_dotenv()
@@ -1124,14 +1143,118 @@ def create_knowledge_task(payload: KnowledgeTaskCreate):
     }
 
 
-# ---------- Dev-only: local run ---------- #
+# ---------- Teacher Council Routes ---------- #
 
-if __name__ == "__main__":
-    import uvicorn
+# ---------- Teacher Council Routes ---------- #
 
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=ORCHESTRATOR_PORT,
-        reload=True,
+@app.post("/tasks/teacher")
+def create_teacher_task(payload: TeacherTaskCreate):
+    """
+    Create and execute a Teacher Council research task immediately on the orchestrator server.
+    This is different from dev/knowledge:
+    - Teacher Council runs locally on the server and is the only internet gateway.
+    - The orchestrator executes the research synchronously and logs results to the DB.
+    """
+    # 1) Build input payload that gets stored in tasks.input_payload
+    input_payload: Dict[str, Any] = {
+        "kind": "teacher_research",
+        "question": payload.question,
+        "max_sources": payload.max_sources,
+        "domains_allow": payload.domains_allow,
+        "include_snippets": payload.include_snippets,
+        "task_type": "teacher",
+        "priority": payload.priority,
+        "origin": {
+            "submitted_by": payload.submitted_by,
+            "origin_type": "bobctl",
+            "source_node": "orchestrator-server",
+            "source_tool": "bobctl submit-teacher",
+        },
+    }
+
+    # 2) Create DB task row
+    db_task = create_task(
+        high_level_type="teacher",
+        input_payload=input_payload,
+        submitted_by=payload.submitted_by,
+        is_experiment=False,
+        input_hash=None,
     )
+    task_uuid = db_task["task_uuid"]
+
+    logger.info("[TEACHER_TASK_CREATE] uuid=%s submitted_by=%s", task_uuid, payload.submitted_by)
+
+    # 3) Mark RUNNING + create execution record
+    try:
+        update_task_status(task_uuid=task_uuid, final_status="RUNNING")
+    except Exception as e:
+        logger.exception("Failed to set teacher task RUNNING: %s", e)
+
+    exec_row = create_task_execution(
+        task_uuid=task_uuid,
+        target_module="teacher_council",
+        target_node=ORCHESTRATOR_NODE_NAME,
+        strategy_name=None,
+    )
+    execution_id = exec_row["id"]
+
+    # 4) Execute Teacher Council call
+    try:
+        started = _utc_now()
+        result = call_teacher(
+            question=payload.question,
+            max_sources=payload.max_sources,
+            domains_allow=payload.domains_allow,
+            include_snippets=payload.include_snippets,
+        )
+        ended = _utc_now()
+        latency_ms = int((ended - started).total_seconds() * 1000)
+
+        output_summary = result.get("summary", "").strip() or "Teacher Council completed."
+
+        # 5) Complete execution + task status
+        complete_task_execution(
+            execution_id=execution_id,
+            status="SUCCESS",
+            output_summary=output_summary,
+            error_type=None,
+            latency_ms=latency_ms,
+            metrics=result,  # full JSON goes into metrics_json
+        )
+        update_task_status(task_uuid=task_uuid, final_status="SUCCESS", error_type=None)
+
+        logger.info("[TEACHER_TASK_SUCCESS] uuid=%s exec_id=%s latency_ms=%s", task_uuid, execution_id, latency_ms)
+
+        return {
+            "status": "ok",
+            "task_uuid": task_uuid,
+            "execution_id": execution_id,
+            "final_status": "SUCCESS",
+            "summary": output_summary,
+            "sources": result.get("sources", []),
+            "confidence": result.get("confidence", None),
+        }
+
+    except Exception as e:
+        err = str(e)
+        logger.exception("[TEACHER_TASK_FAILED] uuid=%s exec_id=%s error=%s", task_uuid, execution_id, err)
+
+        # best-effort DB updates
+        try:
+            complete_task_execution(
+                execution_id=execution_id,
+                status="FAILED",
+                output_summary=err,
+                error_type=err,
+                latency_ms=None,
+                metrics={"error": err},
+            )
+        except Exception:
+            pass
+
+        try:
+            update_task_status(task_uuid=task_uuid, final_status="FAILED", error_type=err)
+        except Exception:
+            pass
+
+        raise HTTPException(status_code=500, detail=f"Teacher task failed: {err}")

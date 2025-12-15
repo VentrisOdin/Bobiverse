@@ -16,6 +16,9 @@ DEFAULT_ALLOWLIST = {
     "docs.python.org",
     "kubernetes.io",
     "github.com",
+    "cdc.gov",
+    "nice.org.uk",
+    "ukhsa.gov.uk",
 }
 
 HIGH_TRUST = {
@@ -28,6 +31,9 @@ HIGH_TRUST = {
     "docs.python.org",
     "developer.mozilla.org",
     "kubernetes.io",
+    "cdc.gov",
+    "nice.org.uk",
+    "ukhsa.gov.uk",
 }
 
 MEDIUM_TRUST = {
@@ -38,8 +44,18 @@ MEDIUM_TRUST = {
 
 
 def domain_of(url: str) -> str:
-    host = urlparse(url).netloc.lower()
-    return host[4:] if host.startswith("www.") else host
+    host = (urlparse(url).hostname or "").lower()
+    host = host.lstrip("www.")
+
+    # collapse common subdomains to base domains
+    if host.endswith(".wikipedia.org"):
+        return "wikipedia.org"
+    if host.endswith(".nhs.uk"):
+        return "nhs.uk"
+    if host.endswith(".ncbi.nlm.nih.gov"):
+        return "ncbi.nlm.nih.gov"
+
+    return host
 
 
 def is_allowed(url: str, allowlist: set[str]) -> bool:

@@ -35,3 +35,22 @@ This repo currently contains the Phase 1 implementation:
 - Add configuration + identity management via a shared `identity.yaml`.
 - Begin modularising councils (Money, Dev, Medical, Knowledge, Ops).
 
+For Teacher Council:
+
+sudo systemctl restart teacher_council.service
+
+
+To immediately confirm it’s back up:
+
+systemctl status teacher_council.service
+
+
+And a quick health check:
+
+curl -s http://localhost:8013/health | jq
+
+
+If you ever want to restart everything cleanly during dev, the usual order is:
+
+sudo systemctl restart teacher_council.service
+sudo systemctl restart bobiverse-orchestrator.service
