@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 import os
@@ -12,10 +13,10 @@ from .trust import DEFAULT_ALLOWLIST, is_allowed, domain_of, trust_for_domain
 
 from .fetchers.wikipedia import fetch_wikipedia_summary
 from .fetchers.arxiv import fetch_arxiv_top
-from .fetchers.pubmed import fetch_pubmed_top
+from .fetchers.pubmed import fetch_pubmed_candidates
 
 
-from .fetchers.nhs import fetch_nhs_top
+from .fetchers.nhs import fetch_nhs_candidates
 from .fetchers.cdc import fetch_cdc_top
 from .fetchers.nice import fetch_nice_top
 from .fetchers.ukhsa import fetch_ukhsa_top
@@ -33,9 +34,62 @@ app = FastAPI(title=APP_TITLE)
 # Relevance + Ranking Helpers
 # ---------------------------
 
+
+
+
 _STOPWORDS: Set[str] = {
-    "meaning", "define", "definition", "what", "is", "the", "a", "an", "of", "in", "for", "to", "and"
+    "meaning", "define", "definition", "what", "is", "the", "a", "an", "of", "in", "for", "to", "and",
+    "how", "does", "do", "work", "works", "why", "when", "where", "who", "explain"
 }
+def _wiki_query(question: str) -> str:
+    kws = _extract_keywords(question)
+    # join strongest tokens into a title-like query
+    return " ".join(kws[:4]) if kws else (question or "").strip()
+
+def _question_domain(question: str) -> str:
+    q = (question or "").lower()
+
+    # very conservative: only label medical when it's clearly medical
+    medical_triggers = [
+        "nhs", "symptom", "symptoms", "treatment", "diagnosis", "infection",
+        "disease", "illness", "medicine", "antibiotic", "virus", "bacteria",
+        "dose", "side effect", "clinic", "gp", "hospital", "condition"
+    ]
+    if any(t in q for t in medical_triggers):
+        return "medical"
+
+    return "general"
+
+def _extract_acronyms(question: str) -> List[str]:
+    """
+    Returns likely acronyms, e.g. MRSA, HIV, COPD
+    """
+    return re.findall(r"\b[A-Z]{3,}\b", question or "")
+
+def _stands_for_bonus(snippet: Optional[str]) -> int:
+    if not snippet:
+        return 0
+    s = snippet.lower()
+    if "stands for" in s:
+        return 3
+    if "is short for" in s or "abbreviation" in s:
+        return 2
+    return 0
+
+def _looks_like_definition(c: Dict[str, Any], question: str) -> bool:
+    q = (question or "").lower()
+    blob = _candidate_text(c)
+    kws = _extract_keywords(question)
+
+    # Strong signals for definition/explanation style
+    if any(x in blob for x in [" is a ", " refers to ", " means ", " stands for ", " abbreviation"]):
+        return True
+
+    # If acronym is in question, require either "(ACRONYM)" or "stands for"
+    # e.g. MRSA → title/snippet contains MRSA or the expanded phrase
+    if kws:
+        return any(kw in blob for kw in kws)
+    return False
 
 def _norm(s: str) -> str:
     return re.sub(r"\s+", " ", (s or "").strip().lower())
@@ -63,26 +117,29 @@ def _extract_keywords(question: str) -> List[str]:
     return kws
 
 def _candidate_text(c: Dict[str, Any]) -> str:
+    url = str(c.get("url", "") or "")
+    if "nhs.uk/search/click" in url:
+        # remove searchText=... so it can't falsely satisfy keyword matching
+        url = url.split("searchText=", 1)[0]
     return _norm(" ".join([
         str(c.get("title", "")),
         str(c.get("snippet", "")),
-        str(c.get("url", "")),
+        url,
     ]))
 
 def _is_relevant(question: str, c: Dict[str, Any]) -> bool:
-    """
-    Hard relevance filter:
-    - If the question contains a strong token (e.g. 'mrsa'),
-      require at least one strong token to appear in title/snippet/url.
-    """
     kws = _extract_keywords(question)
     if not kws:
         return True
 
     blob = _candidate_text(c)
 
-    # If user asked with an acronym (MRSA), that token will be in kws.
-    # Require at least one keyword match.
+    url = (c.get("url") or "").lower()
+    if "pubmed.ncbi.nlm.nih.gov" in url:
+        # only accept if keyword(s) appear in TITLE or URL (not just abstract noise)
+        title = _norm(c.get("title", ""))
+        return any(kw in title for kw in kws) or any(kw in url for kw in kws)
+
     return any(kw in blob for kw in kws)
 
 def _definitiony_bonus(c: Dict[str, Any]) -> int:
@@ -144,6 +201,25 @@ def _make_chunks(question: str, sources: List[TeacherSource]) -> List[TeacherChu
 
 
 def _summarise(question: str, sources: List[TeacherSource]) -> str:
+    def _answer(question: str, sources: List[TeacherSource]) -> str:
+        if not sources:
+            return "No trusted sources were found for this question on the current allowlist."
+
+        # pick best snippet (prefer high-trust)
+        best = next((s for s in sources if s.trust == "high" and (s.snippet or "").strip()), None)
+        if not best:
+            best = next((s for s in sources if (s.snippet or "").strip()), sources[0])
+
+        snip = re.sub(r"\s+", " ", (best.snippet or "").strip())
+
+        # keep 1–2 sentences
+        parts = re.split(r"(?<=[.!?])\s+", snip)
+        short = " ".join(parts[:2]).strip()
+
+        if len(short) > 320:
+            short = short[:320].rsplit(" ", 1)[0] + "…"
+
+        return f"{short} (Source: {best.domain})"
     # v1 = deterministic “compressed digest” (no LLM needed yet)
     if not sources:
         return "No trusted sources were found for this question on the current allowlist."
@@ -170,48 +246,41 @@ def health():
 def research(req: TeacherResearchRequest):
     allowlist = set(req.domains_allow) if req.domains_allow else set(DEFAULT_ALLOWLIST)
 
+
     candidates: List[Dict[str, Any]] = []
 
-    # Definition-first sources (but ONLY if relevant)
 
+    # Determine question domain for source gating
+    q_domain = _question_domain(req.question)
 
-
-    nhs = fetch_nhs_top(req.question)
-    logger.info("NHS fetch: %s", "OK" if nhs else "NONE")
-    if nhs:
-        candidates.append(nhs)
-
-    cdc = fetch_cdc_top(req.question)
-    logger.info("CDC fetch: %s", "OK" if cdc else "NONE")
-    if cdc and _is_relevant(req.question, cdc):
-        candidates.append(cdc)
-
-    nice = fetch_nice_top(req.question)
-    logger.info("NICE fetch: %s", "OK" if nice else "NONE")
-    if nice and _is_relevant(req.question, nice):
-        candidates.append(nice)
-
-    ukhsa = fetch_ukhsa_top(req.question)
-    logger.info("UKHSA fetch: %s", "OK" if ukhsa else "NONE")
-    if ukhsa and _is_relevant(req.question, ukhsa):
-        candidates.append(ukhsa)
-
-    w = fetch_wikipedia_summary(req.question)
-    logger.info("Wikipedia fetch: %s", "OK" if w else "NONE")
-    if w:
+    # Always allowed for all questions: Wikipedia
+    w = fetch_wikipedia_summary(_wiki_query(req.question))
+    if w and _is_relevant(req.question, w):
         candidates.append(w)
 
-    # Then scholarly sources (also gated)
+    # Only run medical fetchers for medical questions
+    if q_domain == "medical":
+        for nhs in fetch_nhs_candidates(req.question, limit=3):
+            if _is_relevant(req.question, nhs):
+                candidates.append(nhs)
 
-    p = fetch_pubmed_top(req.question)
-    logger.info("PubMed fetch: %s", "OK" if p else "NONE")
-    if p:
-        candidates.append(p)
+        cdc = fetch_cdc_top(req.question)
+        if cdc and _is_relevant(req.question, cdc):
+            candidates.append(cdc)
 
-    a = fetch_arxiv_top(req.question)
-    logger.info("arXiv fetch: %s", "OK" if a else "NONE")
-    if a:
-        candidates.append(a)
+        nice = fetch_nice_top(req.question)
+        if nice and _is_relevant(req.question, nice):
+            candidates.append(nice)
+
+        ukhsa = fetch_ukhsa_top(req.question)
+        if ukhsa and _is_relevant(req.question, ukhsa):
+            candidates.append(ukhsa)
+
+        for p in fetch_pubmed_candidates(req.question, limit=3):
+            if _is_relevant(req.question, p):
+                candidates.append(p)
+
+    # a = fetch_arxiv_top(req.question)  # disable for now; too noisy for general Qs
 
 
     # --- Logging for debugging allowlist and candidate filtering ---
@@ -250,9 +319,17 @@ def research(req: TeacherResearchRequest):
     filtered.sort(key=lambda c: _rank_key(req.question, c), reverse=True)
     filtered = filtered[: req.max_sources]
 
+    from urllib.parse import unquote, urlparse, parse_qs
     sources: List[TeacherSource] = []
     for c in filtered:
         url = c["url"]
+        # Canonicalize NHS click URLs
+        if "nhs.uk/search/click" in url:
+            parsed = urlparse(url)
+            qs = parse_qs(parsed.query)
+            nhs_path = qs.get("url", [None])[0]
+            if nhs_path and nhs_path.startswith("/conditions/"):
+                url = f"https://www.nhs.uk{unquote(nhs_path)}"
         dom = domain_of(url)
         sources.append(
             TeacherSource(
@@ -272,34 +349,102 @@ def research(req: TeacherResearchRequest):
     )
 
     if is_definition_query:
-        definition_preferred_domains = {
-            "nhs.uk",
-            "who.int",
-            "cdc.gov",
-            "gov.uk",
-            "wikipedia.org",
-        }
+        primary_domains = {"nhs.uk", "cdc.gov", "who.int", "nih.gov", "nice.org.uk", "ukhsa.gov.uk"}
+        supporting_domains = {"ncbi.nlm.nih.gov"}  # PubMed
 
-        # Keep definition-style sources first
-        definition_sources = [
+        primary = [
             s for s in sources
-            if s.domain in definition_preferred_domains
+            if s.trust == "high" and s.domain in primary_domains
         ]
 
-        if definition_sources:
-            sources = definition_sources
+        # allow PubMed only as *supporting evidence* if it looks definitional
+        supporting = []
+        for c in filtered:
+            dom = domain_of(c.get("url", ""))
+            if dom in supporting_domains and _looks_like_definition(c, req.question):
+                supporting.append(
+                    TeacherSource(
+                        title=c.get("title", "").strip() or dom,
+                        url=c["url"],
+                        domain=dom,
+                        trust=trust_for_domain(dom),
+                        snippet=c.get("snippet") if req.include_snippets else None,
+                    )
+                )
 
-    summary = _summarise(req.question, sources)
+        wiki = [s for s in sources if s.domain == "wikipedia.org"]
+
+        if primary:
+            sources = primary[: req.max_sources]
+            if len(sources) < req.max_sources and supporting:
+                sources.append(supporting[0])
+        elif supporting:
+            sources = [supporting[0]]
+            if wiki and len(sources) < req.max_sources:
+                sources.append(wiki[0])
+        elif wiki:
+            sources = [wiki[0]]
+
+
+
+    # Tiny filter: for definition queries, drop PubMed if snippet is not meaningful
+    is_definition_query = any(k in req.question.lower() for k in ["what is", "meaning", "define", "definition"])
+    if is_definition_query:
+        def _good_snip(s: TeacherSource) -> bool:
+            sn = (s.snippet or "").strip()
+            return len(sn) >= 80  # tune as needed
+
+        sources = [s for s in sources if not (s.domain == "ncbi.nlm.nih.gov" and not _good_snip(s))]
+
+    # Build answer/summary depending on mode
+
+    answer: Optional[str] = None
+    summary: str = ""
+
+    if req.mode in ("answer", "both"):
+        if sources:
+            acronyms = _extract_acronyms(req.question)
+
+            def score_source(s: TeacherSource) -> tuple:
+                """
+                Higher tuple wins.
+                Order:
+                1) Has 'stands for' if acronym query
+                2) Trust (+1 for Wikipedia if acronym query)
+                3) Has snippet
+                """
+                trust_score = 2 if s.trust == "high" else 1
+                if acronyms and s.domain == "wikipedia.org":
+                    trust_score += 1
+                stands_bonus = _stands_for_bonus(s.snippet) if acronyms else 0
+                has_snip = 1 if (s.snippet or "").strip() else 0
+                return (stands_bonus, trust_score, has_snip)
+
+            ranked = sorted(sources, key=score_source, reverse=True)
+            best = ranked[0] if ranked else None
+
+            if best and best.snippet:
+                snip = re.sub(r"\s+", " ", best.snippet.strip())
+                parts = re.split(r"(?<=[.!?])\s+", snip)
+                answer = " ".join(parts[:2]).strip()
+
+    if req.mode in ("research", "both"):
+        summary = _summarise(req.question, sources)
+    else:
+        # Optional: keep summary minimal in answer-only mode
+        summary = "Answer-only mode. See sources for citations."
+
     chunks = _make_chunks(req.question, sources)
 
-    confidence = 0.25
-    if sources:
-        confidence = 0.55 if any(s.trust == "high" for s in sources) else 0.45
+    # Set a default confidence value (e.g., 1.0 for full confidence, or adjust as needed)
+    confidence = 1.0
 
     return TeacherResearchResponse(
         question=req.question,
+        answer=answer,
         summary=summary,
         confidence=confidence,
         sources=sources,
         chunks=chunks,
+        mode=req.mode,  # echo mode for debugging
     )

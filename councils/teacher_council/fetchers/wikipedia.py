@@ -1,3 +1,5 @@
+
+
 from __future__ import annotations
 
 import re
@@ -52,6 +54,8 @@ def _try_summary_by_title(title: str, timeout: int) -> Optional[Dict[str, Any]]:
         return None
 
     js = r.json()
+    if js.get("type") == "disambiguation":
+        return None
     extract = js.get("extract")
     page_url = js.get("content_urls", {}).get("desktop", {}).get("page")
 
@@ -74,7 +78,7 @@ def fetch_wikipedia_summary(query: str, timeout: int = 12) -> dict | None:
             params={
                 "action": "opensearch",
                 "search": q,
-                "limit": 1,
+                "limit": 5,
                 "namespace": 0,
                 "format": "json",
             },

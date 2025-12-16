@@ -1,53 +1,73 @@
 from __future__ import annotations
-from dataclasses import dataclass
 from urllib.parse import urlparse
 
+# -------------------------
+# Allowlist (who can be accessed at all)
+# -------------------------
 
 DEFAULT_ALLOWLIST = {
-    "wikipedia.org",
-    "arxiv.org",
-    "ncbi.nlm.nih.gov",
-    "nih.gov",
-    "who.int",
-    "gov.uk",
+    # Medical & public health
     "nhs.uk",
+    "gov.uk",
+    "cdc.gov",
+    "who.int",
+    "nih.gov",
+    "nice.org.uk",
+    "ukhsa.gov.uk",
     "nist.gov",
+
+    # Research & literature
+    "ncbi.nlm.nih.gov",
+    "arxiv.org",
+
+    # Reference / engineering
+    "wikipedia.org",
     "developer.mozilla.org",
     "docs.python.org",
     "kubernetes.io",
     "github.com",
-    "cdc.gov",
-    "nice.org.uk",
-    "ukhsa.gov.uk",
 }
 
+# -------------------------
+# Trust tiers
+# -------------------------
+
 HIGH_TRUST = {
-    "nih.gov",
-    "ncbi.nlm.nih.gov",
-    "who.int",
-    "gov.uk",
+    # Authoritative medical / governmental guidance
     "nhs.uk",
+    "gov.uk",
+    "cdc.gov",
+    "who.int",
+    "nih.gov",
+    "nice.org.uk",
+    "ukhsa.gov.uk",
     "nist.gov",
+
+    # Official technical documentation
     "docs.python.org",
     "developer.mozilla.org",
     "kubernetes.io",
-    "cdc.gov",
-    "nice.org.uk",
-    "ukhsa.gov.uk",
 }
 
 MEDIUM_TRUST = {
+    # Peer-reviewed but contextual / non-guideline
+    "ncbi.nlm.nih.gov",   # PubMed abstracts, literature summaries
     "arxiv.org",
+
+    # Community / reference
     "wikipedia.org",
     "github.com",
 }
 
+# -------------------------
+# Helpers
+# -------------------------
 
 def domain_of(url: str) -> str:
     host = (urlparse(url).hostname or "").lower()
     host = host.lstrip("www.")
 
-    # collapse common subdomains to base domains
+    # Collapse known subdomains
     if host.endswith(".wikipedia.org"):
         return "wikipedia.org"
     if host.endswith(".nhs.uk"):
