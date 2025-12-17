@@ -41,6 +41,7 @@ from orchestrator.models import (
 )
 
 from orchestrator.teacher_router import call_teacher
+from orchestrator.ops_client import get_ops_hints
 from dotenv import load_dotenv
 import uuid
 import json
@@ -209,15 +210,28 @@ def _choose_node_for_task() -> Optional[str]:
     if not NODE_REGISTRY:
         return None
 
-    # Filter to nodes with a load value
-    nodes_with_load = [n for n in NODE_REGISTRY.values() if n.load is not None]
+    ops_hints = get_ops_hints()  # node_id -> {routable, health_score, ...}
 
-    if nodes_with_load:
-        chosen = min(nodes_with_load, key=lambda n: n.load)
-    else:
-        # Fall back to first node if no load info
-        chosen = sorted(NODE_REGISTRY.values(), key=lambda n: n.name.lower())[0]
+    # Exclude unroutable nodes if Ops Bob has an opinion
+    candidates = []
+    for n in NODE_REGISTRY.values():
+        hint = ops_hints.get(n.name)
+        if hint is not None and hint.get("routable") is False:
+            continue
+        candidates.append(n)
 
+    if not candidates:
+        return None  # Everyone is unroutable (or no nodes)
+
+    # Existing behaviour: pick lowest load, but use Ops health as a tie-breaker if present
+    def score(node: NodeInfo):
+        hint = ops_hints.get(node.name, {})
+        health = float(hint.get("health_score", 0.0))
+        load = node.load if node.load is not None else 999.0
+        # Higher health is better, lower load is better
+        return (-health, load, node.name.lower())
+
+    chosen = sorted(candidates, key=score)[0]
     return chosen.name
 
 
@@ -231,22 +245,29 @@ def choose_node_for_capability(task_type: str) -> Optional[str]:
     if not NODE_REGISTRY:
         return None
 
-    # Filter by capability
+    ops_hints = get_ops_hints()
+
     capable_nodes = [
         n for n in NODE_REGISTRY.values()
         if task_type in n.capabilities
     ]
 
-    if capable_nodes:
-        # Pick lowest load among capable nodes
-        nodes_with_load = [n for n in capable_nodes if n.load is not None]
-        if nodes_with_load:
-            chosen = min(nodes_with_load, key=lambda n: n.load)
-        else:
-            chosen = sorted(capable_nodes, key=lambda n: n.name.lower())[0]
-        return chosen.name
+    # Filter unroutable (only if Ops Bob returned a hint for that node)
+    capable_nodes = [
+        n for n in capable_nodes
+        if not (ops_hints.get(n.name) is not None and ops_hints.get(n.name, {}).get("routable") is False)
+    ]
 
-    # Fallback: use generic lowest-load selector
+    if capable_nodes:
+        def score(node: NodeInfo):
+            hint = ops_hints.get(node.name, {})
+            health = float(hint.get("health_score", 0.0))
+            load = node.load if node.load is not None else 999.0
+            return (-health, load, node.name.lower())
+
+        return sorted(capable_nodes, key=score)[0].name
+
+    # Fallback: use generic selector (which already filters unroutable)
     return _choose_node_for_task()
 
 
