@@ -8,11 +8,17 @@ import sys
 from typing import Dict, Optional, Any
 import logging
 
+
 import psutil
 import requests
 from dotenv import load_dotenv
+import threading
 
 logger = logging.getLogger("node_agent")
+
+# --- Load .env from this folder (node_agent/.env) ---
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(dotenv_path=BASE_DIR / ".env")
 
 # Add councils to Python path so we can import the dev council client
 COUNCILS_PATH = Path.home() / "bobiverse" / "councils"
@@ -20,13 +26,12 @@ sys.path.append(str(COUNCILS_PATH))
 
 from dev_council.dev_council_client import analyse_dev_task_async  # type: ignore
 
-load_dotenv()
-
 # =========================
 #    Configuration
 # =========================
 
 AGENT_VERSION = "bob-agent-v1"
+
 
 NODE_NAME = os.getenv("BOBIVERSE_NODE_NAME", "data-mainpc")
 NODE_ROLE = os.getenv("NODE_ROLE", "worker")
@@ -42,13 +47,122 @@ KNOWLEDGE_COUNCIL_URL = os.getenv(
 )
 HEARTBEAT_INTERVAL = int(os.getenv("HEARTBEAT_INTERVAL_SEC", 5))
 
+# Ops Bob config
+OPS_BOB_URL = os.getenv("OPS_BOB_URL", "http://100.111.201.26:8014").rstrip("/")
+OPS_REPORT_INTERVAL_S = float(os.getenv("OPS_REPORT_INTERVAL_S", "10"))
+OPS_REPORT_TIMEOUT_S = float(os.getenv("OPS_REPORT_TIMEOUT_S", "2.0"))
+
 # Reuse a single HTTP session for efficiency
 SESSION = requests.Session()
 
 
+import time
+
+def _health_url_from_base(base: str) -> str:
+    # e.g. http://localhost:8011 -> http://localhost:8011/health
+    return base.rstrip("/") + "/health"
+
+def _health_url_from_knowledge_url(url: str) -> str:
+    # e.g. http://localhost:8021/knowledge/analyse -> http://localhost:8021/health
+    u = url.rstrip("/")
+    if "/knowledge/analyse" in u:
+        return u.split("/knowledge/analyse", 1)[0] + "/health"
+    # fallback: try sibling /health
+    return u.rsplit("/", 1)[0] + "/health"
+
+def probe_get(name: str, url: str, timeout_s: float) -> Dict[str, Any]:
+    t0 = time.time()
+    try:
+        r = SESSION.get(url, timeout=timeout_s)
+        latency_ms = int((time.time() - t0) * 1000)
+        ok = 200 <= r.status_code < 300
+        return {
+            "name": name,
+            "url": url,
+            "ok": ok,
+            "latency_ms": latency_ms,
+            "status_code": r.status_code,
+        }
+    except Exception as e:
+        latency_ms = int((time.time() - t0) * 1000)
+        return {
+            "name": name,
+            "url": url,
+            "ok": False,
+            "latency_ms": latency_ms,
+            "error": str(e)[:160],
+        }
 # =========================
 #    Helper Functions
 # =========================
+
+# =========================
+#   Ops Bob Reporting Loop
+# =========================
+async def ops_report_loop() -> None:
+    """
+    Periodically report node health to Ops Bob.
+    - Normal cadence: ~10s with jitter
+    - On errors: exponential backoff (capped)
+    """
+    import random
+
+    backoff_s = OPS_REPORT_INTERVAL_S
+    max_backoff_s = 40.0
+
+    while True:
+        # Jitter prevents “heartbeat storms”
+        jitter = random.uniform(-1.5, 1.5)
+        sleep_s = max(2.0, backoff_s + jitter)
+
+        try:
+            # Collect metrics
+            cpu_pct = psutil.cpu_percent(interval=None)
+            ram_pct = psutil.virtual_memory().percent
+            disk_pct = psutil.disk_usage("/").percent
+
+            try:
+                load_1m = os.getloadavg()[0]  # Linux
+            except (AttributeError, OSError):
+                load_1m = None  # Windows / unsupported
+
+
+            # Probe Dev and Knowledge Council health endpoints
+            svc_timeout = min(0.6, OPS_REPORT_TIMEOUT_S)  # keep probes fast and bounded
+
+            dev_health = _health_url_from_base(DEV_COUNCIL_URL)
+            know_health = _health_url_from_knowledge_url(KNOWLEDGE_COUNCIL_URL)
+
+            services = [
+                probe_get("dev_council", dev_health, timeout_s=svc_timeout),
+                probe_get("knowledge_council", know_health, timeout_s=svc_timeout),
+            ]
+
+            payload = {
+                "node_id": NODE_NAME,
+                "cpu_pct": float(cpu_pct),
+                "ram_pct": float(ram_pct),
+                "disk_pct": float(disk_pct),
+                "load_1m": float(load_1m) if load_1m is not None else None,
+                "services": services,
+                "counters": {},
+            }
+
+            # Send (sync requests inside async loop is OK at this frequency; keep timeout low)
+            url = f"{OPS_BOB_URL}/ops/report"
+            resp = SESSION.post(url, json=payload, timeout=OPS_REPORT_TIMEOUT_S)
+            if resp.status_code >= 400:
+                raise RuntimeError(f"Ops report failed: {resp.status_code} {resp.text[:200]}")
+
+            # Success → reset backoff to normal interval
+            backoff_s = OPS_REPORT_INTERVAL_S
+
+        except Exception as e:
+            logger.warning(f"[ops_report_loop] error: {e}")
+            # Failure → exponential backoff (capped)
+            backoff_s = min(max_backoff_s, max(OPS_REPORT_INTERVAL_S, backoff_s * 2))
+
+        await asyncio.sleep(sleep_s)
 
 def get_tailscale_ip() -> str:
     """
@@ -101,6 +215,14 @@ def process_one_dev_task() -> None:
             params={"node_name": NODE_NAME},
             timeout=10,
         )
+        if resp.status_code == 404:
+            logging.warning("[DEV_TASK] 404 from orchestrator (likely lost registration). Re-registering…")
+            if register_node():
+                resp = requests.get(
+                    f"{ORCH_URL}/dev/tasks/next",
+                    params={"node_name": NODE_NAME},
+                    timeout=10,
+                )
         resp.raise_for_status()
     except requests.RequestException as e:
         logging.error("[DEV_TASK] Error calling /dev/tasks/next: %s", e)
@@ -228,6 +350,14 @@ def process_one_knowledge_task() -> None:
             params={"node_name": NODE_NAME},
             timeout=10,
         )
+        if resp.status_code == 404:
+            logging.warning("[KNOWLEDGE_TASK] 404 from orchestrator (likely lost registration). Re-registering…")
+            if register_node():
+                resp = requests.get(
+                    f"{ORCH_URL}/knowledge/tasks/next",
+                    params={"node_name": NODE_NAME},
+                    timeout=10,
+                )
         resp.raise_for_status()
     except requests.RequestException as e:
         logging.error("[KNOWLEDGE_TASK] Error calling /knowledge/tasks/next: %s", e)
@@ -443,7 +573,19 @@ def send_heartbeat() -> None:
             json=payload,
             timeout=5,
         )
+
+        # If orchestrator restarted, our node registration is gone
+        if resp.status_code == 404:
+            print(f"[NODE_AGENT] Heartbeat got 404 (not registered). Re-registering…")
+            if register_node():
+                resp = SESSION.post(
+                    f"{ORCH_URL}/heartbeat",
+                    json=payload,
+                    timeout=5,
+                )
+
         resp.raise_for_status()
+
         print(
             f"[NODE_AGENT] Heartbeat OK for '{NODE_NAME}': "
             f"load={metrics['load']:.2f}, free={metrics['free_memory_mb']}MB"
@@ -582,6 +724,16 @@ def main() -> None:
         if not register_node():
             logging.error("[NODE_AGENT] CRITICAL: Could not connect to Prime Bob. Exiting.")
             return
+
+
+
+    # Start Ops Bob reporting loop in a dedicated background thread
+    try:
+        t = threading.Thread(target=lambda: asyncio.run(ops_report_loop()), daemon=True)
+        t.start()
+        logger.info(f"Ops reporting enabled → {OPS_BOB_URL}")
+    except Exception as e:
+        logger.warning(f"Failed to start ops_report_loop thread: {e}")
 
     # Main loop
     while True:

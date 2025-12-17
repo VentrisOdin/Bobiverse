@@ -4,12 +4,14 @@ import os
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import httpx
+from qdrant_client import QdrantClient
+from qdrant_client import models as qmodels
 
 from councils.knowledge_council.schemas import (
     KnowledgeTaskRequest,
@@ -45,6 +47,193 @@ logger.info(
     f"[KnowledgeCouncil] Starting with model={KNOWLEDGE_COUNCIL_MODEL}, "
     f"OLLAMA_URL={OLLAMA_URL}"
 )
+
+# ---------------- Qdrant & Embeddings ---------------- #
+
+QDRANT_HOST = os.getenv("KNOWLEDGE_QDRANT_HOST", "localhost")
+QDRANT_PORT = int(os.getenv("KNOWLEDGE_QDRANT_PORT", "6333"))
+
+KNOWLEDGE_EMBED_MODEL = os.getenv(
+    "KNOWLEDGE_EMBED_MODEL",
+    "all-MiniLM-L6-v2",  # safe default; change to your BGE/E5 later
+)
+
+# Lazy singletons
+_qdrant_client: QdrantClient | None = None
+_knowledge_embedder: Any | None = None
+
+try:
+    from sentence_transformers import SentenceTransformer  # type: ignore
+except ImportError:
+    SentenceTransformer = None  # type: ignore
+    logger.warning(
+        "[KnowledgeCouncil] sentence-transformers not installed; "
+        "RAG retrieval will be disabled."
+    )
+
+
+def get_qdrant_client() -> QdrantClient | None:
+    global _qdrant_client
+    if _qdrant_client is not None:
+        return _qdrant_client
+
+    try:
+        client = QdrantClient(
+            host=QDRANT_HOST,
+            port=QDRANT_PORT,
+            timeout=60.0,
+        )
+        _qdrant_client = client
+        logger.info(
+            f"[KnowledgeCouncil] Connected to Qdrant at {QDRANT_HOST}:{QDRANT_PORT}"
+        )
+        return client
+    except Exception as e:
+        logger.error(f"[KnowledgeCouncil] Failed to init Qdrant client: {e}")
+        return None
+
+
+def get_embedder() -> Any | None:
+    global _knowledge_embedder
+    if _knowledge_embedder is not None:
+        return _knowledge_embedder
+
+    if SentenceTransformer is None:
+        logger.error(
+            "[KnowledgeCouncil] Cannot init embedder: sentence-transformers missing."
+        )
+        return None
+
+    try:
+        logger.info(
+            f"[KnowledgeCouncil] Loading embed model: {KNOWLEDGE_EMBED_MODEL}"
+        )
+        model = SentenceTransformer(KNOWLEDGE_EMBED_MODEL)
+        _knowledge_embedder = model
+        return model
+    except Exception as e:
+        logger.error(f"[KnowledgeCouncil] Failed to init embedder: {e}")
+        return None
+
+# =========================
+#   Knowledge Collections
+# =========================
+
+# Trust-weighted collections used by Knowledge Bob.
+# You can add/remove collections here without touching the search logic.
+COLLECTIONS_CONFIG: Dict[str, Dict[str, Any]] = {
+    # Core PLOS scientific brain
+    "knowledge_bob_plos": {
+        "trust": "high",
+        "weight": 1.0,
+    },
+    # Base collection (if you used it for early testing / misc docs)
+    "knowledge_bob": {
+        "trust": "medium",
+        "weight": 0.7,
+    },
+    # Future arXiv collection (once ingested)
+    "knowledge_bob_arxiv": {
+        "trust": "medium_high",
+        "weight": 0.85,
+    },
+    # Future Wikipedia collection (once ingested)
+    "knowledge_bob_wikipedia": {
+        "trust": "low",
+        "weight": 0.3,
+    },
+}
+
+# Optional mapping labels → numeric weight multiplier if you prefer that form
+TRUST_WEIGHTS: Dict[str, float] = {
+    "very_high": 1.2,
+    "high": 1.0,
+    "medium_high": 0.85,
+    "medium": 0.7,
+    "low": 0.3,
+}
+
+# =========================
+#   Trust-Weighted Search
+# =========================
+
+def trust_weighted_search(
+    qdrant_client: QdrantClient,
+    embedder,
+    query: str,
+    top_k: int = 10,
+) -> List[Dict[str, Any]]:
+    """
+    Multi-collection, trust-weighted search for Knowledge Bob.
+
+    - Embeds the query once
+    - Queries all configured collections
+    - Applies trust weights per collection
+    - Returns a unified, sorted list of hits
+    """
+    if embedder is None:
+        logger.warning(
+            "[KnowledgeBob] trust_weighted_search called with no embedder; "
+            "returning empty results."
+        )
+        return []
+
+    # You probably already have an embedder with an embed() or embed_batch() method.
+    # Here we assume an embed_batch([...]) → [vector] style interface.
+    try:
+        query_vec = embedder.embed_batch([query])[0]
+    except AttributeError:
+        # Fallback: if your embedder exposes `embed` instead of `embed_batch`
+        query_vec = embedder.embed(query)
+
+    all_hits: List[Dict[str, Any]] = []
+
+    for coll_name, cfg in COLLECTIONS_CONFIG.items():
+        # If this collection doesn't exist yet, just skip it.
+        try:
+            search_results = qdrant_client.search(
+                collection_name=coll_name,
+                query_vector=query_vec,
+                limit=top_k,
+                with_payload=True,
+            )
+        except Exception as e:
+            logger.warning(
+                f"[KnowledgeBob] Skipping collection '{coll_name}' "
+                f"due to search error: {e}"
+            )
+            continue
+
+        trust_label = cfg.get("trust", "low")
+        base_weight = cfg.get("weight")
+        weight = (
+            base_weight
+            if base_weight is not None
+            else TRUST_WEIGHTS.get(trust_label, 0.3)
+        )
+
+        for r in search_results:
+            payload = r.payload or {}
+            base_score = float(r.score)
+            final_score = base_score * float(weight)
+
+            all_hits.append(
+                {
+                    "collection": coll_name,
+                    "score": final_score,
+                    "base_score": base_score,
+                    "trust": trust_label,
+                    "weight": weight,
+                    "payload": payload,
+                    # you can add raw content if you store it in payload later
+                }
+            )
+
+    # Sort by trust-weighted score
+    all_hits.sort(key=lambda h: h["score"], reverse=True)
+
+    # Return the top_k combined results
+    return all_hits[:top_k]
 
 # ---------------- FastAPI App ---------------- #
 
@@ -175,6 +364,42 @@ async def analyse_knowledge(request: KnowledgeTaskRequest):
     Accepts a question + optional extra_context, calls Llama via Ollama,
     and returns structured analysis.
     """
+    # --- RAG: retrieve context from Qdrant ---
+    rag_context = ""
+    try:
+        q_client = get_qdrant_client()
+        embedder = get_embedder()
+        if q_client and embedder:
+            hits = trust_weighted_search(
+                qdrant_client=q_client,
+                embedder=embedder,
+                query=request.question,
+                top_k=5,
+            )
+            lines: List[str] = []
+            for idx, h in enumerate(hits, start=1):
+                payload = h["payload"]
+                title = payload.get("document_title") or "Unknown title"
+                section = payload.get("section") or "Unknown section"
+                source = payload.get("source_file") or h["collection"]
+                trust = h.get("trust", "unknown")
+                score = h.get("score", 0.0)
+
+                lines.append(
+                    f"[{idx}] Source: {source} | Title: {title} | "
+                    f"Section: {section} | Trust: {trust} | Score: {score:.3f}"
+                )
+
+            if lines:
+                rag_context = "\n".join(lines)
+        else:
+            logger.warning(
+                "[KnowledgeCouncil] RAG disabled: missing Qdrant client or embedder."
+            )
+    except Exception as e:
+        logger.error(f"[KnowledgeCouncil] Error during RAG retrieval: {e}")
+        rag_context = ""
+
     user_prompt_parts = [
         "You are answering a knowledge / explanation question.",
         f"QUESTION:\n{request.question}",
@@ -184,6 +409,13 @@ async def analyse_knowledge(request: KnowledgeTaskRequest):
         user_prompt_parts.append(
             "EXTRA CONTEXT (may or may not be fully correct, use with judgement):\n"
             f"{request.extra_context}"
+        )
+
+    if rag_context:
+        user_prompt_parts.append(
+            "RETRIEVED CONTEXT (from Knowledge Bob's local brain; "
+            "higher-trust sources appear first):\n"
+            f"{rag_context}"
         )
 
     user_prompt_parts.append(
