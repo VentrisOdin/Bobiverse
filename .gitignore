@@ -1,0 +1,47 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+.ipynb_checkpoints/
+
+# --- Virtualenvs ---
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# --- OS / editor ---
+.DS_Store
+*.swp
+.vscode/
+
+# --- Bobiverse data / brains ---
+data/brains/
+data/**/brains/
+data/**/sources/
+data/**/xml/
+data/**/plos/
+data/**/arxiv/
+data/**/wikipedia/
+
+# --- Qdrant / vector DB data ---
+qdrant_data/
+qdrant/
+storage/
+snapshots/
+*.sqlite
+*.db
+*.wal
+*.shm
+
+# --- Model caches ---
+.cache/
+.huggingface/
+transformers_cache/
+sentence_transformers/
