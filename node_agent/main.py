@@ -92,9 +92,39 @@ def probe_get(name: str, url: str, timeout_s: float) -> Dict[str, Any]:
             "latency_ms": latency_ms,
             "error": str(e)[:160],
         }
+
 # =========================
 #    Helper Functions
 # =========================
+
+from typing import List
+
+def _check_health(url: str, timeout_s: float = 1.0) -> tuple[bool, str | None]:
+    try:
+        r = SESSION.get(url, timeout=timeout_s)
+        if r.status_code != 200:
+            return False, f"HTTP {r.status_code}"
+        try:
+            j = r.json()
+            if isinstance(j, dict) and "status" in j and j.get("status") != "ok":
+                return False, f"bad status: {j.get('status')}"
+        except Exception:
+            pass
+        return True, None
+    except Exception as e:
+        return False, str(e)
+
+def build_local_services() -> List[Dict[str, Any]]:
+    # Dev Council (8011)
+    dev_ok, dev_detail = _check_health("http://127.0.0.1:8011/health", timeout_s=1.0)
+
+    # Knowledge Council (8021)
+    kb_ok, kb_detail = _check_health("http://127.0.0.1:8021/health", timeout_s=1.0)
+
+    return [
+        {"name": "dev_council", "port": 8011, "ok": dev_ok, "detail": dev_detail},
+        {"name": "knowledge_council", "port": 8021, "ok": kb_ok, "detail": kb_detail},
+    ]
 
 # =========================
 #   Ops Bob Reporting Loop
@@ -127,16 +157,7 @@ async def ops_report_loop() -> None:
                 load_1m = None  # Windows / unsupported
 
 
-            # Probe Dev and Knowledge Council health endpoints
-            svc_timeout = min(0.6, OPS_REPORT_TIMEOUT_S)  # keep probes fast and bounded
-
-            dev_health = _health_url_from_base(DEV_COUNCIL_URL)
-            know_health = _health_url_from_knowledge_url(KNOWLEDGE_COUNCIL_URL)
-
-            services = [
-                probe_get("dev_council", dev_health, timeout_s=svc_timeout),
-                probe_get("knowledge_council", know_health, timeout_s=svc_timeout),
-            ]
+            services = build_local_services()
 
             payload = {
                 "node_id": NODE_NAME,
