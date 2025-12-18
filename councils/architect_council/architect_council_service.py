@@ -138,6 +138,17 @@ async def architect_propose(payload: ArchitectRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+# Health check endpoint
+@app.get("/health")
+async def health():
+    return {
+        "status": "ok",
+        "service": "architect_council",
+        "llm_url": ARCHITECT_LLM_URL,
+        "model": MODEL_NAME,
+    }
+
 # Dev-only run
 if __name__ == "__main__":
     import uvicorn

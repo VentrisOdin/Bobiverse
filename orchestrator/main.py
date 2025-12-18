@@ -42,6 +42,8 @@ from orchestrator.models import (
 
 from orchestrator.teacher_router import call_teacher
 from orchestrator.ops_client import get_ops_hints
+import threading
+from orchestrator.ops_reporter import run_forever
 from dotenv import load_dotenv
 import uuid
 import json
@@ -175,11 +177,20 @@ app = FastAPI(
 )
 
 
+
 @app.on_event("startup")
 async def startup_event():
     # Ensure the SQLite DB and tables exist
     init_db()
     logger.info("Database initialised.")
+
+    # Start ops_reporter in a daemon thread
+    try:
+        t = threading.Thread(target=run_forever, daemon=True)
+        t.start()
+        logger.info("Ops server reporter enabled.")
+    except Exception as e:
+        logger.warning(f"Failed to start ops server reporter: {e}")
 
 
 # In-memory node registry (Phase 1: keep it simple)
