@@ -23,9 +23,13 @@ from .schemas import (
 # Load .env from this folder
 load_dotenv()
 
+
 DEV_COUNCIL_NAME = os.getenv("DEV_COUNCIL_NAME", "dev_council_v1")
 DEV_COUNCIL_MODEL = os.getenv("DEV_COUNCIL_MODEL", "deepseek-coder:6.7b")
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+
+# Dev Council request timeout (seconds)
+DEV_COUNCIL_TIMEOUT_S = float(os.getenv("DEV_COUNCIL_TIMEOUT_S", "600"))
 
 app = FastAPI(
     title="Bobiverse Dev Council",
@@ -58,23 +62,27 @@ async def call_deepseek(prompt: str, model: Optional[str] = None) -> str:
         "format": "json",
     }
 
+
     try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
+        timeout = httpx.Timeout(
+            DEV_COUNCIL_TIMEOUT_S,
+            connect=5.0,
+        )
+        async with httpx.AsyncClient(timeout=timeout) as client:
             resp = await client.post(url, json=payload)
             resp.raise_for_status()
             data = resp.json()
     except httpx.HTTPError as e:
+        # This is the missing piece: log the full underlying exception so journald shows WHY.
+        logger.exception("Error calling Ollama /api/generate (model=%s url=%s): %s", model_name, url, e)
         raise HTTPException(
             status_code=502,
-            detail=f"Error calling DeepSeek via Ollama: {e}"
+            detail=f"Error calling DeepSeek via Ollama: {repr(e)}"
         )
 
     text = data.get("response")
     if not text:
-        raise HTTPException(
-            status_code=500,
-            detail="DeepSeek returned an empty response"
-        )
+        raise HTTPException(status_code=500, detail="DeepSeek returned an empty response")
 
     return text
 

@@ -40,12 +40,20 @@ NODE_ROLE = os.getenv("NODE_ROLE", "worker")
 TAILSCALE_IP = os.getenv("TAILSCALE_IP", "").strip()
 
 ORCH_URL = os.getenv("ORCHESTRATOR_URL", "http://100.111.201.26:5080").rstrip("/")
+
 DEV_COUNCIL_URL = os.getenv("DEV_COUNCIL_URL", "http://localhost:8011")
 KNOWLEDGE_COUNCIL_URL = os.getenv(
     "KNOWLEDGE_COUNCIL_URL",
     "http://localhost:8021/knowledge/analyse",
 )
 HEARTBEAT_INTERVAL = int(os.getenv("HEARTBEAT_INTERVAL_SEC", 5))
+
+
+# Dev Council request timeout (seconds)
+DEV_COUNCIL_TIMEOUT_S = int(os.getenv("DEV_COUNCIL_TIMEOUT_S", "600"))
+
+# Knowledge Council request timeout (seconds)
+KNOWLEDGE_COUNCIL_TIMEOUT_S = int(os.getenv("KNOWLEDGE_COUNCIL_TIMEOUT_S", "300"))
 
 # Ops Bob config
 OPS_BOB_URL = os.getenv("OPS_BOB_URL", "http://100.111.201.26:8014").rstrip("/")
@@ -292,12 +300,13 @@ def process_one_dev_task() -> None:
         "details": input_payload.get("details"),
     }
 
+
     # 2) Call Dev Council on this node
     try:
         dc_resp = requests.post(
             f"{DEV_COUNCIL_URL}/dev_council/analyse",
             json=dev_council_request,
-            timeout=120,
+            timeout=DEV_COUNCIL_TIMEOUT_S,
         )
         dc_resp.raise_for_status()
         dev_result = dc_resp.json()
@@ -446,7 +455,7 @@ def process_one_knowledge_task() -> None:
         kb_resp = requests.post(
             KNOWLEDGE_COUNCIL_URL,
             json=kb_request,
-            timeout=120,
+            timeout=KNOWLEDGE_COUNCIL_TIMEOUT_S,
         )
         kb_resp.raise_for_status()
         kb_result = kb_resp.json()

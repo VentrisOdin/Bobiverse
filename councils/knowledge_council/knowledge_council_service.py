@@ -30,10 +30,14 @@ KNOWLEDGE_COUNCIL_MODEL = os.getenv("KNOWLEDGE_COUNCIL_MODEL", "llama3:8b")
 # Single source of truth for Ollama URL, shared with Architect Bob.
 # Prefer OLLAMA_URL (Architect style), fall back to OLLAMA_BASE_URL, then default.
 OLLAMA_URL = (
+
     os.getenv("OLLAMA_URL")
     or os.getenv("OLLAMA_BASE_URL")
     or "http://localhost:11434"
 )
+
+# Knowledge Council request timeout (seconds)
+KNOWLEDGE_COUNCIL_TIMEOUT_S = float(os.getenv("KNOWLEDGE_COUNCIL_TIMEOUT_S", "300"))
 
 logger = logging.getLogger("knowledge_council")
 logger.setLevel(logging.INFO)
@@ -306,7 +310,11 @@ async def call_ollama_knowledge(payload: Dict[str, Any]) -> str:
         f"[KnowledgeCouncil] Calling Ollama chat endpoint at {url} "
         f"with model={KNOWLEDGE_COUNCIL_MODEL}"
     )
-    async with httpx.AsyncClient(timeout=120.0) as client:
+    timeout = httpx.Timeout(
+        KNOWLEDGE_COUNCIL_TIMEOUT_S,
+        connect=5.0,
+    )
+    async with httpx.AsyncClient(timeout=timeout) as client:
         try:
             resp = await client.post(url, json=payload)
             resp.raise_for_status()
