@@ -44,6 +44,7 @@ from orchestrator.teacher_router import call_teacher
 from orchestrator.ops_client import get_ops_hints
 import threading
 from orchestrator.ops_reporter import run_forever
+from orchestrator.memory_client import write_event
 from dotenv import load_dotenv
 import uuid
 import json
@@ -627,6 +628,26 @@ def task_result(task_id: int, payload: TaskResult):
         payload.status,
     )
 
+
+    # --- Memory Bob event logging (generic task result) ---
+    task_uuid_for_memory = TASK_DB_UUIDS.get(task_id)
+
+    write_event({
+        "task_id": task_uuid_for_memory or f"inmem:{task_id}",
+        "module": task.high_level_type or "unknown",
+        "node_id": payload.node_name,
+        "status": "success" if payload.status == "completed" else "failed",
+        "summary": str(task.result) if task.result else f"Task {payload.status}",
+        "details": {
+            "execution_failed": payload.status != "completed",
+        },
+        "tags": [
+            "auto",
+            task.high_level_type or "unknown",
+            payload.status,
+        ],
+    })
+
     return task
 
 
@@ -921,6 +942,19 @@ def dev_task_result(task_uuid: str, body: DevTaskResultIn):
     except Exception as e:
         logger.exception("Failed to complete dev task execution in DB: %s", e)
 
+    # --- Memory Bob event logging (Dev Council) ---
+    write_event({
+        "task_id": task_uuid,
+        "module": "dev_council",
+        "node_id": ORCHESTRATOR_NODE_NAME,
+        "status": body.status,
+        "summary": body.output_summary,
+        "details": {
+            "execution_id": body.execution_id,
+            "full_response": body.full_response,
+        },
+        "tags": ["dev", body.status],
+    })
     return {"status": "ok", "task_uuid": task_uuid, "final_status": final_status_db}
 
 
@@ -1128,6 +1162,19 @@ def knowledge_task_result(task_uuid: str, body: KnowledgeTaskResultIn):
     except Exception as e:
         logger.exception("Failed to complete knowledge task execution in DB: %s", e)
 
+    # --- Memory Bob event logging (Knowledge Council) ---
+    write_event({
+        "task_id": task_uuid,
+        "module": "knowledge_council",
+        "node_id": ORCHESTRATOR_NODE_NAME,
+        "status": body.status,
+        "summary": body.output_summary,
+        "details": {
+            "execution_id": body.execution_id,
+            "full_response": body.full_response,
+        },
+        "tags": ["knowledge", body.status],
+    })
     return {"status": "ok", "task_uuid": task_uuid, "final_status": final_status_db}
 
 
@@ -1244,6 +1291,7 @@ def create_teacher_task(payload: TeacherTaskCreate):
 
         output_summary = result.get("summary", "").strip() or "Teacher Council completed."
 
+
         # 5) Complete execution + task status
         complete_task_execution(
             execution_id=execution_id,
@@ -1254,6 +1302,21 @@ def create_teacher_task(payload: TeacherTaskCreate):
             metrics=result,  # full JSON goes into metrics_json
         )
         update_task_status(task_uuid=task_uuid, final_status="SUCCESS", error_type=None)
+
+        # --- Memory Bob event logging (Teacher Council success) ---
+        write_event({
+            "task_id": task_uuid,
+            "module": "teacher_council",
+            "node_id": ORCHESTRATOR_NODE_NAME,
+            "status": "success",
+            "summary": output_summary,
+            "details": {
+                "sources": result.get("sources", []),
+                "confidence": result.get("confidence"),
+                "latency_ms": latency_ms,
+            },
+            "tags": ["teacher", "success"],
+        })
 
         logger.info("[TEACHER_TASK_SUCCESS] uuid=%s exec_id=%s latency_ms=%s", task_uuid, execution_id, latency_ms)
 
@@ -1288,5 +1351,16 @@ def create_teacher_task(payload: TeacherTaskCreate):
             update_task_status(task_uuid=task_uuid, final_status="FAILED", error_type=err)
         except Exception:
             pass
+
+        # --- Memory Bob event logging (Teacher Council failure) ---
+        write_event({
+            "task_id": task_uuid,
+            "module": "teacher_council",
+            "node_id": ORCHESTRATOR_NODE_NAME,
+            "status": "failed",
+            "summary": err,
+            "details": {"error": err},
+            "tags": ["teacher", "failed"],
+        })
 
         raise HTTPException(status_code=500, detail=f"Teacher task failed: {err}")

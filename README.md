@@ -364,3 +364,12 @@ Debates
 Improves the whole
 
 The system grows smarter by living, not by static training.
+
+our active Bobiverse services are:
+
+Role	systemd unit
+Orchestrator	bobiverse-orchestrator
+Memory Bob	memory_council
+Architect Council	architect_council
+Teacher Council	teacher_council
+Ops Bob	ops_bob
