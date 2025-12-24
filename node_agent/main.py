@@ -55,11 +55,13 @@ HEARTBEAT_INTERVAL_SEC = env_int("HEARTBEAT_INTERVAL_SEC", 5)
 HTTP_TIMEOUT_SEC = float(env_str("HTTP_TIMEOUT_SEC", "1.5"))
 
 # These are "councils" running on prime-bob that we want to show as live in Bridge.
-SERVICES: List[Dict[str, Any]] = [
-    {"name": "architect_council", "host": "127.0.0.1", "port": 8012, "health_path": "/health"},
+SERVICES = [
+    {"name": "orchestrator",    "host": "127.0.0.1", "port": 5080, "health_path": "/health"},
+    {"name": "reflector",       "host": "127.0.0.1", "port": 5081, "health_path": "/reflector/summary"},
+    {"name": "architect",       "host": "127.0.0.1", "port": 8012, "health_path": "/health"},
     {"name": "teacher_council", "host": "127.0.0.1", "port": 8013, "health_path": "/health"},
-    {"name": "ops_bob", "host": "127.0.0.1", "port": 8014, "health_path": "/ops/stats"},
-    {"name": "memory_council", "host": "127.0.0.1", "port": 8031, "health_path": "/health"},
+    {"name": "ops_bob",         "host": "127.0.0.1", "port": 8014, "health_path": "/ops/stats"},
+    {"name": "memory_council",  "host": "127.0.0.1", "port": 8031, "health_path": "/health"},
 ]
 
 # Reflector is typically CLI/batch (bobctl reflector-run), not a daemon.

@@ -11,10 +11,11 @@ from urllib.parse import urlparse
 from .schemas import TeacherResearchRequest, TeacherResearchResponse, TeacherSource, TeacherChunk
 from .trust import DEFAULT_ALLOWLIST, is_allowed, domain_of, trust_for_domain
 
+
 from .fetchers.wikipedia import fetch_wikipedia_summary
 from .fetchers.arxiv import fetch_arxiv_top
 from .fetchers.pubmed import fetch_pubmed_candidates
-
+from .fetchers.web_search import fetch_web_candidates
 
 from .fetchers.nhs import fetch_nhs_candidates
 from .fetchers.cdc import fetch_cdc_top
@@ -41,10 +42,13 @@ _STOPWORDS: Set[str] = {
     "meaning", "define", "definition", "what", "is", "the", "a", "an", "of", "in", "for", "to", "and",
     "how", "does", "do", "work", "works", "why", "when", "where", "who", "explain"
 }
+_STOPWORDS |= {"affect", "effects", "effect", "impact", "impacts", "change", "changes"}
 def _wiki_query(question: str) -> str:
-    kws = _extract_keywords(question)
-    # join strongest tokens into a title-like query
-    return " ".join(kws[:4]) if kws else (question or "").strip()
+    q = (question or "").strip()
+    m = re.search(r"affect\s+(.*)$", q, flags=re.IGNORECASE)
+    if m:
+        return m.group(1).strip()
+    return q
 
 def _question_domain(question: str) -> str:
     q = (question or "").lower()
@@ -253,10 +257,28 @@ def research(req: TeacherResearchRequest):
     # Determine question domain for source gating
     q_domain = _question_domain(req.question)
 
+
+
     # Always allowed for all questions: Wikipedia
-    w = fetch_wikipedia_summary(_wiki_query(req.question))
-    if w and _is_relevant(req.question, w):
+    wq = _wiki_query(req.question)
+    w = fetch_wikipedia_summary(wq)
+
+    logger.info("WIKI_QUERY=%s", wq)
+    logger.info("WIKI_RAW=%s", w)
+
+    if w:
+        # Wikipedia is a safe baseline; relevance is handled later by ranking anyway
         candidates.append(w)
+
+    # General web discovery (allowlist-filtered)
+    if q_domain != "medical":
+        for c in fetch_web_candidates(
+            req.question,
+            allowlist=list(allowlist),
+            limit=6,
+            search_k=25,
+        ):
+            candidates.append(c)
 
     # Only run medical fetchers for medical questions
     if q_domain == "medical":
@@ -304,11 +326,13 @@ def research(req: TeacherResearchRequest):
     # Filter by allowlist + de-dupe + relevance + rank
     seen_urls: Set[str] = set()
     filtered: List[Dict[str, Any]] = []
+
     for c in candidates:
         url = c.get("url", "")
         if not url or url in seen_urls:
             continue
-        if not is_allowed(url, allowlist):
+        dom = domain_of(url)
+        if dom != "wikipedia.org" and not is_allowed(url, allowlist):
             continue
         if not _is_relevant(req.question, c):
             continue
@@ -436,8 +460,9 @@ def research(req: TeacherResearchRequest):
 
     chunks = _make_chunks(req.question, sources)
 
-    # Set a default confidence value (e.g., 1.0 for full confidence, or adjust as needed)
-    confidence = 1.0
+
+    # Set confidence based on number of sources
+    confidence = 0.2 if not sources else 0.7 if len(sources) == 1 else 0.9
 
     return TeacherResearchResponse(
         question=req.question,

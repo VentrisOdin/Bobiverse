@@ -16,6 +16,19 @@ DEFAULT_ALLOWLIST = {
     "ukhsa.gov.uk",
     "nist.gov",
 
+    # Science & consensus research
+    "nationalacademies.org",
+    "nap.edu",
+
+
+    # Climate & earth systems
+    "ipcc.ch",
+    "noaa.gov",
+    "climate.gov",
+    "nasa.gov",
+    "metoffice.gov.uk",
+    "wmo.int",
+
     # Research & literature
     "ncbi.nlm.nih.gov",
     "arxiv.org",
@@ -42,6 +55,18 @@ HIGH_TRUST = {
     "nice.org.uk",
     "ukhsa.gov.uk",
     "nist.gov",
+
+    # Science & consensus bodies
+    "nationalacademies.org",
+    "nap.edu",
+
+    # Climate / earth systems authorities
+    "ipcc.ch",
+    "noaa.gov",
+    "climate.gov",
+    "nasa.gov",
+    "metoffice.gov.uk",
+    "wmo.int",
 
     # Official technical documentation
     "docs.python.org",
@@ -74,6 +99,20 @@ def domain_of(url: str) -> str:
         return "nhs.uk"
     if host.endswith(".ncbi.nlm.nih.gov"):
         return "ncbi.nlm.nih.gov"
+    if host.endswith(".nationalacademies.org"):
+        return "nationalacademies.org"
+    if host.endswith(".nap.edu"):
+        return "nap.edu"
+    if host.endswith(".noaa.gov"):
+        return "noaa.gov"
+    if host.endswith(".climate.gov"):
+        return "climate.gov"
+    if host.endswith(".nasa.gov"):
+        return "nasa.gov"
+    if host.endswith(".metoffice.gov.uk"):
+        return "metoffice.gov.uk"
+    if host.endswith(".wmo.int"):
+        return "wmo.int"
 
     return host
 

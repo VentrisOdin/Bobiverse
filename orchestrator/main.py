@@ -535,7 +535,7 @@ def next_task(node_name: str):
                         task_uuid=task_uuid,
                         target_module="generic",
                         target_node=node_name,
-                        strategy_name=None,
+                        strategy_name="orchestrator:queue_v1",
                     )
                     TASK_DB_EXECUTION_IDS[task.id] = exec_row["id"]
 
@@ -877,7 +877,7 @@ def dev_next_task(node_name: str):
         task_uuid=task_uuid,
         target_module="dev_council",
         target_node=node_name,
-        strategy_name=None,
+        strategy_name="dev:default_v1",
     )
 
     return DevTaskNextResponse(
@@ -1097,7 +1097,7 @@ def knowledge_next_task(node_name: str):
         task_uuid=task_uuid,
         target_module="knowledge_council",
         target_node=node_name,
-        strategy_name=None,
+        strategy_name="knowledge:default_v1",
     )
 
     return KnowledgeTaskNextResponse(
@@ -1273,7 +1273,7 @@ def create_teacher_task(payload: TeacherTaskCreate):
         task_uuid=task_uuid,
         target_module="teacher_council",
         target_node=ORCHESTRATOR_NODE_NAME,
-        strategy_name=None,
+        strategy_name="teacher:default_v1",
     )
     execution_id = exec_row["id"]
 

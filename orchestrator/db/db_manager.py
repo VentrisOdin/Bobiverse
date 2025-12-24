@@ -161,12 +161,14 @@ def create_task_execution(
     task_uuid: str,
     target_module: Optional[str],
     target_node: Optional[str],
-    strategy_name: Optional[str] = None,
+    strategy_name: Optional[str] = "default_v1",
 ) -> Dict[str, Any]:
     """
     Create a task_executions row for a given task UUID.
     Returns the created execution as a dict.
     """
+    strategy_name = strategy_name or "default_v1"
+
     with get_connection() as conn:
         cur = conn.cursor()
 
@@ -183,8 +185,8 @@ def create_task_execution(
             INSERT INTO task_executions (
                 task_id,
                 target_module,
-                target_node,
                 strategy_name,
+                target_node,
                 status,
                 started_at
             )
@@ -193,8 +195,8 @@ def create_task_execution(
             (
                 task_id,
                 target_module,
-                target_node,
                 strategy_name,
+                target_node,
                 "RUNNING",
             ),
         )

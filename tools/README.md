@@ -662,3 +662,6 @@ Because it depends on:
 - Fully stable task/execution loop
 
 You're now completing Phase 2–3, so routing comes after that.
+udo systemctl restart bobiverse-node-agent.service
+# optional, but safe:
+sudo systemctl restart bobiverse-orchestrator
